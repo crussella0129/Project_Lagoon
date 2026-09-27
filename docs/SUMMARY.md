@@ -1,0 +1,11 @@
+# Summary
+- [Project Book](README.md)
+- [Intents](intents/README.md)
+- [Tasks](work/tasks.md)
+- [Completed tasks](work/completed-tasks.md)
+- [Sprint 0](sprints/s0/sprint-meta.md)
+- [Voluntary partner choice](intents/INT-0001-voluntary-observable-partner-choice.md)
+- [Evaluated DARE descendants](intents/INT-0002-evaluated-dare-descendants.md)
+- [Controlled evolutionary study](intents/INT-0003-controlled-evolutionary-study.md)
+- [Idea assessment](sprints/s0/sprint-research/idea-review.md)
+- [Sprint 0 research](sprints/s0/sprint-research/research-report.md)
