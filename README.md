@@ -22,3 +22,9 @@ cargo run --locked -- replay --record runs/demo/operator-record.json --output ru
 
 See [usage and local inference](docs/usage.md), the [implementation Book](docs/README.md),
 and [fusion-method assessment](docs/sprints/s0/sprint-research/fusion-method-review.md).
+
+The v0.2 instrument adds phase-specific response schemas, harness-bound plan
+fingerprints, recorded shuffled opaque handles, and token-aware sliding memory.
+See the [variance study](docs/research/variance-review.md), [merge-screening proposal review](docs/research/useful-protocol-review.md)
+and [draft preregistration](PREREG.md) for the next experiment. The preregistration
+is not frozen; the current harness still records requests without training or merging.

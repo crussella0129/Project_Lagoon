@@ -10,7 +10,7 @@
   "max_siblings": 1,
   "mode": "mutual_choice",
   "decoding": {
-    "temperature": 0.0,
+    "temperature": 0,
     "max_tokens": 256
   },
   "agents": [
@@ -53,7 +53,7 @@
             "phase": {
               "kind": "selection"
             },
-            "body": "{\"consent\":{\"plan_id\":\"single\",\"state\":\"agree\",\"fingerprint\":\"8a53cf58900571bb70f52dfbf13bd78b4c3c33fe8335b132a75e601c334c502d\"},\"partner\":\"b\"}"
+            "body": "{\"consent\":{\"plan_id\":\"single\",\"state\":\"agree\"},\"partner\":\"p-c1bc7d533fa54f3f\"}"
           },
           {
             "transport_failure": false,
@@ -72,7 +72,7 @@
             "phase": {
               "kind": "selection"
             },
-            "body": "{\"consent\":{\"plan_id\":\"single\",\"state\":\"agree\",\"fingerprint\":\"8a53cf58900571bb70f52dfbf13bd78b4c3c33fe8335b132a75e601c334c502d\"},\"partner\":\"b\"}"
+            "body": "{\"consent\":{\"plan_id\":\"single\",\"state\":\"agree\"},\"partner\":\"p-c1bc7d533fa54f3f\"}"
           }
         ]
       }
@@ -116,7 +116,7 @@
             "phase": {
               "kind": "selection"
             },
-            "body": "{\"consent\":{\"plan_id\":\"single\",\"state\":\"agree\",\"fingerprint\":\"8a53cf58900571bb70f52dfbf13bd78b4c3c33fe8335b132a75e601c334c502d\"},\"partner\":\"a\"}"
+            "body": "{\"consent\":{\"plan_id\":\"single\",\"state\":\"agree\"},\"partner\":\"p-809a715ff182bbd5\"}"
           },
           {
             "transport_failure": false,
@@ -135,7 +135,7 @@
             "phase": {
               "kind": "selection"
             },
-            "body": "{\"consent\":{\"plan_id\":\"single\",\"state\":\"agree\",\"fingerprint\":\"8a53cf58900571bb70f52dfbf13bd78b4c3c33fe8335b132a75e601c334c502d\"},\"partner\":\"a\"}"
+            "body": "{\"consent\":{\"plan_id\":\"single\",\"state\":\"agree\"},\"partner\":\"p-809a715ff182bbd5\"}"
           }
         ]
       }
@@ -214,7 +214,7 @@
       ],
       "density": 0.5,
       "epsilon": null,
-      "lambda": 1.0
+      "lambda": 1
     }
   ],
   "plans": [
@@ -229,5 +229,12 @@
       "max_compute_seconds": 60,
       "max_output_bytes": 1024
     }
-  ]
+  ],
+  "memory": {
+    "recent_rounds": 2,
+    "max_public_events": 64,
+    "max_prompt_tokens": 6144,
+    "context_window_tokens": 8192,
+    "safety_margin_tokens": 128
+  }
 }

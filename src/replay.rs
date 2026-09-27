@@ -1,8 +1,8 @@
 use crate::{
-    config::fingerprint,
+    config::{BackendConfig, fingerprint},
     protocol::{Phase, Status},
     record::{Record, RecordError, SCHEMA_VERSION},
-    runner::{Reply, Session, outcome_from_reply},
+    runner::{Reply, Session, fit_bytes, outcome_from_reply, tokens_fit},
 };
 
 /// Structural consistency checking, not authentication against the trusted operator.
@@ -34,15 +34,52 @@ pub fn reconstruct(record: &Record) -> Result<Session, RecordError> {
         {
             let observations = session.observations(config, round, phase.clone());
             let calls = &record.session.calls[cursor..cursor + observations.len()];
-            for (call, observation) in calls.iter().zip(observations) {
-                if call.handle != observation.owner || call.observation != observation {
+            for (call, mut observation) in calls.iter().zip(observations) {
+                if config.alias(&call.handle) != observation.owner
+                    || !config.agents.iter().any(|a| a.handle == call.handle)
+                {
                     return Err(fail());
                 }
-                let over_context = serde_json::to_vec(&observation).map_err(|_| fail())?.len()
-                    > config.max_context_bytes;
+                let fixture = matches!(
+                    config
+                        .agents
+                        .iter()
+                        .find(|a| a.handle == call.handle)
+                        .unwrap()
+                        .backend,
+                    BackendConfig::Fixture { .. }
+                );
+                let mut fits = false;
+                let mut over_context = !fit_bytes(config, &mut observation);
+                for (index, trial) in call.token_trials.iter().enumerate() {
+                    if over_context
+                        || fits
+                        || trial.prompt_fingerprint != fingerprint(&observation.messages())
+                        || (fixture && trial.count != crate::backend::fixture_tokens(&observation))
+                    {
+                        return Err(fail());
+                    }
+                    fits = tokens_fit(config, &trial.count);
+                    if !fits {
+                        if !observation.drop_oldest_event() {
+                            over_context = true;
+                        } else {
+                            over_context = !fit_bytes(config, &mut observation);
+                        }
+                    }
+                    if (fits || over_context) && index + 1 != call.token_trials.len() {
+                        return Err(fail());
+                    }
+                }
+                if call.observation != observation
+                    || call.response_schema_fingerprint
+                        != fingerprint(&observation.response_format())
+                {
+                    return Err(fail());
+                }
                 match &call.reply {
                     Reply::Response { body }
-                        if body.len() > config.max_response_bytes || over_context =>
+                        if body.len() > config.max_response_bytes || over_context || !fits =>
                     {
                         return Err(fail());
                     }
@@ -55,11 +92,26 @@ pub fn reconstruct(record: &Record) -> Result<Session, RecordError> {
                                 | Status::TransportFailure
                                 | Status::HttpFailure
                                 | Status::MalformedContent
+                                | Status::TokenizationFailure
                         ) || (*status == Status::ContextLimit) != over_context =>
                     {
                         return Err(fail());
                     }
                     _ => {}
+                }
+                if let Reply::Failure { status } = &call.reply {
+                    if (*status == Status::TokenizationFailure && fits)
+                        || (!fits
+                            && !over_context
+                            && !matches!(
+                                status,
+                                Status::TokenizationFailure
+                                    | Status::Timeout
+                                    | Status::TransportFailure
+                            ))
+                    {
+                        return Err(fail());
+                    }
                 }
                 if call.outcome != outcome_from_reply(&call.reply, &observation, config) {
                     return Err(fail());
@@ -86,11 +138,12 @@ mod tests {
 
     pub(crate) async fn recorded() -> Record {
         let mut config = config();
+        let aliases = [config.alias("b"), config.alias("a")];
         for (index, agent) in config.agents.iter_mut().enumerate() {
             agent.initial_private.thought = Some(format!("PRIVATE_CANARY_{index}"));
             let partner = match index {
-                0 => Some("b"),
-                1 => Some("a"),
+                0 => Some(aliases[0].as_str()),
+                1 => Some(aliases[1].as_str()),
                 _ => None,
             };
             agent.backend=BackendConfig::Fixture {responses:(0..2).flat_map(|round|[
@@ -158,7 +211,7 @@ mod tests {
     #[tokio::test]
     async fn unsupported_or_inconsistent_records_are_rejected() {
         let original = recorded().await;
-        for kind in 0..9 {
+        for kind in 0..13 {
             let mut record = original.clone();
             match kind {
                 0 => record.schema_version = 99,
@@ -171,7 +224,11 @@ mod tests {
                 5 => record.session.calls[0].outcome.status = Status::Abstained,
                 6 => record.config.recipes[0].density = Some(0.1),
                 7 => record.report.total.admitted_children = 1,
-                _ => record.session.calls[1] = record.session.calls[0].clone(),
+                8 => record.session.calls[1] = record.session.calls[0].clone(),
+                9 => record.session.calls[0].token_trials[0].count.prompt_tokens += 1,
+                10 => record.session.calls[0].observation.handles.reverse(),
+                11 => record.session.calls[0].response_schema_fingerprint = "fake".into(),
+                _ => record.session.calls[0].observation.omitted_public_events += 1,
             }
             assert!(reconstruct(&record).is_err(), "kind {kind}");
         }

@@ -101,7 +101,8 @@ async fn execute(cli: Cli) -> Result<(), RecordError> {
                 Phase::Selection,
             );
             print_json(
-                &serde_json::json!({"mode":config.mode,"max_siblings":config.max_siblings,"plans":observation.plans}),
+                &serde_json::json!({"mode":config.mode,"max_siblings":config.max_siblings,"plans":observation.plans,
+                    "operator_aliases":config.agents.iter().map(|a| (&a.handle,config.alias(&a.handle))).collect::<std::collections::BTreeMap<_,_>>()}),
             )
         }
     }

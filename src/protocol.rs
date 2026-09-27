@@ -70,6 +70,7 @@ pub enum Status {
     TransportFailure,
     HttpFailure,
     MalformedContent,
+    TokenizationFailure,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -130,7 +131,7 @@ pub fn normalize(
     if body.len() > config.max_response_bytes {
         return Outcome::failure(Status::OversizedResponse);
     }
-    let Ok(serde_json::Value::Object(mut fields)) = serde_json::from_str(body) else {
+    let Ok(serde_json::Value::Object(mut fields)) = serde_json::from_str(json_body(body)) else {
         return Outcome::failure(Status::InvalidResponse);
     };
     let private_update = match fields.remove("private_update") {
@@ -177,28 +178,47 @@ pub fn normalize(
             }
             let consent = match fields.remove("consent") {
                 None => Consent::Missing,
-                Some(value) => match serde_json::from_value::<Consent>(value) {
-                    Ok(Consent::Agree {
-                        plan_id,
-                        fingerprint,
-                    }) => {
-                        if observation
-                            .plans
-                            .iter()
-                            .any(|p| p.plan.id == plan_id && p.fingerprint == fingerprint)
-                        {
-                            Consent::Agree {
-                                plan_id,
-                                fingerprint,
+                Some(mut value) => {
+                    // The immutable observation binds the receipt. An obsolete copied hash
+                    // is ignored, never interpreted as a different authorization.
+                    if value.get("state").and_then(|v| v.as_str()) == Some("agree") {
+                        if let Some(fields) = value.as_object_mut() {
+                            fields.remove("fingerprint");
+                            if let Some(card) = fields
+                                .get("plan_id")
+                                .and_then(|v| v.as_str())
+                                .and_then(|id| observation.plans.iter().find(|p| p.plan.id == id))
+                            {
+                                fields.insert(
+                                    "fingerprint".into(),
+                                    serde_json::json!(card.fingerprint),
+                                );
                             }
-                        } else {
-                            Consent::Invalid
                         }
                     }
-                    Ok(Consent::Decline) => Consent::Decline,
-                    Ok(Consent::Defer) => Consent::Defer,
-                    _ => Consent::Invalid,
-                },
+                    match serde_json::from_value::<Consent>(value) {
+                        Ok(Consent::Agree {
+                            plan_id,
+                            fingerprint,
+                        }) => {
+                            if observation
+                                .plans
+                                .iter()
+                                .any(|p| p.plan.id == plan_id && p.fingerprint == fingerprint)
+                            {
+                                Consent::Agree {
+                                    plan_id,
+                                    fingerprint,
+                                }
+                            } else {
+                                Consent::Invalid
+                            }
+                        }
+                        Ok(Consent::Decline) => Consent::Decline,
+                        Ok(Consent::Defer) => Consent::Defer,
+                        _ => Consent::Invalid,
+                    }
+                }
             };
             if !fields.is_empty() {
                 return Outcome::failure(Status::InvalidResponse);
@@ -211,8 +231,24 @@ pub fn normalize(
                 },
                 public_message: None,
                 private_update,
-                ballot: Some(Ballot { partner, consent }),
+                ballot: Some(Ballot {
+                    partner: partner.and_then(|alias| config.handle_for_alias(&alias)),
+                    consent,
+                }),
             }
         }
     }
+}
+
+/// Accept one complete JSON fence only. Never extract a guess from surrounding prose.
+pub fn json_body(body: &str) -> &str {
+    let trimmed = body.trim();
+    trimmed
+        .strip_prefix("```json\n")
+        .or_else(|| trimmed.strip_prefix("```json\r\n"))
+        .or_else(|| trimmed.strip_prefix("```\n"))
+        .or_else(|| trimmed.strip_prefix("```\r\n"))
+        .and_then(|s| s.strip_suffix("```"))
+        .map(str::trim)
+        .unwrap_or(trimmed)
 }

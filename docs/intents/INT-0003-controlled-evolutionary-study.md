@@ -40,6 +40,15 @@ social class, human stereotypes, or elimination incentives.
   equal-budget sibling batches within/across methods, and separately single-child
   versus batch plans. Measure behavioral diversity, consent, lineage concentration,
   and exposure; account for siblings' shared parentage in uncertainty estimates.
+- **AC-7:** first test single-generation pair screening against skill-profile,
+  geometry and random controls at matched costs. Freeze held-out skill metrics,
+  failure handling, exchangeability assumptions, useful effect thresholds and
+  independently anchored record commitments before real confirmatory runs.
+  [Draft preregistration](../../PREREG.md) is not yet frozen or executed.
+- **AC-8:** measure delta variance, covariance, skill diversity and lineage
+  concentration separately. Declare structured variation/training explicitly;
+  compare averaging, DARE variants and crossover with finite-population drift
+  accounted for. Parameter variance is not a prediction of skill-score variance.
 
 ## Rationale
 
@@ -69,3 +78,6 @@ fine-tuning or participant distress mechanism is included by default.
 - 2026-09-27: refined while `proposed` after the sibling question: treat optional
   method-diverse batches as a hypothesis with count/budget controls and shared-
   parentage accounting, not guaranteed novelty or a hidden elimination contest.
+- 2026-09-27: user requested a sourced review and draft next-study preregistration;
+  added a screening pilot and qualified variance/uncertainty requirements. This
+  intent remains proposed; training and real generational runs are unscheduled.

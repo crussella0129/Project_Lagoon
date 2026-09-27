@@ -6,6 +6,9 @@ pub struct Fixture {
 }
 
 impl Backend for Fixture {
+    fn count_tokens(&self, request: Request) -> super::TokenFuture {
+        Box::pin(async move { Ok(super::fixture_tokens(&request.observation)) })
+    }
     fn respond(&self, request: Request) -> ResponseFuture {
         let response = self
             .responses
