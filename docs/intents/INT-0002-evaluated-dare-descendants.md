@@ -42,6 +42,11 @@ This is follow-on work, not an acceptance claim for Sprint 0.
   method, recipe, seed, hashes, validation and failures. Defer unavailable capacity
   explicitly rather than silently change count/methods. Do not treat siblings as
   independent experimental replications or select only a hidden benchmark winner.
+- **AC-8:** evaluate coordinate/block/layer crossover as a separate proposed
+  recipe family before generational claims. For LoRA, distinguish scaled delta
+  products from factor arithmetic and record ranks, dense/concatenated output,
+  precision and any truncation error. A toy DARE-average variance calculation
+  does not select the real merger or establish skill retention.
 
 ## Rationale
 
@@ -72,3 +77,6 @@ Recursively merged descendants may drift away from the small-delta regime.
   beyond DARE and added mutual recipe consent and pool-specific comparison.
 - 2026-09-27: refined while `proposed` following the sibling question: support
   finite consented batches with independent child jobs and measured diversity.
+- 2026-09-27: reviewed blending variance and the specialist-pool proposal; added
+  delta-representation and crossover evaluation requirements. Intent remains
+  proposed; no actual crossover operator or weight fusion has been implemented.

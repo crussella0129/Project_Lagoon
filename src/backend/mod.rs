@@ -16,9 +16,26 @@ pub struct Request {
 }
 
 pub type ResponseFuture = Pin<Box<dyn Future<Output = Result<String, Status>> + Send>>;
+pub type TokenFuture = Pin<Box<dyn Future<Output = Result<TokenCount, Status>> + Send>>;
+
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct TokenCount {
+    pub prompt_tokens: u32,
+    pub model_capacity: Option<u32>,
+}
+
+/// Deterministic fixture accounting, deliberately not described as a model tokenizer.
+pub fn fixture_tokens(observation: &Observation) -> TokenCount {
+    TokenCount {
+        prompt_tokens: observation.prompt_bytes() as u32 + 16,
+        model_capacity: None,
+    }
+}
 
 pub trait Backend: Send + Sync {
     fn respond(&self, request: Request) -> ResponseFuture;
+    fn count_tokens(&self, request: Request) -> TokenFuture;
 }
 
 pub fn configured(config: &BackendConfig) -> Result<Arc<dyn Backend>, ConfigError> {
@@ -26,8 +43,12 @@ pub fn configured(config: &BackendConfig) -> Result<Arc<dyn Backend>, ConfigErro
         BackendConfig::Fixture { responses } => Ok(Arc::new(fixture::Fixture {
             responses: responses.clone(),
         })),
-        BackendConfig::LocalHttp { endpoint, model } => {
-            Ok(Arc::new(local_http::LocalHttp::new(endpoint, model)?))
-        }
+        BackendConfig::LocalHttp {
+            endpoint,
+            model,
+            tokenizer,
+        } => Ok(Arc::new(local_http::LocalHttp::new(
+            endpoint, model, tokenizer,
+        )?)),
     }
 }

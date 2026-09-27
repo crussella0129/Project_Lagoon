@@ -437,8 +437,8 @@ mod tests {
         for (index, agent) in config.agents.iter_mut().enumerate() {
             agent.initial_private.thought = Some(format!("private-{index}"));
             let partner = match index {
-                0 => Some("b"),
-                1 => Some("a"),
+                0 => Some("p-c1bc7d533fa54f3f"),
+                1 => Some("p-809a715ff182bbd5"),
                 _ => None,
             };
             agent.backend = BackendConfig::Fixture {

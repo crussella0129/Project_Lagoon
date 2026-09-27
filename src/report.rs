@@ -48,7 +48,20 @@ pub struct Report {
     pub total: Counts,
     pub per_round: Vec<RoundReport>,
     pub all_call_status_counts: BTreeMap<String, u64>,
+    pub fenced_json_responses: u64,
+    pub presentation: Vec<PresentationCounts>,
     pub baseline: Baseline,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PresentationCounts {
+    pub round: u32,
+    pub kind: String,
+    pub id: String,
+    pub position: usize,
+    pub exposures: u64,
+    pub choices: u64,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -176,8 +189,57 @@ pub fn describe(config: &Experiment, session: &Session) -> Report {
         Some(2.0 * total.social_pairs as f64 / total.decision_slots as f64)
     };
     let mut all_call_status_counts = BTreeMap::new();
+    let mut presentation: BTreeMap<(u32, String, String, usize), PresentationCounts> =
+        BTreeMap::new();
+    let mut fenced_json_responses = 0;
     for call in &session.calls {
         count(&mut all_call_status_counts, key(&call.outcome.status));
+        if let crate::runner::Reply::Response { body } = &call.reply {
+            if crate::protocol::json_body(body) != body.trim() {
+                fenced_json_responses += 1;
+            }
+        }
+        if call.observation.phase != crate::protocol::Phase::Selection {
+            continue;
+        }
+        let ballot = call.outcome.ballot.as_ref();
+        let partner = ballot
+            .and_then(|b| b.partner.as_deref())
+            .map(|h| config.alias(h));
+        let plan = ballot.and_then(|b| match &b.consent {
+            Consent::Agree { plan_id, .. } => Some(plan_id.as_str()),
+            _ => None,
+        });
+        for (kind, ids, selected) in [
+            (
+                "partner",
+                call.observation.handles.clone(),
+                partner.as_deref(),
+            ),
+            (
+                "plan",
+                call.observation
+                    .plans
+                    .iter()
+                    .map(|p| p.plan.id.clone())
+                    .collect(),
+                plan,
+            ),
+        ] {
+            for (position, id) in ids.into_iter().enumerate() {
+                let entry = presentation
+                    .entry((call.observation.round, kind.into(), id.clone(), position))
+                    .or_insert_with(|| PresentationCounts {
+                        round: call.observation.round,
+                        kind: kind.into(),
+                        id: id.clone(),
+                        position,
+                        ..Default::default()
+                    });
+                entry.exposures += 1;
+                entry.choices += u64::from(selected == Some(id.as_str()));
+            }
+        }
     }
     Report {
         population_per_round: config.agents.len(),
@@ -187,6 +249,8 @@ pub fn describe(config: &Experiment, session: &Session) -> Report {
         total,
         per_round,
         all_call_status_counts,
+        fenced_json_responses,
+        presentation: presentation.into_values().collect(),
         baseline: random_baseline(config.agents.len()),
     }
 }
@@ -206,8 +270,8 @@ mod tests {
         config.rounds = 1;
         config.communication_steps = 0;
         for (a, body) in config.agents.iter_mut().zip([
-            r#"{"partner":"b","consent":{"state":"decline"}}"#,
-            r#"{"partner":"a","consent":{"state":"defer"}}"#,
+            r#"{"partner":"p-c1bc7d533fa54f3f","consent":{"state":"decline"}}"#,
+            r#"{"partner":"p-809a715ff182bbd5","consent":{"state":"defer"}}"#,
             r#"{"partner":null}"#,
         ]) {
             a.backend = BackendConfig::Fixture {
@@ -236,14 +300,18 @@ mod tests {
         assert_eq!(report.total.blocked_pairs, 1);
         assert_eq!(report.total.pending_child_requests, 0);
         if let BackendConfig::Fixture { responses } = &mut config.agents[2].backend {
-            responses[0].body = Some(r#"{"partner":"a","consent":{"state":"defer"}}"#.into());
+            responses[0].body =
+                Some(r#"{"partner":"p-809a715ff182bbd5","consent":{"state":"defer"}}"#.into());
         }
         let nonreciprocal = describe(&config, &crate::runner::run(&config).await.unwrap());
         assert_eq!(nonreciprocal.total.valid_nominations, 3);
         assert_eq!(nonreciprocal.total.nonreciprocal_nominations, 1);
         assert_eq!(nonreciprocal.total.voluntary_abstentions, 0);
         let fingerprint = config.plan_fingerprint(&config.plans[0]);
-        for (a, partner) in config.agents[..2].iter_mut().zip(["b", "a"]) {
+        for (a, partner) in config.agents[..2]
+            .iter_mut()
+            .zip(["p-c1bc7d533fa54f3f", "p-809a715ff182bbd5"])
+        {
             if let BackendConfig::Fixture { responses } = &mut a.backend {
                 responses[0].body=Some(serde_json::json!({"partner":partner,"consent":{"state":"agree","plan_id":"single","fingerprint":fingerprint}}).to_string());
             }

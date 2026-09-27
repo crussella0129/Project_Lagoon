@@ -19,6 +19,7 @@ pub struct Experiment {
     pub timeout_ms: u64,
     pub max_response_bytes: usize,
     pub max_context_bytes: usize,
+    pub memory: MemoryPolicy,
     pub max_private_bytes: usize,
     pub max_siblings: usize,
     pub mode: Mode,
@@ -40,6 +41,40 @@ pub enum Mode {
 pub struct Decoding {
     pub temperature: f64,
     pub max_tokens: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MemoryPolicy {
+    pub recent_rounds: u32,
+    pub max_public_events: usize,
+    pub max_prompt_tokens: u32,
+    pub context_window_tokens: u32,
+    pub safety_margin_tokens: u32,
+}
+
+impl Default for MemoryPolicy {
+    fn default() -> Self {
+        Self {
+            recent_rounds: 2,
+            max_public_events: 64,
+            max_prompt_tokens: 6144,
+            context_window_tokens: 8192,
+            safety_margin_tokens: 128,
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum TokenizerConfig {
+    Vllm {
+        endpoint: String,
+    },
+    LlamaCpp {
+        template_endpoint: String,
+        tokenize_endpoint: String,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -73,8 +108,14 @@ pub struct MergeMetadata {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum BackendConfig {
-    Fixture { responses: Vec<FixtureResponse> },
-    LocalHttp { endpoint: String, model: String },
+    Fixture {
+        responses: Vec<FixtureResponse>,
+    },
+    LocalHttp {
+        endpoint: String,
+        model: String,
+        tokenizer: TokenizerConfig,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -180,6 +221,17 @@ impl Experiment {
             "invalid token bound",
         )?;
         require(
+            self.memory.recent_rounds <= 100
+                && self.memory.max_public_events <= 2048
+                && (256..=1_048_576).contains(&self.memory.max_prompt_tokens)
+                && self.memory.context_window_tokens <= 1_048_576
+                && self.memory.max_prompt_tokens as u64
+                    + self.decoding.max_tokens as u64
+                    + self.memory.safety_margin_tokens as u64
+                    <= self.memory.context_window_tokens as u64,
+            "invalid memory policy or insufficient output token reserve",
+        )?;
+        require(
             !self.recipes.is_empty() && self.recipes.len() <= 32,
             "invalid recipe count",
         )?;
@@ -219,9 +271,25 @@ impl Experiment {
                 )?;
             }
             match &agent.backend {
-                BackendConfig::LocalHttp { endpoint, model } => {
+                BackendConfig::LocalHttp {
+                    endpoint,
+                    model,
+                    tokenizer,
+                } => {
                     validate_endpoint(endpoint)?;
                     require(valid_metadata(model), "missing local model")?;
+                    match tokenizer {
+                        TokenizerConfig::Vllm { endpoint } => {
+                            validate_endpoint(endpoint)?;
+                        }
+                        TokenizerConfig::LlamaCpp {
+                            template_endpoint,
+                            tokenize_endpoint,
+                        } => {
+                            validate_endpoint(template_endpoint)?;
+                            validate_endpoint(tokenize_endpoint)?;
+                        }
+                    }
                 }
                 BackendConfig::Fixture { responses } => {
                     require(
@@ -252,6 +320,15 @@ impl Experiment {
             }
         }
         let mut recipes = BTreeSet::new();
+        require(
+            self.agents
+                .iter()
+                .map(|a| self.alias(&a.handle))
+                .collect::<BTreeSet<_>>()
+                .len()
+                == self.agents.len(),
+            "public alias collision",
+        )?;
         for recipe in &self.recipes {
             require(
                 valid_id(&recipe.id) && recipes.insert(&recipe.id),
@@ -329,6 +406,20 @@ impl Experiment {
             .collect();
         fingerprint(&(plan, resolved))
     }
+
+    pub fn alias(&self, handle: &str) -> String {
+        format!(
+            "p-{}",
+            &fingerprint(&("lagoon-alias-v1", self.seed, handle))[..16]
+        )
+    }
+
+    pub fn handle_for_alias(&self, alias: &str) -> Option<String> {
+        self.agents
+            .iter()
+            .find(|a| self.alias(&a.handle) == alias)
+            .map(|a| a.handle.clone())
+    }
 }
 
 fn valid_id(value: &str) -> bool {
@@ -389,6 +480,7 @@ pub(crate) mod tests {
             timeout_ms: 100,
             max_response_bytes: 4096,
             max_context_bytes: 100_000,
+            memory: MemoryPolicy::default(),
             max_private_bytes: 1024,
             max_siblings: 1,
             mode: Mode::MutualChoice,
@@ -433,6 +525,9 @@ pub(crate) mod tests {
         value.agents[0].backend = BackendConfig::LocalHttp {
             endpoint: "http://127.0.0.1:8000/v1/chat/completions".into(),
             model: "local".into(),
+            tokenizer: TokenizerConfig::Vllm {
+                endpoint: "http://127.0.0.1:8000/tokenize".into(),
+            },
         };
         value.validate().unwrap();
         assert!(validate_endpoint("http://[::1]:8000/v1/chat/completions").is_ok());

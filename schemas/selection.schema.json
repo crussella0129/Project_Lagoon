@@ -1,0 +1,90 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "partner": {
+      "enum": [
+        null
+      ]
+    },
+    "private_update": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "feeling": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "learned_preference": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "thought": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "feeling",
+            "learned_preference",
+            "thought"
+          ]
+        }
+      ]
+    },
+    "consent": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "state": {
+              "const": "agree"
+            },
+            "plan_id": {
+              "type": "string",
+              "enum": [
+                "__offered_plan_id__"
+              ]
+            }
+          },
+          "required": [
+            "state",
+            "plan_id"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "state": {
+              "enum": [
+                "decline",
+                "defer"
+              ]
+            }
+          },
+          "required": [
+            "state"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "partner",
+    "consent",
+    "private_update"
+  ]
+}

@@ -1,5 +1,5 @@
 use lovers_lagoon::{
-    config::{BackendConfig, Experiment},
+    config::{BackendConfig, Experiment, TokenizerConfig},
     record::{self, Record},
     report::Report,
 };
@@ -173,6 +173,9 @@ fn local_config(endpoint: String, root: &Path) -> PathBuf {
         agent.backend = BackendConfig::LocalHttp {
             endpoint: endpoint.clone(),
             model: "test-local".into(),
+            tokenizer: TokenizerConfig::Vllm {
+                endpoint: endpoint.clone(),
+            },
         };
     }
     let path = root.join("config.json");
@@ -190,29 +193,60 @@ async fn cli_local_http_pipeline() {
     );
     let server = tokio::spawn(async move {
         let mut owners = Vec::new();
-        for _ in 0..6 {
+        while owners.len() < 6 {
             let (mut socket, _) = listener.accept().await.unwrap();
             let request = read_request(&mut socket).await;
+            if request.get("response_format").is_none() {
+                let body = r#"{"count":500,"max_model_len":8192}"#;
+                socket.write_all(format!("HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",body.len()).as_bytes()).await.unwrap();
+                continue;
+            }
             let observation: serde_json::Value =
                 serde_json::from_str(request["messages"][1]["content"].as_str().unwrap()).unwrap();
             let owner = observation["owner"].as_str().unwrap();
+            assert!(observation.get("procedure").is_none());
+            assert!(observation["plans"][0].get("fingerprint").is_none());
+            assert_eq!(request["response_format"]["type"], "json_schema");
+            assert_eq!(request["response_format"]["json_schema"]["strict"], true);
             let serialized = observation.to_string();
-            for other in ["a", "b", "c"].into_iter().filter(|a| *a != owner) {
+            let aliases: Vec<_> = ["a", "b", "c"]
+                .iter()
+                .map(|h| {
+                    (
+                        *h,
+                        lovers_lagoon::config::fingerprint(&("lagoon-alias-v1", 9_u64, h)),
+                    )
+                })
+                .collect();
+            let owner_handle = aliases
+                .iter()
+                .find(|(_, hash)| owner == format!("p-{}", &hash[..16]))
+                .unwrap()
+                .0;
+            for other in ["a", "b", "c"].into_iter().filter(|a| *a != owner_handle) {
                 assert!(!serialized.contains(&format!("fixture-private-{other}")));
             }
-            assert!(serialized.contains(&format!("fixture-private-{owner}")));
-            let content = if observation["phase"]["kind"] == "communication" {
+            assert!(serialized.contains(&format!("fixture-private-{owner_handle}")));
+            let mut content = if observation["phase"]["kind"] == "communication" {
                 serde_json::json!({"public_message":format!("public-{owner}")})
             } else {
-                let partner = match owner {
-                    "a" => Some("b"),
-                    "b" => Some("a"),
+                let partner = match owner_handle {
+                    "a" => Some(format!("p-{}", &aliases[1].1[..16])),
+                    "b" => Some(format!("p-{}", &aliases[0].1[..16])),
                     _ => None,
                 };
-                serde_json::json!({"partner":partner,"consent":{"state":"agree","plan_id":observation["plans"][0]["plan"]["id"],"fingerprint":observation["plans"][0]["fingerprint"]}})
+                serde_json::json!({"partner":partner,"consent":{"state":"agree","plan_id":observation["plans"][0]["plan"]["id"]}})
             };
-            let body = serde_json::json!({"choices":[{"message":{"content":content.to_string()}}]})
-                .to_string();
+            if owner_handle == "c" && observation["phase"]["kind"] == "selection" {
+                content["consent"]["fingerprint"] =
+                    serde_json::json!("obsolete transposed fingerprint");
+            }
+            let content = if owner_handle == "b" && observation["phase"]["kind"] == "selection" {
+                format!("```json\n{content}\n```")
+            } else {
+                content.to_string()
+            };
+            let body = serde_json::json!({"choices":[{"message":{"content":content}}]}).to_string();
             socket
                 .write_all(
                     format!(
@@ -249,6 +283,8 @@ async fn cli_local_http_pipeline() {
     assert_eq!(record.report.total.social_pairs, 1);
     assert_eq!(record.report.total.pending_batches, 1);
     assert_eq!(record.report.total.failed_decisions, 0);
+    assert_eq!(record.report.fenced_json_responses, 1);
+    assert_eq!(record.report.total.consent_counts["agree"], 3);
     check_replay(&root.path().join("run"), &root.path().join("replay"));
 }
 
@@ -263,6 +299,10 @@ async fn cli_local_failures_preserve_status() {
         let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
         let endpoint = format!("http://{}/", listener.local_addr().unwrap());
         let server = tokio::spawn(async move {
+            let (mut socket, _) = listener.accept().await.unwrap();
+            let _ = read_request(&mut socket).await;
+            let token_body = r#"{"count":500,"max_model_len":8192}"#;
+            socket.write_all(format!("HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{token_body}",token_body.len()).as_bytes()).await.unwrap();
             let (mut socket, _) = listener.accept().await.unwrap();
             let _ = read_request(&mut socket).await;
             tokio::time::sleep(std::time::Duration::from_millis(delay)).await;
@@ -300,4 +340,126 @@ async fn cli_local_failures_preserve_status() {
         server.abort();
         let _ = server.await;
     }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn cli_llama_template_tokenization_and_generation_share_projection() {
+    use tokio::{io::AsyncWriteExt, net::TcpListener};
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let endpoint = format!("http://{}/", listener.local_addr().unwrap());
+    let server = tokio::spawn(async move {
+        let mut template_messages = None;
+        for stage in 0..3 {
+            let (mut socket, _) = listener.accept().await.unwrap();
+            let request = read_request(&mut socket).await;
+            let body = match stage {
+                0 => {
+                    template_messages = Some(request["messages"].clone());
+                    serde_json::json!({"prompt":"<BOS>templated chat<ASSISTANT>"})
+                }
+                1 => {
+                    assert_eq!(request["content"],"<BOS>templated chat<ASSISTANT>");
+                    assert_eq!(request["add_special"],true);
+                    assert_eq!(request["parse_special"],true);
+                    serde_json::json!({"tokens":[1,2,3,4,5]})
+                }
+                _ => {
+                    assert_eq!(Some(request["messages"].clone()),template_messages);
+                    assert_eq!(request["response_format"]["type"],"json_schema");
+                    serde_json::json!({"choices":[{"message":{"content":"{\"partner\":null,\"consent\":{\"state\":\"defer\"},\"private_update\":null}"}}]})
+                }
+            }.to_string();
+            socket
+                .write_all(
+                    format!(
+                        "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+                        body.len()
+                    )
+                    .as_bytes(),
+                )
+                .await
+                .unwrap();
+        }
+    });
+    let root = tempfile::tempdir().unwrap();
+    let path = local_config(endpoint.clone(), root.path());
+    let mut config: Experiment = record::read_json(&path).unwrap();
+    config.agents.truncate(1);
+    config.communication_steps = 0;
+    if let BackendConfig::LocalHttp { tokenizer, .. } = &mut config.agents[0].backend {
+        *tokenizer = TokenizerConfig::LlamaCpp {
+            template_endpoint: endpoint.clone(),
+            tokenize_endpoint: endpoint,
+        };
+    }
+    std::fs::write(&path, serde_json::to_vec(&config).unwrap()).unwrap();
+    let run = root.path().join("run");
+    let output = tokio::task::spawn_blocking(move || {
+        binary()
+            .arg("run")
+            .arg("--config")
+            .arg(path)
+            .arg("--output")
+            .arg(run)
+            .output()
+            .unwrap()
+    })
+    .await
+    .unwrap();
+    success(output);
+    server.await.unwrap();
+    let record: Record = record::read_json(&root.path().join("run/operator-record.json")).unwrap();
+    assert_eq!(
+        record.session.calls[0].token_trials[0].count.prompt_tokens,
+        5
+    );
+    assert_eq!(record.report.total.voluntary_abstentions, 1);
+    check_replay(&root.path().join("run"), &root.path().join("replay"));
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn cli_tokenizer_http_failure_prevents_generation_and_redacts_body() {
+    use tokio::{io::AsyncWriteExt, net::TcpListener};
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let endpoint = format!("http://{}/", listener.local_addr().unwrap());
+    let server = tokio::spawn(async move {
+        let (mut socket, _) = listener.accept().await.unwrap();
+        let request = read_request(&mut socket).await;
+        assert!(request.get("response_format").is_none());
+        socket.write_all(b"HTTP/1.1 500 Failed\r\nContent-Length: 12\r\nConnection: close\r\n\r\nTOKEN_CANARY").await.unwrap();
+    });
+    let root = tempfile::tempdir().unwrap();
+    let path = local_config(endpoint, root.path());
+    let mut config: Experiment = record::read_json(&path).unwrap();
+    config.agents.truncate(1);
+    config.communication_steps = 0;
+    std::fs::write(&path, serde_json::to_vec(&config).unwrap()).unwrap();
+    let run = root.path().join("run");
+    success(
+        tokio::task::spawn_blocking(move || {
+            binary()
+                .arg("run")
+                .arg("--config")
+                .arg(path)
+                .arg("--output")
+                .arg(run)
+                .output()
+                .unwrap()
+        })
+        .await
+        .unwrap(),
+    );
+    server.await.unwrap();
+    let record: Record = record::read_json(&root.path().join("run/operator-record.json")).unwrap();
+    assert_eq!(
+        record.report.total.selection_status_counts["tokenization_failure"],
+        1
+    );
+    assert!(record.session.calls[0].token_trials.is_empty());
+    assert!(
+        !serde_json::to_string(&record)
+            .unwrap()
+            .contains("TOKEN_CANARY")
+    );
+    check_replay(&root.path().join("run"), &root.path().join("replay"));
 }

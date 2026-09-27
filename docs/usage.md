@@ -41,7 +41,7 @@ empirical question for the later fusion/evaluation increment.
 ## Explicit local inference
 
 Copy `examples/local-experiment.json` and replace each backend's `model` and
-`endpoint` with your own running server. The adapter posts chat-completions JSON
+`endpoint` and tokenizer endpoint with your own running server. The adapter posts chat-completions JSON
 to the **exact URL** supplied, for example `http://127.0.0.1:8000/v1/chat/completions`.
 Only HTTP URLs with literal loopback IPs (`127.0.0.1` or `[::1]`) are accepted.
 Hostnames, credentials in URLs, query strings, fragments, redirects, and environment
@@ -57,6 +57,27 @@ model for all handles; configure distinct served checkpoints if that is your
 experimental question. Seeds and decoding settings are submitted and recorded,
 but a server may ignore them. Inference is not promised deterministic. Only replay
 is exact. The actual served weights are not verified by the HTTP adapter.
+
+Each request supplies a strict `response_format` JSON schema. This follows
+Animus Ferric's schema-to-server boundary; its valve passes an existing
+`response_format` through. Point the chat endpoint at a running Ferric valve if
+desired, and point the tokenizer at its actual upstream model server. Ferric's
+tool-action/scratchpad schema is not imported into this experiment. The server
+enforces decoding; this client cannot prove that it honored the schema. It never
+retries without constraints. See [vLLM structured outputs](https://docs.vllm.ai/en/latest/features/structured_outputs/)
+and [llama.cpp server API](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md).
+
+`tokenizer: {kind: "vllm", endpoint: "http://127.0.0.1:8000/tokenize"}` counts
+the same chat messages with the generation prompt. For llama.cpp use
+`{kind: "llama_cpp", template_endpoint: "http://127.0.0.1:8000/apply-template",
+tokenize_endpoint: "http://127.0.0.1:8000/tokenize"}`. It templates the chat, then
+tokenizes with special-token parsing and insertion enabled, matching the server's
+text-completion path. Template/tokenizer and inference must use the same model,
+adapter and template settings. Configure `context_window_tokens` for the usable
+per-request/per-slot capacity; llama.cpp counting does not discover that capacity.
+vLLM's reported `max_model_len` further lowers the configured capacity if necessary.
+Both adapters are covered by disposable HTTP mocks; a real server/model conformance
+run remains required before scientific use.
 
 The template omits merge provenance, so any agreed pair remains blocked at the
 metadata boundary. To study eligibility, supply `checkpoint: {model, revision}`
@@ -76,30 +97,73 @@ consent. Communication and selection failures do not substitute random choices.
 Private state and the whole population persist across rounds.
 Persisted textual memory changes context; it does not update model weights.
 
+Operator routing handles stay private. Peers receive stable, per-seed opaque
+aliases, with candidate handles and plan cards independently shuffled per owner
+and round. The same round's communication and selection share that presentation.
+Full operator observations record the permutation. `catalog` prints an
+operator-only alias map for authoring fixtures. Reports tabulate each candidate/
+plan's zero-based position, intended call exposures and choices. Exposure counts
+include failed attempts whose projection may not have reached a model; filter the
+operator call statuses/token trials when estimating effects among delivered calls.
+Shuffling mitigates order confounding; it does not prove absence of label bias.
+
 Communication responses use JSON:
 
 ```json
-{"public_message":"optional public text","private_update":{"learned_preference":"optional brief self-report"}}
+{"public_message":"optional public text","private_update":{"feeling":null,"learned_preference":"optional brief self-report","thought":null}}
 ```
 
 Selection responses require an explicit `partner` key:
 
 ```json
-{"partner":null,"consent":{"state":"defer"}}
+{"partner":null,"consent":{"state":"defer"},"private_update":null}
 ```
 
-For agreement, use another handle and the exact plan card values:
+For agreement, select an offered opaque handle and plan ID:
 
 ```json
-{"partner":"b","consent":{"state":"agree","plan_id":"single","fingerprint":"copy the offered fingerprint"}}
+{"partner":"p-c1bc7d533fa54f3f","consent":{"state":"agree","plan_id":"single"},"private_update":null}
 ```
 
 `decline` and `defer` remain available in both `fixed_plan` and `mutual_choice` mode.
 Fixed mode requires one offered plan. Mutual mode may offer several. Missing or
 invalid consent does not erase an otherwise valid partner nomination, but it blocks
-a merge request. Both parents must agree to the same offered fingerprint, covering
+a merge request. The harness binds each valid plan ID to the fingerprint in that
+call's immutable operator observation. Both parents' receipts must agree, covering
 recipes, child count, seeds and the resource envelope. `catalog` displays these
 cards without making inference calls. Changing a payload changes its fingerprint.
+
+The protocol templates live in `schemas/communication.schema.json` and
+`schemas/selection.schema.json`. Partner and plan enums are specialized from
+the observation before submission; the template placeholders are never offered.
+Constrained schemas use required nullable private fields. Parsing also accepts
+omitted private fields and missing consent for diagnostic/fixture compatibility.
+One complete JSON markdown fence is accepted and counted in
+`fenced_json_responses`; surrounding prose, guessed targets and unknown plan IDs
+are not repaired. An obsolete echoed fingerprint is ignored, never used as consent.
+
+## Memory and token budgets
+
+Every configuration declares `memory`: `recent_rounds` preceding rounds plus
+current-round events, `max_public_events`, `max_prompt_tokens`,
+`context_window_tokens`, and `safety_margin_tokens`. Owner-private state persists,
+including `learned_preference`; the procedure and full offered plan cards stay intact.
+The full public transcript is retained in the output, while each call receives only
+its recorded window. Oldest complete messages/pair events are removed first to fit
+the byte guard and then the tokenizer budget. A base prompt that cannot fit gives
+`context_limit` without generation. Output tokens and the safety margin are reserved.
+Do not intentionally set a budget larger than the actual server slot.
+
+Tokenization and generation share one timeout after worker acquisition.
+Tokenizer/HTTP/parse errors become `tokenization_failure`; timeout remains
+`timeout`. There is no approximate-token fallback for HTTP backends. Fixtures use
+a declared deterministic byte-plus-16 accounting rule, not a real-model tokenizer.
+Operator calls retain each successful count, model capacity, prompt hash, final
+projection, omitted-event count and response-schema hash. Replay reconstructs
+trimming from those receipts without contacting the tokenizer. External counts
+are trusted server measurements, not authenticated/recomputed offline; fixture
+counts are recomputed and checked. Owners may receive different fitting projections
+of the same frozen underlying public snapshot.
 
 The owner receives optional `feeling`, `learned_preference`, and `thought` fields.
 Omitting a field or supplying null retains its previous value; an empty string
@@ -181,7 +245,7 @@ dependent field consistently.
 ```powershell
 cargo fmt --check
 cargo clippy --locked --all-targets -- -D warnings
-cargo test --locked
+cargo test --locked --all-targets
 ```
 
 Tests cover frozen snapshots, owner-only projections, bounded concurrent calls,
@@ -196,3 +260,12 @@ checkpoints, a pinned external merger and evaluation before child admission.
 comparisons and generational studies. [Method research](sprints/s0/sprint-research/fusion-method-review.md)
 and [sibling research](sprints/s0/sprint-research/sibling-batch-review.md) explain
 why the current catalog permits exact single-child or opt-in sibling plans.
+
+The v0.2 record format is schema version 2, with required memory/tokenizer settings.
+It rejects v0.1 records rather than silently reinterpret old prompts and consent.
+Use the v0.1 code revision to replay archived Sprint 0 records. Historical evidence
+in `docs/sprints/s0` is preserved unchanged.
+
+See the [variance study](research/variance-review.md), [useful-protocol assessment](research/useful-protocol-review.md)
+and [unfrozen next-study preregistration](../PREREG.md). No training or real fusion
+has been executed by this follow-up.

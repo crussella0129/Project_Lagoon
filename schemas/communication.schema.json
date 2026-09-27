@@ -1,0 +1,52 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "public_message": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "private_update": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "feeling": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "learned_preference": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "thought": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "feeling",
+            "learned_preference",
+            "thought"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "public_message",
+    "private_update"
+  ]
+}

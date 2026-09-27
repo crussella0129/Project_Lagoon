@@ -1,6 +1,6 @@
 use crate::{
-    backend::{self, Backend, Request},
-    config::{ConfigError, Experiment},
+    backend::{self, Backend, Request, TokenCount},
+    config::{ConfigError, Experiment, fingerprint},
     observation::Observation,
     protocol::{Outcome, Phase, PrivateState, PublicMessage, PublicView, Status, normalize},
 };
@@ -24,8 +24,38 @@ pub struct Call {
     pub handle: String,
     pub observation: Observation,
     pub elapsed_ms: u64,
+    pub token_trials: Vec<TokenTrial>,
+    pub response_schema_fingerprint: String,
     pub reply: Reply,
     pub outcome: Outcome,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct TokenTrial {
+    pub prompt_fingerprint: String,
+    pub count: TokenCount,
+}
+
+pub fn tokens_fit(config: &Experiment, count: &TokenCount) -> bool {
+    let capacity = count
+        .model_capacity
+        .unwrap_or(config.memory.context_window_tokens)
+        .min(config.memory.context_window_tokens);
+    count.prompt_tokens <= config.memory.max_prompt_tokens
+        && count.prompt_tokens as u64
+            + config.decoding.max_tokens as u64
+            + config.memory.safety_margin_tokens as u64
+            <= capacity as u64
+}
+
+pub fn fit_bytes(config: &Experiment, observation: &mut Observation) -> bool {
+    while observation.prompt_bytes() > config.max_context_bytes {
+        if !observation.drop_oldest_event() {
+            return false;
+        }
+    }
+    true
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -84,7 +114,7 @@ impl Session {
                     self.public.messages.push(PublicMessage {
                         round,
                         step: *step,
-                        author: call.handle.clone(),
+                        author: config.alias(&call.handle),
                         text: text.clone(),
                     });
                 }
@@ -102,7 +132,9 @@ impl Session {
                 .pairs
                 .extend(batches.iter().map(|batch| crate::protocol::PublicPair {
                     round,
-                    pair: batch.pair.clone(),
+                    pair: crate::protocol::Pair {
+                        agents: batch.pair.agents.clone().map(|h| config.alias(&h)),
+                    },
                 }));
             self.batches.extend(batches);
             self.selections.push(selection);
@@ -145,60 +177,90 @@ pub async fn run_with(
             let observations = session.observations(config, round, phase.clone());
             let permits = Arc::new(tokio::sync::Semaphore::new(config.workers));
             let mut pending = Vec::new();
-            for observation in observations {
-                let context_bytes = serde_json::to_vec(&observation)
-                    .expect("typed observation")
-                    .len();
-                let backend = backends[&observation.owner].clone();
-                let request = Request {
-                    observation: observation.clone(),
-                    decoding: config.decoding.clone(),
-                    seed: config.seed,
-                    max_response_bytes: config.max_response_bytes,
-                };
+            for mut observation in observations {
+                let handle = config
+                    .handle_for_alias(&observation.owner)
+                    .expect("known owner");
+                let backend = backends[&handle].clone();
                 let permits = permits.clone();
-                let timeout_ms = config.timeout_ms;
-                let context_limit = config.max_context_bytes;
-                let response_limit = config.max_response_bytes;
+                let limits = config.clone();
+                let mut fallback = observation.clone();
+                fit_bytes(config, &mut fallback);
                 let task = tokio::spawn(async move {
-                    if context_bytes > context_limit {
-                        return (
-                            Reply::Failure {
-                                status: Status::ContextLimit,
-                            },
-                            0,
-                        );
-                    }
                     let _permit = permits
                         .acquire_owned()
                         .await
                         .expect("open worker semaphore");
                     let start = Instant::now();
-                    let reply = match tokio::time::timeout(
-                        Duration::from_millis(timeout_ms),
-                        backend.respond(request),
-                    )
-                    .await
-                    {
-                        Err(_) => Reply::Failure {
-                            status: Status::Timeout,
-                        },
-                        Ok(Err(status)) => Reply::Failure { status },
-                        Ok(Ok(body)) if body.len() > response_limit => Reply::Failure {
-                            status: Status::OversizedResponse,
-                        },
-                        Ok(Ok(body)) => Reply::Response { body },
+                    let deadline =
+                        tokio::time::Instant::now() + Duration::from_millis(limits.timeout_ms);
+                    let mut trials = Vec::new();
+                    let failure = loop {
+                        if !fit_bytes(&limits, &mut observation) {
+                            break Some(Status::ContextLimit);
+                        }
+                        let request = Request {
+                            observation: observation.clone(),
+                            decoding: limits.decoding.clone(),
+                            seed: limits.seed,
+                            max_response_bytes: limits.max_response_bytes,
+                        };
+                        let count =
+                            match tokio::time::timeout_at(deadline, backend.count_tokens(request))
+                                .await
+                            {
+                                Err(_) => break Some(Status::Timeout),
+                                Ok(Err(_)) => break Some(Status::TokenizationFailure),
+                                Ok(Ok(count)) => count,
+                            };
+                        let fits = tokens_fit(&limits, &count);
+                        trials.push(TokenTrial {
+                            prompt_fingerprint: fingerprint(&observation.messages()),
+                            count,
+                        });
+                        if fits {
+                            break None;
+                        }
+                        if !observation.drop_oldest_event() {
+                            break Some(Status::ContextLimit);
+                        }
+                    };
+                    let reply = if let Some(status) = failure {
+                        Reply::Failure { status }
+                    } else {
+                        let request = Request {
+                            observation: observation.clone(),
+                            decoding: limits.decoding.clone(),
+                            seed: limits.seed,
+                            max_response_bytes: limits.max_response_bytes,
+                        };
+                        match tokio::time::timeout_at(deadline, backend.respond(request)).await {
+                            Err(_) => Reply::Failure {
+                                status: Status::Timeout,
+                            },
+                            Ok(Err(status)) => Reply::Failure { status },
+                            Ok(Ok(body)) if body.len() > limits.max_response_bytes => {
+                                Reply::Failure {
+                                    status: Status::OversizedResponse,
+                                }
+                            }
+                            Ok(Ok(body)) => Reply::Response { body },
+                        }
                     };
                     (
+                        observation,
+                        trials,
                         reply,
                         start.elapsed().as_millis().min(u64::MAX as u128) as u64,
                     )
                 });
-                pending.push((observation, task));
+                pending.push((handle, fallback, task));
             }
             let mut calls = Vec::new();
-            for (observation, task) in pending {
-                let (reply, elapsed_ms) = task.await.unwrap_or((
+            for (handle, fallback, task) in pending {
+                let (observation, token_trials, reply, elapsed_ms) = task.await.unwrap_or((
+                    fallback,
+                    Vec::new(),
                     Reply::Failure {
                         status: Status::TransportFailure,
                     },
@@ -206,9 +268,11 @@ pub async fn run_with(
                 ));
                 let outcome = outcome_from_reply(&reply, &observation, config);
                 calls.push(Call {
-                    handle: observation.owner.clone(),
+                    handle,
+                    response_schema_fingerprint: fingerprint(&observation.response_format()),
                     observation,
                     elapsed_ms,
+                    token_trials,
                     reply,
                     outcome,
                 });
@@ -249,6 +313,9 @@ mod tests {
         delay: u64,
     }
     impl Backend for Probe {
+        fn count_tokens(&self, request: Request) -> crate::backend::TokenFuture {
+            Box::pin(async move { Ok(crate::backend::fixture_tokens(&request.observation)) })
+        }
         fn respond(&self, request: Request) -> ResponseFuture {
             let (active, peak, seen, delay) = (
                 self.active.clone(),
@@ -386,7 +453,7 @@ mod tests {
             assert_eq!(session.calls[0].outcome.status, expected);
             assert_eq!(session.calls.len(), 3);
         }
-        config.agents[0].backend=BackendConfig::Fixture {responses:vec![FixtureResponse {round:0,phase:Phase::Selection,delay_ms:0,transport_failure:false,body:Some(r#"{"partner":"b","consent":{"state":"agree","plan_id":"wrong","fingerprint":"fake"}}"#.into())}]};
+        config.agents[0].backend=BackendConfig::Fixture {responses:vec![FixtureResponse {round:0,phase:Phase::Selection,delay_ms:0,transport_failure:false,body:Some(serde_json::json!({"partner":config.alias("b"),"consent":{"state":"agree","plan_id":"wrong","fingerprint":"fake"}}).to_string())}]};
         let session = run(&config).await.unwrap();
         assert_eq!(session.calls[0].outcome.status, Status::Valid);
         assert_eq!(
@@ -449,6 +516,9 @@ mod tests {
     async fn invalid_configuration_makes_zero_backend_calls() {
         struct Counter(Arc<AtomicUsize>);
         impl Backend for Counter {
+            fn count_tokens(&self, request: Request) -> crate::backend::TokenFuture {
+                Box::pin(async move { Ok(crate::backend::fixture_tokens(&request.observation)) })
+            }
             fn respond(&self, _: Request) -> ResponseFuture {
                 self.0.fetch_add(1, Ordering::SeqCst);
                 Box::pin(async { Ok("{}".into()) })
@@ -465,6 +535,9 @@ mod tests {
                     config.agents[0].backend = BackendConfig::LocalHttp {
                         endpoint: "http://example.com/".into(),
                         model: "x".into(),
+                        tokenizer: crate::config::TokenizerConfig::Vllm {
+                            endpoint: "http://127.0.0.1/tokenize".into(),
+                        },
                     }
                 }
                 4 => config.recipes[0].density = Some(2.0),
@@ -482,6 +555,104 @@ mod tests {
                 .collect();
             assert!(run_with(&config, backends).await.is_err());
             assert_eq!(calls.load(Ordering::SeqCst), 0);
+        }
+    }
+
+    struct BudgetProbe {
+        mode: u8,
+        generations: Arc<AtomicUsize>,
+    }
+    impl Backend for BudgetProbe {
+        fn count_tokens(&self, request: Request) -> crate::backend::TokenFuture {
+            let mode = self.mode;
+            Box::pin(async move {
+                if mode == 1 {
+                    return Err(Status::TokenizationFailure);
+                }
+                if mode == 2 {
+                    tokio::time::sleep(Duration::from_millis(101)).await;
+                }
+                Ok(TokenCount {
+                    prompt_tokens: if mode == 3 {
+                        4000
+                    } else {
+                        2000 + request.observation.event_count() as u32 * 1000
+                    },
+                    model_capacity: Some(4096),
+                })
+            })
+        }
+        fn respond(&self, request: Request) -> ResponseFuture {
+            self.generations.fetch_add(1, Ordering::SeqCst);
+            Box::pin(async move {
+                Ok(if request.observation.phase == Phase::Selection {
+                    r#"{"partner":null,"consent":{"state":"defer"}}"#.into()
+                } else {
+                    r#"{"public_message":"hello","private_update":{"learned_preference":"persistent"}}"#.into()
+                })
+            })
+        }
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn token_budget_trims_history_and_replays_without_tokenizer() {
+        let mut config = config();
+        config.rounds = 6;
+        config.communication_steps = 2;
+        config.memory.max_prompt_tokens = 3500;
+        config.memory.context_window_tokens = 4096;
+        for agent in &mut config.agents {
+            agent.backend = BackendConfig::LocalHttp {
+                endpoint: "http://127.0.0.1:1/chat".into(),
+                model: "test".into(),
+                tokenizer: crate::config::TokenizerConfig::Vllm {
+                    endpoint: "http://127.0.0.1:1/tokenize".into(),
+                },
+            };
+        }
+        for mode in 0..4 {
+            let generations = Arc::new(AtomicUsize::new(0));
+            let backends = config
+                .agents
+                .iter()
+                .map(|a| {
+                    (
+                        a.handle.clone(),
+                        Arc::new(BudgetProbe {
+                            mode,
+                            generations: generations.clone(),
+                        }) as Arc<dyn Backend>,
+                    )
+                })
+                .collect();
+            let session = run_with(&config, backends).await.unwrap();
+            if mode == 0 {
+                assert_eq!(generations.load(Ordering::SeqCst), 54);
+                assert_eq!(session.public.messages.len(), 36);
+                assert!(
+                    session
+                        .calls
+                        .iter()
+                        .all(|c| c.observation.event_count() <= 1)
+                );
+                assert!(session.calls.iter().any(|c| c.token_trials.len() > 1));
+                assert!(
+                    session
+                        .private_states
+                        .values()
+                        .all(|s| s.learned_preference.as_deref() == Some("persistent"))
+                );
+            } else {
+                assert_eq!(generations.load(Ordering::SeqCst), 0);
+                let status = match mode {
+                    1 => Status::TokenizationFailure,
+                    2 => Status::Timeout,
+                    _ => Status::ContextLimit,
+                };
+                assert!(session.calls.iter().all(|c| c.outcome.status == status));
+            }
+            let record = crate::record::Record::from_session(config.clone(), session, 1, 2);
+            crate::replay::reconstruct(&record).unwrap();
         }
     }
 }

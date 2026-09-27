@@ -1,0 +1,357 @@
+{
+  "results": [
+    {
+      "independent_zero_mean_one_generation_ratio": 0.5,
+      "name": "linear",
+      "rows": [
+        {
+          "expected_finite_mean_squared": 0.015776990370552624,
+          "expected_finite_variance_ratio": 1.0,
+          "generation": 0,
+          "mean_squared": 0.015776990370552624,
+          "population_variance": 0.983184809407687,
+          "second_moment": 0.9989617997782396,
+          "variance_ratio_to_initial": 1.0
+        },
+        {
+          "expected_finite_mean_squared": 0.023336198974629584,
+          "expected_finite_variance_ratio": 0.484375,
+          "generation": 1,
+          "mean_squared": 0.022918789319435636,
+          "population_variance": 0.47554450076785554,
+          "second_moment": 0.4984632900872912,
+          "variance_ratio_to_initial": 0.48367763234090655
+        },
+        {
+          "expected_finite_mean_squared": 0.02699769064222936,
+          "expected_finite_variance_ratio": 0.23461914062500003,
+          "generation": 2,
+          "mean_squared": 0.026795860015921408,
+          "population_variance": 0.23078103651741305,
+          "second_moment": 0.2575768965333345,
+          "variance_ratio_to_initial": 0.23472803313188445
+        },
+        {
+          "expected_finite_mean_squared": 0.028771225668723005,
+          "expected_finite_variance_ratio": 0.11364364624023439,
+          "generation": 3,
+          "mean_squared": 0.028616271090357283,
+          "population_variance": 0.11080303282946367,
+          "second_moment": 0.13941930391982096,
+          "variance_ratio_to_initial": 0.11269807239619192
+        },
+        {
+          "expected_finite_mean_squared": 0.029630281697180863,
+          "expected_finite_variance_ratio": 0.05504614114761354,
+          "generation": 4,
+          "mean_squared": 0.029557175022672792,
+          "population_variance": 0.053847130125623165,
+          "second_moment": 0.08340430514829596,
+          "variance_ratio_to_initial": 0.054768065586838145
+        },
+        {
+          "expected_finite_mean_squared": 0.03004638696096514,
+          "expected_finite_variance_ratio": 0.026662974618375305,
+          "generation": 5,
+          "mean_squared": 0.030049741840611766,
+          "population_variance": 0.026239286346828535,
+          "second_moment": 0.056289028187440304,
+          "variance_ratio_to_initial": 0.026688051011117854
+        },
+        {
+          "expected_finite_mean_squared": 0.030247937948110648,
+          "expected_finite_variance_ratio": 0.01291487833077554,
+          "generation": 6,
+          "mean_squared": 0.030326469146654676,
+          "population_variance": 0.012728734435800847,
+          "second_moment": 0.04305520358245552,
+          "variance_ratio_to_initial": 0.012946431142959975
+        }
+      ]
+    },
+    {
+      "independent_zero_mean_one_generation_ratio": 1.0,
+      "name": "dare_average_p0.5",
+      "rows": [
+        {
+          "expected_finite_mean_squared": 0.015776990370552624,
+          "expected_finite_variance_ratio": 1.0,
+          "generation": 0,
+          "mean_squared": 0.015776990370552624,
+          "population_variance": 0.983184809407687,
+          "second_moment": 0.9989617997782396,
+          "variance_ratio_to_initial": 1.0
+        },
+        {
+          "expected_finite_mean_squared": 0.03114058803539708,
+          "expected_finite_variance_ratio": 0.9844605445728047,
+          "generation": 1,
+          "mean_squared": 0.03160131352834548,
+          "population_variance": 0.967273571256445,
+          "second_moment": 0.9988748847847905,
+          "variance_ratio_to_initial": 0.9838166354900991
+        },
+        {
+          "expected_finite_mean_squared": 0.04638738722399829,
+          "expected_finite_variance_ratio": 0.9769763931366594,
+          "generation": 2,
+          "mean_squared": 0.04655021518715032,
+          "population_variance": 0.9548580896244554,
+          "second_moment": 1.0014083048116058,
+          "variance_ratio_to_initial": 0.9711888146438136
+        },
+        {
+          "expected_finite_mean_squared": 0.06163924101930414,
+          "expected_finite_variance_ratio": 0.9773002795711789,
+          "generation": 3,
+          "mean_squared": 0.060976898751290205,
+          "population_variance": 0.9551367210208588,
+          "second_moment": 1.016113619772149,
+          "variance_ratio_to_initial": 0.9714722114108683
+        },
+        {
+          "expected_finite_mean_squared": 0.07701518606174583,
+          "expected_finite_variance_ratio": 0.9852517333515391,
+          "generation": 4,
+          "mean_squared": 0.07698774419098543,
+          "population_variance": 0.959067877786897,
+          "second_moment": 1.0360556219778825,
+          "variance_ratio_to_initial": 0.9754706018746169
+        },
+        {
+          "expected_finite_mean_squared": 0.09263243853336268,
+          "expected_finite_variance_ratio": 1.0007141041007312,
+          "generation": 5,
+          "mean_squared": 0.08986329021774032,
+          "population_variance": 0.9752036756326767,
+          "second_moment": 1.065066965850417,
+          "variance_ratio_to_initial": 0.9918823666734452
+        },
+        {
+          "expected_finite_mean_squared": 0.10860735257621791,
+          "expected_finite_variance_ratio": 1.0236321544737759,
+          "generation": 6,
+          "mean_squared": 0.10524081024492406,
+          "population_variance": 1.001381858451584,
+          "second_moment": 1.106622668696508,
+          "variance_ratio_to_initial": 1.0185082691166267
+        }
+      ]
+    },
+    {
+      "independent_zero_mean_one_generation_ratio": 5.000000000000001,
+      "name": "dare_average_p0.9",
+      "rows": [
+        {
+          "expected_finite_mean_squared": 0.015776990370552624,
+          "expected_finite_variance_ratio": 1.0,
+          "generation": 0,
+          "mean_squared": 0.015776990370552624,
+          "population_variance": 0.983184809407687,
+          "second_moment": 0.9989617997782396,
+          "variance_ratio_to_initial": 1.0
+        },
+        {
+          "expected_finite_mean_squared": 0.09357570052153708,
+          "expected_finite_variance_ratio": 4.985144901155243,
+          "generation": 1,
+          "mean_squared": 0.09238833889583209,
+          "population_variance": 4.903548357089921,
+          "second_moment": 4.995936695985753,
+          "variance_ratio_to_initial": 4.987412651385481
+        },
+        {
+          "expected_finite_mean_squared": 0.4824629660657797,
+          "expected_finite_variance_ratio": 24.91891401785091,
+          "generation": 2,
+          "mean_squared": 0.4786132377062427,
+          "population_variance": 24.471517830780552,
+          "second_moment": 24.950131068486794,
+          "variance_ratio_to_initial": 24.890048744267368
+        },
+        {
+          "expected_finite_mean_squared": 2.427402471705785,
+          "expected_finite_variance_ratio": 124.62681245974336,
+          "generation": 3,
+          "mean_squared": 2.371371132510856,
+          "population_variance": 120.48561453006708,
+          "second_moment": 122.85698566257794,
+          "variance_ratio_to_initial": 122.54625313287012
+        },
+        {
+          "expected_finite_mean_squared": 12.155633497431689,
+          "expected_finite_variance_ratio": 623.3604798979313,
+          "generation": 4,
+          "mean_squared": 11.961381785858885,
+          "population_variance": 600.7193214979771,
+          "second_moment": 612.680703283836,
+          "variance_ratio_to_initial": 610.993290122003
+        },
+        {
+          "expected_finite_mean_squared": 60.81546175257606,
+          "expected_finite_variance_ratio": 3117.9989262862255,
+          "generation": 5,
+          "mean_squared": 58.98117907108251,
+          "population_variance": 2927.6042506280464,
+          "second_moment": 2986.585429699129,
+          "variance_ratio_to_initial": 2977.674413411413
+        },
+        {
+          "expected_finite_mean_squared": 304.20898619209953,
+          "expected_finite_variance_ratio": 15596.042466245704,
+          "generation": 6,
+          "mean_squared": 270.425813172432,
+          "population_variance": 15512.400797952712,
+          "second_moment": 15782.826611125145,
+          "variance_ratio_to_initial": 15777.705930279833
+        }
+      ]
+    },
+    {
+      "independent_zero_mean_one_generation_ratio": 1.0,
+      "name": "coordinate_crossover",
+      "rows": [
+        {
+          "expected_finite_mean_squared": 0.015776990370552624,
+          "expected_finite_variance_ratio": 1.0,
+          "generation": 0,
+          "mean_squared": 0.015776990370552624,
+          "population_variance": 0.983184809407687,
+          "second_moment": 0.9989617997782396,
+          "variance_ratio_to_initial": 1.0
+        },
+        {
+          "expected_finite_mean_squared": 0.031139253017547733,
+          "expected_finite_variance_ratio": 0.984375,
+          "generation": 1,
+          "mean_squared": 0.030731939809781308,
+          "population_variance": 0.9684573979012139,
+          "second_moment": 0.9991893377109952,
+          "variance_ratio_to_initial": 0.9850207088580369
+        },
+        {
+          "expected_finite_mean_squared": 0.04626148031068354,
+          "expected_finite_variance_ratio": 0.9689941406249999,
+          "generation": 2,
+          "mean_squared": 0.04646385830247255,
+          "population_variance": 0.9519523513462981,
+          "second_moment": 0.9984162096487706,
+          "variance_ratio_to_initial": 0.968233380171725
+        },
+        {
+          "expected_finite_mean_squared": 0.061147422802364106,
+          "expected_finite_variance_ratio": 0.9538536071777344,
+          "generation": 3,
+          "mean_squared": 0.06111395665380693,
+          "population_variance": 0.9369446800018384,
+          "second_moment": 0.9980586366556453,
+          "variance_ratio_to_initial": 0.952969035970251
+        },
+        {
+          "expected_finite_mean_squared": 0.07580077244261216,
+          "expected_finite_variance_ratio": 0.9389496445655823,
+          "generation": 4,
+          "mean_squared": 0.07780478255949647,
+          "population_variance": 0.9213915889596271,
+          "second_moment": 0.9991963715191237,
+          "variance_ratio_to_initial": 0.937149943879537
+        },
+        {
+          "expected_finite_mean_squared": 0.09022516349473134,
+          "expected_finite_variance_ratio": 0.924278556369245,
+          "generation": 5,
+          "mean_squared": 0.09189232147138951,
+          "population_variance": 0.9073839011977589,
+          "second_moment": 0.9992762226691484,
+          "variance_ratio_to_initial": 0.922902685756919
+        },
+        {
+          "expected_finite_mean_squared": 0.10442417343666116,
+          "expected_finite_variance_ratio": 0.9098367039259756,
+          "generation": 6,
+          "mean_squared": 0.10689268908161279,
+          "population_variance": 0.8937173759638636,
+          "second_moment": 1.0006100650454763,
+          "variance_ratio_to_initial": 0.909002424988927
+        }
+      ]
+    },
+    {
+      "independent_zero_mean_one_generation_ratio": 1.0,
+      "name": "block64_crossover",
+      "rows": [
+        {
+          "expected_finite_mean_squared": 0.015776990370552624,
+          "expected_finite_variance_ratio": 1.0,
+          "generation": 0,
+          "mean_squared": 0.015776990370552624,
+          "population_variance": 0.983184809407687,
+          "second_moment": 0.9989617997782396,
+          "variance_ratio_to_initial": 1.0
+        },
+        {
+          "expected_finite_mean_squared": 0.031139253017547733,
+          "expected_finite_variance_ratio": 0.984375,
+          "generation": 1,
+          "mean_squared": 0.031244753873720624,
+          "population_variance": 0.9686999584873802,
+          "second_moment": 0.9999447123611008,
+          "variance_ratio_to_initial": 0.9852674179038292
+        },
+        {
+          "expected_finite_mean_squared": 0.04626148031068354,
+          "expected_finite_variance_ratio": 0.9689941406249999,
+          "generation": 2,
+          "mean_squared": 0.045604294780727465,
+          "population_variance": 0.9529586188162853,
+          "second_moment": 0.9985629135970128,
+          "variance_ratio_to_initial": 0.9692568576099021
+        },
+        {
+          "expected_finite_mean_squared": 0.061147422802364106,
+          "expected_finite_variance_ratio": 0.9538536071777344,
+          "generation": 3,
+          "mean_squared": 0.0609835406196575,
+          "population_variance": 0.9384431943646039,
+          "second_moment": 0.9994267349842614,
+          "variance_ratio_to_initial": 0.954493179090066
+        },
+        {
+          "expected_finite_mean_squared": 0.07580077244261216,
+          "expected_finite_variance_ratio": 0.9389496445655823,
+          "generation": 4,
+          "mean_squared": 0.07561832405484921,
+          "population_variance": 0.9247536552089721,
+          "second_moment": 1.0003719792638213,
+          "variance_ratio_to_initial": 0.9405695107983651
+        },
+        {
+          "expected_finite_mean_squared": 0.09022516349473134,
+          "expected_finite_variance_ratio": 0.924278556369245,
+          "generation": 5,
+          "mean_squared": 0.0902299682775106,
+          "population_variance": 0.9097350682939047,
+          "second_moment": 0.9999650365714153,
+          "variance_ratio_to_initial": 0.9252940643397128
+        },
+        {
+          "expected_finite_mean_squared": 0.10442417343666116,
+          "expected_finite_variance_ratio": 0.9098367039259756,
+          "generation": 6,
+          "mean_squared": 0.10557153756265297,
+          "population_variance": 0.8959023615890945,
+          "second_moment": 1.0014738991517476,
+          "variance_ratio_to_initial": 0.9112247799361595
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "coordinates": 4096,
+    "generations": 6,
+    "population": 64,
+    "replicates": 8,
+    "seed": 9
+  },
+  "study": "neutral closed population; distinct parents; iid normal initial deltas; no fitness, mutation, TIES, or neural networks"
+}

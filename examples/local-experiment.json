@@ -10,7 +10,7 @@
   "max_siblings": 1,
   "mode": "mutual_choice",
   "decoding": {
-    "temperature": 0.0,
+    "temperature": 0,
     "max_tokens": 256
   },
   "agents": [
@@ -22,7 +22,11 @@
       "backend": {
         "endpoint": "http://127.0.0.1:8000/v1/chat/completions",
         "kind": "local_http",
-        "model": "replace-with-local-model"
+        "model": "replace-with-local-model",
+        "tokenizer": {
+          "kind": "vllm",
+          "endpoint": "http://127.0.0.1:8000/tokenize"
+        }
       }
     },
     {
@@ -33,7 +37,11 @@
       "backend": {
         "endpoint": "http://127.0.0.1:8000/v1/chat/completions",
         "kind": "local_http",
-        "model": "replace-with-local-model"
+        "model": "replace-with-local-model",
+        "tokenizer": {
+          "kind": "vllm",
+          "endpoint": "http://127.0.0.1:8000/tokenize"
+        }
       }
     },
     {
@@ -44,7 +52,11 @@
       "backend": {
         "endpoint": "http://127.0.0.1:8000/v1/chat/completions",
         "kind": "local_http",
-        "model": "replace-with-local-model"
+        "model": "replace-with-local-model",
+        "tokenizer": {
+          "kind": "vllm",
+          "endpoint": "http://127.0.0.1:8000/tokenize"
+        }
       }
     }
   ],
@@ -58,7 +70,7 @@
       ],
       "density": 0.5,
       "epsilon": null,
-      "lambda": 1.0
+      "lambda": 1
     }
   ],
   "plans": [
@@ -73,5 +85,12 @@
       "max_compute_seconds": 60,
       "max_output_bytes": 1024
     }
-  ]
+  ],
+  "memory": {
+    "recent_rounds": 2,
+    "max_public_events": 64,
+    "max_prompt_tokens": 6144,
+    "context_window_tokens": 8192,
+    "safety_margin_tokens": 128
+  }
 }

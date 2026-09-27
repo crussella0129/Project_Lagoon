@@ -3,10 +3,10 @@
 <!-- sprint-loop-intent-v2 -->
 - **Intent ID:** INT-0001
 - **State:** active
-- **Work evidence:** [Sprint 0 build plan](../sprints/s0/sprint-plans/build-plan.md)
-- **Completion evidence:** [T-001 through T-007 implementation](../work/completed-tasks.md)
-- **Code evidence:** [Rust harness](../../src/lib.rs); tested implementation head `2683e908854d1635645e23e5970bca2a4f1e9023`
-- **Test evidence:** [Local unit](../sprints/s0/sprint-tests/unit-tests.md), [integration](../sprints/s0/sprint-tests/integration-tests.md), [E2E](../sprints/s0/sprint-tests/e2e-tests.md); [external CI block](../sprints/s0/failure-report.md)
+- **Work evidence:** [Sprint 0 build plan](../sprints/s0/sprint-plans/build-plan.md); [instrument maintenance](../work/instrument-review.md)
+- **Completion evidence:** [T-001 through T-007 and T-011 implementation](../work/completed-tasks.md)
+- **Code evidence:** [Rust harness](../../src/lib.rs); tested v0.2 implementation head `c06cce7008297639d7f4f210714a83088dec7dbe`; historical v0.1 head `2683e908854d1635645e23e5970bca2a4f1e9023`
+- **Test evidence:** [Maintenance validation](../research/instrument-validation.md); historical [local unit](../sprints/s0/sprint-tests/unit-tests.md), [integration](../sprints/s0/sprint-tests/integration-tests.md), [E2E](../sprints/s0/sprint-tests/e2e-tests.md); [external CI block](../sprints/s0/failure-report.md)
 - **Documentation evidence:** [Usage](../usage.md); [Research assessment](../sprints/s0/sprint-research/idea-review.md)
 
 ## Intent
@@ -35,7 +35,8 @@ INT-0003. These boundaries were approved for Sprint 0.
   Privacy describes harness access; an agent can voluntarily disclose content.
 - **AC-3 — Independent rounds:** agents at each communication step act on one
   frozen public snapshot. Responses are staged before publication. All selection
-  observations share a final snapshot, and ballots are sealed until all attempts
+  observations derive from a shared final snapshot under a declared memory policy,
+  with recorded owner-specific fitting projections, and ballots are sealed until all attempts
   finish. Worker completion order does not change public ordering or outcomes.
 - **AC-4 — Honest participation outcomes:** explicit abstention, invalid response,
   timeout, transport failure, and nonreciprocal selection remain distinct. Only
@@ -48,7 +49,8 @@ INT-0003. These boundaries were approved for Sprint 0.
   child's recipe/seed specification and total count/resource bounds. Baseline
   max_siblings is one; opt-in batches permit at most three in this first increment.
   Each agent separately consents to one exact offered plan, declines, or defers
-  fusion. Reciprocal
+  fusion. The model selects only a plan ID; the harness binds its receipt to the
+  fingerprint in the immutable recorded observation. Reciprocal
   partner selection does not imply recipe consent. A pair produces a pending
   grouped request only when both parents agree to the same allowed plan; absent,
   declined, different, or invalid consent creates a clearly blocked request.
@@ -66,7 +68,9 @@ INT-0003. These boundaries were approved for Sprint 0.
   participation, explicit abstention, invalid/failure outcomes, nominations,
   reciprocal pairs, plan-consent outcomes, requested child counts, and
   blocked/eligible batches and child requests with clear denominators. Record
-  mode, recipe and plan payloads, card order, and exact consent. A
+  mode, recipe and plan payloads, per-owner/per-round shuffled card and opaque-handle
+  order, schema hashes, declared memory/token budgets, token measurements and trimming,
+  and exact consent. Persist private preferences while bounding public context. A
   fixed recorded fixture run replays identically, regardless of completion order.
 - **AC-7 — Usable vertical slice:** fixture and local HTTP workflows run through
   the CLI with tests covering privacy, ordering, failures, pairing, and replay.
@@ -127,3 +131,8 @@ recipe optimization require a subsequent extension of this intent and its tests.
   State remains `active` because hosted CI could not start due to GitHub account
   runner availability; no duplicate lifecycle transition is recorded. Preserve
   implementation evidence and carry verification forward as T-008.
+- 2026-09-27: user selected instrument repairs and variance verification, then
+  review plus a draft next-study preregistration. Added constrained output,
+  harness-bound fingerprint receipts, recorded randomized presentation and
+  declared token-aware memory without changing voluntary choice or the fusion gate.
+  [Follow-up work](../work/instrument-review.md) preserves Sprint 0 evidence.
