@@ -14,6 +14,8 @@
 - [Optional sibling batches](sprints/s0/sprint-research/sibling-batch-review.md)
 - [Running the harness](usage.md)
 - [Instrument follow-up](work/instrument-review.md)
+- [Build and output follow-up](work/output-review.md)
+- [Coverage and study-criteria review](research/output-review.md)
 - [Variance study and qualifications](research/variance-review.md)
 - [Useful merge screening protocol](research/useful-protocol-review.md)
 - [Draft next-study preregistration](../PREREG.md)

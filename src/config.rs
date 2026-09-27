@@ -169,7 +169,10 @@ pub struct ReproductionPlan {
 pub fn fingerprint<T: Serialize>(value: &T) -> String {
     // All fingerprinted catalog types have fixed field order and no unordered maps.
     let bytes = serde_json::to_vec(value).expect("typed finite catalog is serializable");
-    format!("{:x}", Sha256::digest(bytes))
+    Sha256::digest(bytes)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect()
 }
 
 impl Experiment {
@@ -250,7 +253,8 @@ impl Experiment {
                 "invalid or duplicate handle",
             )?;
             require(
-                agent.initial_private.byte_len() <= self.max_private_bytes,
+                agent.initial_private.byte_len() <= self.max_private_bytes
+                    && agent.initial_private.within_note_limits(),
                 "initial private state exceeds bound",
             )?;
             if let Some(checkpoint) = &agent.checkpoint {
@@ -516,6 +520,25 @@ pub(crate) mod tests {
                 max_output_bytes: 1024,
             }],
         }
+    }
+
+    #[test]
+    fn fingerprints_keep_padded_lowercase_sha256_and_initial_notes_are_bounded() {
+        assert_eq!(
+            fingerprint(&serde_json::Value::Null),
+            "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+        );
+        let mut config = config();
+        config.agents[0].initial_private.thought =
+            Some("🙂".repeat(crate::protocol::PRIVATE_NOTE_MAX_CHARS));
+        assert!(config.validate().is_ok());
+        config.agents[0]
+            .initial_private
+            .thought
+            .as_mut()
+            .unwrap()
+            .push('x');
+        assert!(config.validate().is_err());
     }
 
     #[test]

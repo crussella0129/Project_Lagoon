@@ -15,7 +15,32 @@ pub struct Request {
     pub max_response_bytes: usize,
 }
 
-pub type ResponseFuture = Pin<Box<dyn Future<Output = Result<String, Status>> + Send>>;
+#[derive(Clone, Debug)]
+pub struct Generation {
+    pub body: String,
+    pub finish_reason: Option<String>,
+}
+
+impl From<String> for Generation {
+    fn from(body: String) -> Self {
+        Self {
+            body,
+            finish_reason: None,
+        }
+    }
+}
+
+impl From<&str> for Generation {
+    fn from(body: &str) -> Self {
+        body.to_owned().into()
+    }
+}
+
+pub fn valid_finish_reason(reason: &str) -> bool {
+    !reason.is_empty() && reason.len() <= 64 && !reason.chars().any(char::is_control)
+}
+
+pub type ResponseFuture = Pin<Box<dyn Future<Output = Result<Generation, Status>> + Send>>;
 pub type TokenFuture = Pin<Box<dyn Future<Output = Result<TokenCount, Status>> + Send>>;
 
 #[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]

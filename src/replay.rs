@@ -78,8 +78,15 @@ pub fn reconstruct(record: &Record) -> Result<Session, RecordError> {
                     return Err(fail());
                 }
                 match &call.reply {
-                    Reply::Response { body }
-                        if body.len() > config.max_response_bytes || over_context || !fits =>
+                    Reply::Response {
+                        body,
+                        finish_reason,
+                    } if body.len() > config.max_response_bytes
+                        || over_context
+                        || !fits
+                        || finish_reason
+                            .as_ref()
+                            .is_some_and(|r| !crate::backend::valid_finish_reason(r)) =>
                     {
                         return Err(fail());
                     }

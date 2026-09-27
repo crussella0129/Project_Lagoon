@@ -5,7 +5,12 @@
     "partner": {
       "enum": [
         null
-      ]
+      ],
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 18
     },
     "private_update": {
       "anyOf": [
@@ -20,19 +25,22 @@
               "type": [
                 "string",
                 "null"
-              ]
+              ],
+              "maxLength": 64
             },
             "learned_preference": {
               "type": [
                 "string",
                 "null"
-              ]
+              ],
+              "maxLength": 64
             },
             "thought": {
               "type": [
                 "string",
                 "null"
-              ]
+              ],
+              "maxLength": 64
             }
           },
           "required": [
@@ -50,13 +58,16 @@
           "additionalProperties": false,
           "properties": {
             "state": {
-              "const": "agree"
+              "const": "agree",
+              "type": "string",
+              "maxLength": 5
             },
             "plan_id": {
               "type": "string",
               "enum": [
                 "__offered_plan_id__"
-              ]
+              ],
+              "maxLength": 64
             }
           },
           "required": [
@@ -72,7 +83,9 @@
               "enum": [
                 "decline",
                 "defer"
-              ]
+              ],
+              "type": "string",
+              "maxLength": 7
             }
           },
           "required": [

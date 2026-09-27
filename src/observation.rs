@@ -169,6 +169,61 @@ mod tests {
     };
 
     #[test]
+    fn response_schemas_bound_every_string_and_match_parser_limits() {
+        fn check(value: &serde_json::Value) {
+            if let Some(fields) = value.as_object() {
+                let string_type = fields.get("type").is_some_and(|t| {
+                    t == "string"
+                        || t.as_array()
+                            .is_some_and(|a| a.iter().any(|t| t == "string"))
+                });
+                if string_type {
+                    assert!(
+                        fields
+                            .get("maxLength")
+                            .and_then(|n| n.as_u64())
+                            .is_some_and(|n| n > 0),
+                        "unbounded string: {value}"
+                    );
+                }
+                for value in fields.values() {
+                    check(value);
+                }
+            } else if let Some(values) = value.as_array() {
+                for value in values {
+                    check(value);
+                }
+            }
+        }
+        let config = config();
+        for phase in [Phase::Communication { step: 0 }, Phase::Selection] {
+            let observation = Observation::new(
+                &config,
+                "a",
+                &PrivateState::default(),
+                &PublicView::default(),
+                0,
+                phase.clone(),
+            );
+            let format = observation.response_format();
+            let schema = &format["json_schema"]["schema"];
+            check(schema);
+            for field in ["feeling", "learned_preference", "thought"] {
+                assert_eq!(
+                    schema["properties"]["private_update"]["anyOf"][1]["properties"][field]["maxLength"],
+                    crate::protocol::PRIVATE_NOTE_MAX_CHARS
+                );
+            }
+            if matches!(phase, Phase::Communication { .. }) {
+                assert_eq!(
+                    schema["properties"]["public_message"]["maxLength"],
+                    crate::protocol::PUBLIC_MESSAGE_MAX_CHARS
+                );
+            }
+        }
+    }
+
+    #[test]
     fn presentation_is_seeded_per_owner_and_round_and_model_projection_is_clean() {
         let mut config = config();
         let mut second = config.plans[0].clone();

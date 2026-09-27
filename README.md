@@ -28,13 +28,15 @@ need to reproduce the hash.
 
 ## Current implementation
 
-The v0.2 CLI provides:
+The v0.3 CLI provides:
 
 - Deterministic fixtures and explicitly configured local HTTP inference.
 - Phase-specific JSON schemas and recorded, shuffled opaque peer and plan
   presentation.
 - Bounded public-memory windows, persistent owner-private notes, and server token
   accounting before generation.
+- Character-bounded response schemas and recorded finish reasons, with token-limit
+  termination counted separately from invalid responses.
 - Frozen phase snapshots, bounded concurrent calls, sealed nominations, and
   distinct abstention and technical-failure outcomes.
 - Operator records, separate public transcripts, descriptive reports, and offline
@@ -81,4 +83,5 @@ fusion, or generational study has been performed by this implementation.
 - [Variance analysis and reproducible study](docs/research/variance-review.md)
 - [Fusion-method assessment](docs/sprints/s0/sprint-research/fusion-method-review.md)
 - [Implementation and verification](docs/research/instrument-validation.md)
+- [Build, output and study-criteria follow-up](docs/research/output-review.md)
 - [Project Book](docs/README.md)

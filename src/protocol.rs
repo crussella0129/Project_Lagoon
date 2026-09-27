@@ -1,5 +1,9 @@
 use serde::{Deserialize, Serialize};
 
+// JSON Schema maxLength counts Unicode characters, independently of UTF-8 bytes.
+pub const PUBLIC_MESSAGE_MAX_CHARS: usize = 128;
+pub const PRIVATE_NOTE_MAX_CHARS: usize = 64;
+
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct PrivateState {
@@ -27,6 +31,13 @@ impl PrivateState {
             .flatten()
             .map(String::len)
             .sum()
+    }
+
+    pub fn within_note_limits(&self) -> bool {
+        [&self.feeling, &self.learned_preference, &self.thought]
+            .into_iter()
+            .flatten()
+            .all(|s| s.chars().count() <= PRIVATE_NOTE_MAX_CHARS)
     }
 }
 
@@ -71,6 +82,7 @@ pub enum Status {
     HttpFailure,
     MalformedContent,
     TokenizationFailure,
+    GenerationLimit,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -145,7 +157,7 @@ pub fn normalize(
     if let Some(update) = &private_update {
         proposed.update(update);
     }
-    if proposed.byte_len() > config.max_private_bytes {
+    if proposed.byte_len() > config.max_private_bytes || !proposed.within_note_limits() {
         return Outcome::failure(Status::OversizedResponse);
     }
     match observation.phase {
@@ -157,6 +169,12 @@ pub fn normalize(
             };
             if !fields.is_empty() {
                 return Outcome::failure(Status::InvalidResponse);
+            }
+            if public_message
+                .as_ref()
+                .is_some_and(|s| s.chars().count() > PUBLIC_MESSAGE_MAX_CHARS)
+            {
+                return Outcome::failure(Status::OversizedResponse);
             }
             Outcome {
                 status: Status::Valid,
@@ -251,4 +269,70 @@ pub fn json_body(body: &str) -> &str {
         .and_then(|s| s.strip_suffix("```"))
         .map(str::trim)
         .unwrap_or(trimmed)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{config::tests::config, observation::Observation};
+
+    #[test]
+    fn unicode_bounds_accept_limit_and_reject_one_extra_character() {
+        let config = config();
+        let observation = Observation::new(
+            &config,
+            "a",
+            &PrivateState::default(),
+            &PublicView::default(),
+            0,
+            Phase::Communication { step: 0 },
+        );
+        let body = |public: usize, private: usize| {
+            serde_json::json!({
+                "public_message": "🙂".repeat(public),
+                "private_update": {"thought": "🙂".repeat(private)}
+            })
+            .to_string()
+        };
+        assert_eq!(
+            normalize(
+                &body(PUBLIC_MESSAGE_MAX_CHARS, PRIVATE_NOTE_MAX_CHARS),
+                &observation,
+                &config
+            )
+            .status,
+            Status::Valid
+        );
+        for (public, private) in [
+            (PUBLIC_MESSAGE_MAX_CHARS + 1, 0),
+            (0, PRIVATE_NOTE_MAX_CHARS + 1),
+        ] {
+            let outcome = normalize(&body(public, private), &observation, &config);
+            assert_eq!(outcome, Outcome::failure(Status::OversizedResponse));
+        }
+    }
+
+    #[test]
+    fn maximally_escaped_bounded_communication_fits_example_byte_guard() {
+        let config = config();
+        let observation = Observation::new(
+            &config,
+            "a",
+            &PrivateState::default(),
+            &PublicView::default(),
+            0,
+            Phase::Communication { step: 0 },
+        );
+        let public = r"\ud83d\ude00".repeat(PUBLIC_MESSAGE_MAX_CHARS);
+        let private = r"\ud83d\ude00".repeat(PRIVATE_NOTE_MAX_CHARS);
+        let body = format!(
+            r#"{{"public_message":"{public}","private_update":{{"feeling":"{private}","learned_preference":"{private}","thought":"{private}"}}}}"#
+        );
+        assert!(body.len() <= 4096);
+        assert_eq!(
+            normalize(&body, &observation, &config).status,
+            Status::Valid
+        );
+        // This bounds canonical text bytes, not tokenizer output or arbitrary whitespace.
+    }
 }

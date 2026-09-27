@@ -48,6 +48,7 @@ pub struct Report {
     pub total: Counts,
     pub per_round: Vec<RoundReport>,
     pub all_call_status_counts: BTreeMap<String, u64>,
+    pub finish_reason_counts: BTreeMap<String, u64>,
     pub fenced_json_responses: u64,
     pub presentation: Vec<PresentationCounts>,
     pub baseline: Baseline,
@@ -189,12 +190,21 @@ pub fn describe(config: &Experiment, session: &Session) -> Report {
         Some(2.0 * total.social_pairs as f64 / total.decision_slots as f64)
     };
     let mut all_call_status_counts = BTreeMap::new();
+    let mut finish_reason_counts = BTreeMap::new();
     let mut presentation: BTreeMap<(u32, String, String, usize), PresentationCounts> =
         BTreeMap::new();
     let mut fenced_json_responses = 0;
     for call in &session.calls {
         count(&mut all_call_status_counts, key(&call.outcome.status));
-        if let crate::runner::Reply::Response { body } = &call.reply {
+        if let crate::runner::Reply::Response {
+            body,
+            finish_reason,
+        } = &call.reply
+        {
+            count(
+                &mut finish_reason_counts,
+                finish_reason.as_deref().unwrap_or("unreported").into(),
+            );
             if crate::protocol::json_body(body) != body.trim() {
                 fenced_json_responses += 1;
             }
@@ -249,6 +259,7 @@ pub fn describe(config: &Experiment, session: &Session) -> Report {
         total,
         per_round,
         all_call_status_counts,
+        finish_reason_counts,
         fenced_json_responses,
         presentation: presentation.into_values().collect(),
         baseline: random_baseline(config.agents.len()),
