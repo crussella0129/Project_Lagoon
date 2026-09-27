@@ -2,7 +2,7 @@
 
 <!-- sprint-loop-intent-v2 -->
 - **Intent ID:** INT-0001
-- **State:** planned
+- **State:** active
 - **Work evidence:** [Sprint 0 build plan](../sprints/s0/sprint-plans/build-plan.md)
 - **Completion evidence:** none
 - **Code evidence:** none
@@ -122,3 +122,4 @@ recipe optimization require a subsequent extension of this intent and its tests.
   explicit. Baseline remains one child, with optional batches and separate counts.
 - 2026-09-27: `proposed` → `planned` after the user approved the revised plan
   with "ok now proceed"; work is scheduled in the Sprint 0 build plan.
+- 2026-09-27: `planned` → `active` as T-001 implementation begins.

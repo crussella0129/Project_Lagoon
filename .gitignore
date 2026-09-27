@@ -3,3 +3,5 @@
 *.tmp
 /guards-report.ndjson
 # <<< sprint-loops <<<
+/target/
+/runs/
