@@ -27,3 +27,10 @@
 - **Completed:** 2026-09-27
 - **Files modified:** src/backend/mod.rs, src/backend/local_http.rs
 - **Commit:** `debc7d99e553d3076224c1911dc6a0bc1803d78c`
+
+## T-005 (sprint 0)
+- **Description:** screen exact mutual plans and preserve sibling parentage
+- **Intent:** [INT-0001](../intents/INT-0001-voluntary-observable-partner-choice.md)
+- **Completed:** 2026-09-27
+- **Files modified:** src/lib.rs, src/matching.rs, src/merge_request.rs, src/runner.rs
+- **Commit:** PENDING

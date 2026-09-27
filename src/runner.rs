@@ -42,6 +42,7 @@ pub struct Session {
     pub public: PublicView,
     pub private_states: BTreeMap<String, PrivateState>,
     pub selections: Vec<SelectionRound>,
+    pub batches: Vec<crate::merge_request::BatchDecision>,
 }
 
 impl Session {
@@ -55,6 +56,7 @@ impl Session {
                 .map(|a| (a.handle.clone(), a.initial_private.clone()))
                 .collect(),
             selections: vec![],
+            batches: vec![],
         }
     }
 
@@ -68,7 +70,7 @@ impl Session {
     }
 
     /// Called only after all responses in this phase have finished.
-    pub fn publish(&mut self, calls: Vec<Call>, round: u32, phase: &Phase) {
+    pub fn publish(&mut self, config: &Experiment, calls: Vec<Call>, round: u32, phase: &Phase) {
         let mut selections = BTreeMap::new();
         for call in &calls {
             if let Some(update) = &call.outcome.private_update {
@@ -91,10 +93,19 @@ impl Session {
             }
         }
         if *phase == Phase::Selection {
-            self.selections.push(SelectionRound {
+            let selection = SelectionRound {
                 round,
                 outcomes: selections,
-            });
+            };
+            let batches = crate::merge_request::resolve_round(config, &selection);
+            self.public
+                .pairs
+                .extend(batches.iter().map(|batch| crate::protocol::PublicPair {
+                    round,
+                    pair: batch.pair.clone(),
+                }));
+            self.batches.extend(batches);
+            self.selections.push(selection);
         }
         self.calls.extend(calls);
     }
@@ -202,7 +213,7 @@ pub async fn run_with(
                     outcome,
                 });
             }
-            session.publish(calls, round, &phase);
+            session.publish(config, calls, round, &phase);
         }
     }
     Ok(session)
