@@ -48,3 +48,11 @@
 - **Completed:** 2026-09-27
 - **Files modified:** src/main.rs, examples/fixture-experiment.json, examples/sibling-experiment.json, examples/local-experiment.json, tests/cli.rs, docs/usage.md, README.md, docs/SUMMARY.md, src/config.rs, src/merge_request.rs, src/report.rs, src/runner.rs
 - **Commit:** `f3133713db236d10d02f6f4f895050caa2d6cd95`
+
+## T-011 (post-Sprint 0 maintenance)
+- **Description:** Repair format/consent, randomized presentation and token-aware memory; verify the bounded Rust variance study and draft the next merge-screening experiment. Publish a follow-up after the user merged PR #1.
+- **Intent:** [INT-0001](../intents/INT-0001-voluntary-observable-partner-choice.md); proposed follow-on research for [INT-0002](../intents/INT-0002-evaluated-dare-descendants.md) and [INT-0003](../intents/INT-0003-controlled-evolutionary-study.md)
+- **Completed:** 2026-09-27
+- **Files modified:** Cargo.toml, Cargo.lock, src/backend, src/config.rs, src/observation.rs, src/protocol.rs, src/runner.rs, src/record.rs, src/replay.rs, src/report.rs, src/main.rs, tests/cli.rs, schemas, examples, .github/workflows/sprint-loops-ci.yml, README.md, PREREG.md, docs/usage.md, docs/intents, docs/research, docs/work/instrument-review.md, docs/SUMMARY.md
+- **Commit:** `c06cce7008297639d7f4f210714a83088dec7dbe`
+- **Verification:** [38 local tests, format and clippy](../research/instrument-validation.md); [PR #5](https://github.com/crussella0129/Lovers_Lagoon/pull/5). Hosted CI failed before runner execution; this maintenance completion does not realize INT-0001 or close T-008.

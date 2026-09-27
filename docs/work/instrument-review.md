@@ -7,7 +7,7 @@ User selected **Fix the instrument and verify the variance analysis** on 2026-09
 - [x] Declare bounded memory, measure chat-template tokens, and preserve offline replay.
 - [x] Verify the variance claim with a bounded Rust study and analytical checks.
 - [x] Update examples and research documentation; format, lint and test (38 tests plus clean clippy).
-- [ ] Publish the follow-up PR and record its actual hosted-check outcome.
+- [x] Publish [follow-up PR #5](https://github.com/crussella0129/Lovers_Lagoon/pull/5) and record its actual hosted-check outcome: no runner steps started; account payment/spending-limit block persists. T-008 remains open.
 
 Excluded: whispers, payoff treatments, real weight fusion, child admission, repository visibility and billing changes.
 

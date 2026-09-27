@@ -3,10 +3,10 @@
 <!-- sprint-loop-intent-v2 -->
 - **Intent ID:** INT-0001
 - **State:** active
-- **Work evidence:** [Sprint 0 build plan](../sprints/s0/sprint-plans/build-plan.md)
-- **Completion evidence:** [T-001 through T-007 implementation](../work/completed-tasks.md)
-- **Code evidence:** [Rust harness](../../src/lib.rs); tested implementation head `2683e908854d1635645e23e5970bca2a4f1e9023`
-- **Test evidence:** [Local unit](../sprints/s0/sprint-tests/unit-tests.md), [integration](../sprints/s0/sprint-tests/integration-tests.md), [E2E](../sprints/s0/sprint-tests/e2e-tests.md); [external CI block](../sprints/s0/failure-report.md)
+- **Work evidence:** [Sprint 0 build plan](../sprints/s0/sprint-plans/build-plan.md); [instrument maintenance](../work/instrument-review.md)
+- **Completion evidence:** [T-001 through T-007 and T-011 implementation](../work/completed-tasks.md)
+- **Code evidence:** [Rust harness](../../src/lib.rs); tested v0.2 implementation head `c06cce7008297639d7f4f210714a83088dec7dbe`; historical v0.1 head `2683e908854d1635645e23e5970bca2a4f1e9023`
+- **Test evidence:** [Maintenance validation](../research/instrument-validation.md); historical [local unit](../sprints/s0/sprint-tests/unit-tests.md), [integration](../sprints/s0/sprint-tests/integration-tests.md), [E2E](../sprints/s0/sprint-tests/e2e-tests.md); [external CI block](../sprints/s0/failure-report.md)
 - **Documentation evidence:** [Usage](../usage.md); [Research assessment](../sprints/s0/sprint-research/idea-review.md)
 
 ## Intent
