@@ -8,6 +8,6 @@
 - **Bundle version:** 0.22.0
 - **Exit status:** in-progress
 - **Token count:** (filled at Loop Phase if observable)
-- **Summary:** (one-line description of sprint goal, filled after Plan Phase)
-- **Intents:** (filled after Plan Phase)
+- **Summary:** Implement a Rust harness with private state, sealed mutual choices, optional sibling plans, local inference, replay, and pending fusion manifests.
+- **Intents:** [INT-0001](../../intents/INT-0001-voluntary-observable-partner-choice.md); follow-on INT-0002 and INT-0003 remain proposed.
 - **Completion evidence:** (filled at Loop Phase)

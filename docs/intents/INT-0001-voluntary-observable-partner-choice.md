@@ -2,8 +2,8 @@
 
 <!-- sprint-loop-intent-v2 -->
 - **Intent ID:** INT-0001
-- **State:** proposed
-- **Work evidence:** none
+- **State:** planned
+- **Work evidence:** [Sprint 0 build plan](../sprints/s0/sprint-plans/build-plan.md)
 - **Completion evidence:** none
 - **Code evidence:** none
 - **Test evidence:** none
@@ -120,3 +120,5 @@ recipe optimization require a subsequent extension of this intent and its tests.
 - 2026-09-27: refined while `proposed` after the sibling question: consent can
   cover an exact single-child or bounded sibling plan; each child's recipe stays
   explicit. Baseline remains one child, with optional batches and separate counts.
+- 2026-09-27: `proposed` → `planned` after the user approved the revised plan
+  with "ok now proceed"; work is scheduled in the Sprint 0 build plan.
