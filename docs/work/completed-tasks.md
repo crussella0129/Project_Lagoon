@@ -47,4 +47,4 @@
 - **Intent:** [INT-0001](../intents/INT-0001-voluntary-observable-partner-choice.md)
 - **Completed:** 2026-09-27
 - **Files modified:** src/main.rs, examples/fixture-experiment.json, examples/sibling-experiment.json, examples/local-experiment.json, tests/cli.rs, docs/usage.md, README.md, docs/SUMMARY.md, src/config.rs, src/merge_request.rs, src/report.rs, src/runner.rs
-- **Commit:** PENDING
+- **Commit:** `f3133713db236d10d02f6f4f895050caa2d6cd95`
