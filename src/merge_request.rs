@@ -384,6 +384,16 @@ mod tests {
         assert_eq!(children[0].recipe.method, Method::Ties);
         assert_eq!(children[1].recipe.method, Method::DareTies);
         assert_eq!(children[1].seed, 42);
+        let mut session = crate::runner::Session::initial(&config);
+        session.selections.push(paired(&config));
+        session.batches = decisions;
+        let report = crate::report::describe(&config, &session);
+        assert_eq!(report.total.social_pairs, 1);
+        assert_eq!(report.total.agreed_plan_batches, 1);
+        assert_eq!(report.total.pending_batches, 1);
+        assert_eq!(report.total.pending_child_requests, 2);
+        assert_eq!(report.total.executed_merges, 0);
+        assert_eq!(report.total.admitted_children, 0);
     }
 
     #[tokio::test]

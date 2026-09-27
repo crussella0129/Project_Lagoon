@@ -4,4 +4,7 @@ pub mod matching;
 pub mod merge_request;
 pub mod observation;
 pub mod protocol;
+pub mod record;
+pub mod replay;
+pub mod report;
 pub mod runner;
