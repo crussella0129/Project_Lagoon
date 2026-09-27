@@ -2,11 +2,11 @@
 
 <!-- sprint-loop-intent-v2 -->
 - **Intent ID:** INT-0001
-- **State:** active
-- **Work evidence:** [Sprint 0 build plan](../sprints/s0/sprint-plans/build-plan.md); [instrument maintenance](../work/instrument-review.md)
-- **Completion evidence:** [T-001 through T-007 and T-011 implementation](../work/completed-tasks.md)
-- **Code evidence:** [Rust harness](../../src/lib.rs); tested v0.2 implementation head `c06cce7008297639d7f4f210714a83088dec7dbe`; historical v0.1 head `2683e908854d1635645e23e5970bca2a4f1e9023`
-- **Test evidence:** [Maintenance validation](../research/instrument-validation.md); historical [local unit](../sprints/s0/sprint-tests/unit-tests.md), [integration](../sprints/s0/sprint-tests/integration-tests.md), [E2E](../sprints/s0/sprint-tests/e2e-tests.md); [external CI block](../sprints/s0/failure-report.md)
+- **State:** realized
+- **Work evidence:** [Sprint 0 build plan](../sprints/s0/sprint-plans/build-plan.md); [T-012 build/output maintenance](../work/output-review.md)
+- **Completion evidence:** [T-001 through T-007, T-011 and T-012 implementation](../work/completed-tasks.md)
+- **Code evidence:** [Rust harness](../../src/lib.rs); [tested v0.3 implementation 28585c5](https://github.com/crussella0129/Lovers_Lagoon/commit/28585c58c6dc02c7c733794ff650fbba90d22207); [historical v0.2 implementation](https://github.com/crussella0129/Lovers_Lagoon/commit/c06cce7008297639d7f4f210714a83088dec7dbe)
+- **Test evidence:** [45-test local acceptance](../work/output-review.md#local-acceptance-evidence); historical [v0.2 maintenance validation](../research/instrument-validation.md), [local unit](../sprints/s0/sprint-tests/unit-tests.md), [integration](../sprints/s0/sprint-tests/integration-tests.md), [E2E](../sprints/s0/sprint-tests/e2e-tests.md); [external CI block](../sprints/s0/failure-report.md)
 - **Documentation evidence:** [Usage](../usage.md); [Research assessment](../sprints/s0/sprint-research/idea-review.md)
 
 ## Intent
@@ -39,7 +39,7 @@ INT-0003. These boundaries were approved for Sprint 0.
   with recorded owner-specific fitting projections, and ballots are sealed until all attempts
   finish. Worker completion order does not change public ordering or outcomes.
 - **AC-4 — Honest participation outcomes:** explicit abstention, invalid response,
-  timeout, transport failure, and nonreciprocal selection remain distinct. Only
+  generation limit, timeout, transport failure, and nonreciprocal selection remain distinct. Only
   A selecting B and B selecting A creates a pair. Each agent occurs in at most
   one pair per round. Abstention and failed pairing preserve the participant and
   its memory; there is no imposed loneliness cost, replacement, or exclusion.
@@ -70,11 +70,14 @@ INT-0003. These boundaries were approved for Sprint 0.
   blocked/eligible batches and child requests with clear denominators. Record
   mode, recipe and plan payloads, per-owner/per-round shuffled card and opaque-handle
   order, schema hashes, declared memory/token budgets, token measurements and trimming,
-  and exact consent. Persist private preferences while bounding public context. A
+  finish reasons, generation-limit status and exact consent. Persist private preferences while bounding public context. A
   fixed recorded fixture run replays identically, regardless of completion order.
 - **AC-7 — Usable vertical slice:** fixture and local HTTP workflows run through
   the CLI with tests covering privacy, ordering, failures, pairing, and replay.
-  Formatting, clippy, affected tests, and CI pass. Document how to run and what
+  Locked local build, formatting, clippy and affected tests pass. Hosted CI is
+  optional under the user's 2026-09-27 instruction to test locally without waiting
+  for GitHub minutes; this does not claim the historical hosted failures passed.
+  Document how to run and what
   the experiment's observations can and cannot establish.
 
 ## Rationale
@@ -136,3 +139,14 @@ recipe optimization require a subsequent extension of this intent and its tests.
   harness-bound fingerprint receipts, recorded randomized presentation and
   declared token-aware memory without changing voluntary choice or the fusion gate.
   [Follow-up work](../work/instrument-review.md) preserves Sprint 0 evidence.
+- 2026-09-27: user selected build/output repairs and revised draft study criteria,
+  deferred training, and explicitly said "test the code locally, don't worry about
+  github CI (i'm out of minutes)". Revised AC-7 to use local validation as its gate;
+  preserved historical hosted failures and optional T-008. T-012 restores main's
+  sha2 compatibility and records bounded output/termination accounting.
+- 2026-09-27: `active` → `realized` after the locked build, format, warning-free
+  clippy, all 45 local tests and Book validation passed for implementation
+  `28585c58c6dc02c7c733794ff650fbba90d22207`. [PR #6](https://github.com/crussella0129/Lovers_Lagoon/pull/6)
+  is the review checkpoint; merging remains a human action. This realizes the
+  first harness increment, not the unfrozen research protocol, real-server
+  conformance, training, fusion or INT-0002/INT-0003.

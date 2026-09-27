@@ -5,7 +5,7 @@
 - [x] Reproduce main's locked build failure and preserve fingerprints while fixing sha2 0.11 compatibility. The restored build and all 38 pre-existing tests passed before the output changes.
 - [x] Bound response strings, retain finish reasons, distinguish generation limits, and validate replay locally. Partial/complete/null-content length responses are rejected as generation limits without applying memory or ballots.
 - [x] Revise pilot coverage/opportunity criteria and assess the proposed matched-exit protocol and registration services. Exact uniform references reproduce the review's ~8% and ~57% probabilities; preference-crowding estimates remain underspecified.
-- [ ] Run the locked local build, all-target tests, formatting and clippy; record completion and publish a reviewable follow-up.
+- [x] Run the locked local build, all-target tests, formatting and clippy; record completion and publish a reviewable follow-up. [PR #6](https://github.com/crussella0129/Lovers_Lagoon/pull/6) is attached to this task and awaits human merge approval.
 
 Training, actual merging, changing the live matching protocol, and external registration remain outside this repair. The draft can identify a matched-exit treatment requiring implementation before freezing; the existing voluntary matching behavior remains the baseline.
 
@@ -23,3 +23,5 @@ Windows, Rust/Cargo 1.98.1, 2026-09-27, v0.3.0/schema 3:
 Tests cover Unicode limits/escaped byte bounds, a known-answer hash, bounded reason metadata, normal stop recording, partial/complete/null content with length termination, saved offline replay and rejection of changed finish-reason receipts. Existing CLI tests exercise fixture/sibling configurations and disposable vLLM/llama.cpp HTTP servers. No actual model/server conformance or training is claimed.
 
 Implementation and research assessment: [output review](../research/output-review.md). The earlier [v0.2 validation](../research/instrument-validation.md) remains historical evidence for its recorded revision. GitHub CI is outside the current acceptance gate by explicit user instruction; no hosted result was requested, polled or used.
+
+Tested implementation: `28585c58c6dc02c7c733794ff650fbba90d22207`; [T-012 completion](completed-tasks.md#t-012-post-sprint-0-maintenance). The subsequent evidence-only update reconciles INT-0001 with the user's local acceptance override. Sprint 0's terminal failure history is preserved; no historical CI result is relabeled a pass.
