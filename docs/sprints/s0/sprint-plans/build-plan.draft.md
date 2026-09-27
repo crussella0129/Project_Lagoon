@@ -41,11 +41,14 @@ and invoke finalize-plan.sh. Do not hand-write a lock header.
     **THEN** CI **SHALL** run cargo fmt --check, cargo clippy --all-targets
     -- -D warnings, and cargo test --locked; Cargo updater intake **SHALL**
     target codex/dev.
-  - **E4 WHEN** a fixed or mutual-choice recipe catalog is loaded, **THEN**
+  - **E4 WHEN** a fixed-plan or mutual-choice reproduction catalog is loaded, **THEN**
     validation **SHALL** accept only unique immutable recipe IDs/fingerprints,
     supported methods (`linear`, `ties`, `dare_ties`, `della`), complete typed
     payloads, finite bounded coefficients/densities, valid method-specific ranges,
-    and exactly one exposed recipe in fixed mode; invalid catalogs **SHALL** fail
+    immutable plan IDs/fingerprints referencing complete finite child recipes,
+    positive child/resource limits, baseline max_siblings=1 or an explicit opt-in
+    bound <=3, and exactly one exposed plan in fixed mode; invalid catalogs
+    **SHALL** fail
     before inference. This increment **SHALL** use symmetric parent coefficients
     to avoid undefined parent orientation and contain no executable code or
     arbitrary merger options. Catalog validation **SHALL NOT** imply measured
@@ -63,7 +66,7 @@ and invoke finalize-plan.sh. Do not hand-write a lock header.
 - **Success criterion (EARS):**
   - **E1 WHEN** an observation is built for agent A, **THEN** the projection
     **SHALL** include the public transcript, anonymous available handles, protocol
-    rules, neutral immutable recipe cards and declared choice mode, and A's private
+    rules, neutral immutable recipe/plan cards and declared choice mode, and A's private
     memory while excluding every peer's private fields,
     all checkpoint/provider identities, and all unrevealed ballots.
   - **E2 WHEN** A updates or omits optional `feeling`, `learned_preference`, or
@@ -93,7 +96,7 @@ and invoke finalize-plan.sh. Do not hand-write a lock header.
     **SHALL** preserve distinct statuses with exactly one final outcome per agent
     and no retry-derived replacement, guessed partner, or forced abstention.
     A ballot **SHALL** represent partner nomination independently from exact
-    recipe consent, decline, or deferral; invalid/missing recipe consent **SHALL**
+    reproduction-plan consent, decline, or deferral; invalid/missing consent **SHALL**
     block fusion without erasing an otherwise valid partner nomination.
   - **E3 WHEN** all bounded rounds finish or all agents abstain/fail,
     **THEN** the runner **SHALL** terminate within configured call/step limits,
@@ -136,15 +139,19 @@ and invoke finalize-plan.sh. Do not hand-write a lock header.
     than one pair, and all statuses/memories/participants **SHALL** remain intact.
   - **E2 WHEN** a reciprocal pair is resolved, **THEN** the operator merge manifest
     **SHALL** record parent/base revisions, method/mode/payload/fingerprint and
-    both consent outcomes, and produce a pending request only if both parents
-    explicitly consent to the same offered exact recipe and declared
+    both plan-consent outcomes, and produce a grouped pending request only if
+    both parents explicitly consent to the same offered exact single-child or
+    bounded sibling plan and declared
     base, architecture/tensor-layout, tokenizer signatures, and license metadata
     are complete and compatible; otherwise it **SHALL** record explicit blocking
     reasons. Every manifest **SHALL** say actual artifacts are unverified and
     execution has not occurred, and **SHALL** create no child.
     Missing, declined, different, or invalid consent **SHALL** produce a distinct
     blocking reason without changing the social pair or silently substituting a
-    recipe. Fixed mode **SHALL** still permit either parent to decline.
+    plan. Fixed mode **SHALL** still permit either parent to decline. Each declared
+    child **SHALL** have its own recipe/seed reference and pending or blocked
+    request; requests **SHALL** retain the same parent revisions and exact batch
+    count without silent expansion/truncation or any claimed execution/child.
 - **Notes:** missing metadata is blocking, even when missing on both sides.
   License metadata screening does not replace later license compatibility review.
   Do not include checkpoint IDs or full manifests in peer/public projections.
@@ -158,7 +165,7 @@ and invoke finalize-plan.sh. Do not hand-write a lock header.
 - **Success criterion (EARS):**
   - **E1 WHEN** a run is recorded, **THEN** storage **SHALL** write a versioned
     operator record containing config/provenance/prompt/seed/decoding metadata,
-    recipe catalog/fingerprints/card order/mode, separate partner/recipe consent,
+    recipe/plan catalog/fingerprints/card order/mode, separate partner/plan consent,
     responses and status/private-state transitions, plus a separate public event
     projection with no private fields, ballots, or checkpoint identity. Peers
     **SHALL** receive neither file access nor operator-record handles.
@@ -169,8 +176,9 @@ and invoke finalize-plan.sh. Do not hand-write a lock header.
   - **E3 WHEN** metrics summarize a run, **THEN** the report **SHALL** separately
     count attempts, valid responses, explicit abstentions, invalid responses,
     timeouts, transport failures, nominations, nonreciprocal selections, pairs,
-    exact recipe consents, declines, deferrals, disagreements/invalid recipes,
-    and pending/blocked requests with stated denominators and zero-denominator
+    exact plan consents, declines, deferrals, disagreements/invalid plans,
+    requested sibling counts, pending/blocked batches and child requests with
+    stated denominators and zero-denominator
     handling; it **SHALL** make no consciousness, equilibrium, or merge-quality
     conclusion and **SHALL** reproduce the random-nomination sanity baseline.
 - **Notes:** exact replay means deterministic derivation from recorded decisions,
@@ -181,7 +189,7 @@ and invoke finalize-plan.sh. Do not hand-write a lock header.
 ### T-007: Expose the CLI and document a tested experiment workflow
 
 - **Intent:** [INT-0001](../../../intents/INT-0001-voluntary-observable-partner-choice.md)
-- **Touches:** src/main.rs, examples/fixture-experiment.json, examples/local-experiment.json, tests/cli.rs, docs/usage.md, README.md
+- **Touches:** src/main.rs, examples/fixture-experiment.json, examples/sibling-experiment.json, examples/local-experiment.json, tests/cli.rs, docs/usage.md, README.md
 - **Depends on:** T-004, T-006
 - **Acceptance criterion:** AC-7
 - **Success criterion (EARS):**
@@ -189,6 +197,8 @@ and invoke finalize-plan.sh. Do not hand-write a lock header.
     example, **THEN** they **SHALL** finish without network inference, preserve
     one declared reciprocal pair and an explicit abstainer across the example
     rounds, produce pending/blocked requests only, and replay identical outcomes.
+    An opt-in sibling fixture **SHALL** emit the consented child-request count
+    with distinct recipe references from the same parents, and no actual children.
   - **E2 WHEN** the configured local example runs against the test HTTP server,
     **THEN** the full CLI **SHALL** traverse the real transport/runner/pairing/
     recording pipeline, and timeout/malformed-response examples **SHALL** remain
@@ -197,8 +207,9 @@ and invoke finalize-plan.sh. Do not hand-write a lock header.
     **THEN** fmt, warning-free clippy, locked tests, and the CLI fixture smoke
     **SHALL** pass, while usage **SHALL** explain anonymous-handle limits,
     operator-private logs, optional self-reports, consequence-free abstention,
-    memory-versus-weight learning, exact mutual recipe consent, fixed versus
-    mutual-choice modes, pending manifests, and deferred actual fusion.
+    memory-versus-weight learning, exact single/batch plan consent, fixed-plan
+    versus mutual-choice modes, sibling bounds, pending manifests, and deferred
+    actual fusion.
 - **Notes:** preserve the original README idea, append a concise usage link and
   current status. No desktop scaffold, model downloads, remote calls, or tensor
   jobs are prerequisites. Real model/child E2E is unlocked by INT-0002.
@@ -211,5 +222,6 @@ abstention retention and baseline documentation; R-5/R-8 -> T-005 manifests
 and INT-0002; R-6 -> T-004/T-006 recorded inference and replay; R-7 ->
 T-006 descriptive baseline and INT-0003 population/control study; R-10 ->
 T-001/T-002/T-005/T-006 catalog/consent tests and later INT-0002/INT-0003
-paired method comparisons. No research
+paired method comparisons; R-11 -> T-001/T-005/T-006 batch limit/request-count
+tests and INT-0002/INT-0003 fair admission/diversity analysis. No research
 risk is converted into a claim that this first harness validates evolution.

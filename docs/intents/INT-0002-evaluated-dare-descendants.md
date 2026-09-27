@@ -21,7 +21,8 @@ This is follow-on work, not an acceptance claim for Sprint 0.
 - **AC-1:** verify immutable model revisions, actual tensor names/shapes, shared
   base provenance, tokenizer mapping/chat template, accessible weights, licenses,
   and resource bounds before executing a merge.
-- **AC-2:** use a method registry and record both parents' exact recipe consent,
+- **AC-2:** use a method registry and record both parents' exact reproduction-plan
+  consent for a single child or bounded siblings, and each child's
   merger version, method, parameters, seed, parent/base hashes, and child hash.
   Revalidate consent and compatibility before execution. A failed job creates
   no active child and never destroys either parent.
@@ -36,6 +37,11 @@ This is follow-on work, not an acceptance claim for Sprint 0.
 - **AC-6:** compare an initial shortlist (linear, TIES, DARE-TIES, DELLA) on
   compatible pairs at reported equal tuning budgets and held-out tests. Report
   pool-specific capability trade-offs and failures rather than a universal winner.
+- **AC-7:** validate the consented batch/resource limits before execution; create
+  each sibling independently from the same pinned parents/base. Record per-child
+  method, recipe, seed, hashes, validation and failures. Defer unavailable capacity
+  explicitly rather than silently change count/methods. Do not treat siblings as
+  independent experimental replications or select only a hidden benchmark winner.
 
 ## Rationale
 
@@ -64,3 +70,5 @@ Recursively merged descendants may drift away from the small-delta regime.
   protocol is investigated first. No fusion run has been scheduled or performed.
 - 2026-09-27: revised while `proposed` after the user's request: generalized
   beyond DARE and added mutual recipe consent and pool-specific comparison.
+- 2026-09-27: refined while `proposed` following the sibling question: support
+  finite consented batches with independent child jobs and measured diversity.

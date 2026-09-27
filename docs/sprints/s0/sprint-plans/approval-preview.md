@@ -14,10 +14,13 @@ Only reciprocal single selections become pairs. Failed calls are recorded as
 failures rather than disguised as abstention.
 
 Fusion is method-independent. The proposed catalog covers linear, TIES,
-DARE-TIES, and DELLA recipes. Fixed-recipe and mutual-choice modes both permit
+DARE-TIES, and DELLA recipes. Fixed-plan and mutual-choice modes both permit
 declining fusion. A social pair creates a pending request only when both parents
-consent to the same exact offered recipe; disagreements stay blocked without a
-fallback. Sprint 0 validates/records those choices, not the tensor algorithms.
+consent to the same exact offered reproduction plan; disagreements stay blocked
+without a fallback. Plans can specify one child or an optional sibling batch
+using different methods. Baseline max_siblings=1, with an opt-in ceiling of three
+and a proposed first sibling example of two. Each child's recipe/count is explicit.
+Sprint 0 validates and records grouped child requests, not the tensor algorithms.
 
 This sprint emits pending or blocked merge requests. Real weight fusion,
 evaluated descendants, and controlled multi-generation runs are preserved in
@@ -28,6 +31,7 @@ INT-0002 and INT-0003 and are subsequent implementation work.
 - [Idea review](../sprint-research/idea-review.md)
 - [Research report](../sprint-research/research-report.md)
 - [Fusion methods and model choice](../sprint-research/fusion-method-review.md)
+- [Optional siblings](../sprint-research/sibling-batch-review.md)
 
 ## Approval boundary
 

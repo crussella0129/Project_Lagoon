@@ -8,7 +8,8 @@ proposed until plan approval.
 
 Use a method-independent harness. DARE-TIES is a credible candidate, but evidence
 does not establish it as best for this unknown parent pool, behavioral objective,
-or successive generations. Models should be able to propose an exact recipe and
+or successive generations. Models should be able to propose an exact single-child
+or bounded sibling reproduction plan and
 decline fusion, while the harness checks its compatibility and resource limits.
 Measure method choice separately from partner choice.
 
@@ -59,16 +60,18 @@ I recommend two explicit modes, retaining fusion refusal in both:
 
 1. The operator declares immutable recipe IDs, bounded payloads, prerequisites,
    and neutral method cards. Initial recipes can represent `linear`, `ties`,
-   `dare_ties`, and `della`. A fixed mode exposes one declared recipe; mutual
-   choice exposes the catalog. Record card order as a possible presentation bias.
+   `dare_ties`, and `della`. A fixed mode exposes one declared plan; mutual
+   choice exposes the catalog. Plans may reference one child recipe or a bounded
+   sibling batch. Record card order as a possible presentation bias.
 2. Agents can discuss recipes, then independently seal a partner nomination or
-   abstention and a separate exact recipe consent, decline, or deferral.
+   abstention and a separate exact reproduction-plan consent, decline, or deferral.
 3. Reciprocal nominations establish a social pair. A pending fusion request needs
-   both parents to consent to the same exact offered recipe and pass screening.
-   Missing, different, declined, or invalid recipe choices block the request while
+   both parents to consent to the same exact offered single/batch plan and pass
+   screening. Each child's recipe stays explicit. Missing, different, declined,
+   or invalid plan choices block the request while
    preserving the social pair. Never silently select a fallback or average their
    proposals. A partner match alone does not authorize fusion.
-4. Keep partner and recipe-consent outcomes separate. Model method preference is
+4. Keep partner and plan-consent outcomes separate. Model method preference is
    an observation, not proof that it understands its weights or predicts quality.
    Models may suggest unlisted ideas in public text; this does not make that text
    executable YAML, a shell command, or a new harness policy.
@@ -103,6 +106,10 @@ no method is empirically best yet. A method that works for founding parents must
 be retested after repeated merges; DARE's large-delta failure analysis is relevant.
 
 ## Other forms of combination
+
+The [sibling-batch review](sibling-batch-review.md) refines consent to allow several
+methods within one finite family plan. Each job remains explicit; behavioral
+diversity and useful variance remain measured hypotheses.
 
 Mixture-of-experts composition changes size, routing, and inference cost.
 Distillation may combine different architectures but requires training/data.

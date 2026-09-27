@@ -2,7 +2,7 @@
 
 ## Intents Reviewed
 
-- [INT-0001](../../../intents/INT-0001-voluntary-observable-partner-choice.md) — created and revised; relevance: protocol baseline plus exact-recipe consent; current state: proposed.
+- [INT-0001](../../../intents/INT-0001-voluntary-observable-partner-choice.md) — created and revised; relevance: protocol baseline plus single/batch reproduction-plan consent; current state: proposed.
 - [INT-0002](../../../intents/INT-0002-evaluated-dare-descendants.md) — created and revised; relevance: method-independent fusion and pool-specific comparisons; current state: proposed.
 - [INT-0003](../../../intents/INT-0003-controlled-evolutionary-study.md) — created and revised; relevance: separate partner-choice and method-choice experiments; current state: proposed.
 
@@ -84,9 +84,14 @@ recommendation; exploratory search results were not treated as supporting eviden
   system prompts, invoke tools, change config, or cross the private-state boundary.
   Textual persuasion may still influence agents; this is part of the environment.
 - **Risk R-10 — Method choice is not method quality:** models may choose familiar
-  names or disagree. Separate pairing from exact recipe consent; no fallback.
+  names or disagree. Separate pairing from exact reproduction-plan consent; no fallback.
   Record fixed/mutual mode and card order. Later fixed-pair comparisons, held-out
   tests, and budget-matched search controls belong to INT-0002/INT-0003.
+- **Risk R-11 — Sibling count is not useful variance:** more children increase
+  compute and attention opportunities; siblings share parentage. Keep one-child
+  baseline plans, optional bounded batches, exact per-child recipes/counts, and
+  distinct batch/request denominators. Real diversity and fair admission need
+  equal-count/budget controls and shared-parentage analysis in INT-0002/INT-0003.
 - **Unknown:** starting checkpoint family/revisions, hardware and storage budget,
   descendant memory policy, child thresholds, and scientific payoff model. None
   blocks fixtures/local-adapter construction; all block claims about real fusion.
@@ -108,9 +113,15 @@ procedural prompts and decoding metadata. Match decisions do not use capability
 rankings. No automatic model downloads, weight jobs, or fine-tuning occur.
 
 Following the user's method-comparison request, expose declared immutable recipes
-in fixed or mutual-choice mode. Permit independent exact-recipe consent, decline,
+in fixed-plan or mutual-choice mode. Permit independent exact-plan consent, decline,
 or deferral. Pairing alone never authorizes fusion; recipe disagreements create
 blocked requests without changing the social pair. Compare real methods later.
+
+The sibling refinement permits an exact plan with one or a bounded list of child
+recipes. Baseline max_siblings=1; an optional two-child example and ceiling of
+three are proposed, not empirical optima. Every request retains the same original
+parents and per-child method/seed; no tensor execution or automatic population
+growth is added to this first sprint.
 
 Alternative considered: integrate Python/mergekit and real multi-generation runs
 immediately. Rejected for this sprint because parent pool, compute, inheritance,
@@ -127,6 +138,7 @@ retained in the follow-on intents.
 
 - [Idea assessment](idea-review.md) — review, research findings, and derived random-matching sanity check.
 - [Fusion-method review](fusion-method-review.md) — alternatives, evidence limits, recipe consent, and comparative experiment design.
+- [Sibling-batch review](sibling-batch-review.md) — optional method-diverse families, exact plan consent, bounds, and count/diversity controls.
 - [Research progress](progress.md) — completed intake and remaining approval gate.
 - [Sprint metadata](../sprint-meta.md) — initialized sprint provenance.
 - [INT-0001](../../../intents/INT-0001-voluntary-observable-partner-choice.md), [INT-0002](../../../intents/INT-0002-evaluated-dare-descendants.md), [INT-0003](../../../intents/INT-0003-controlled-evolutionary-study.md) — stable proposed outcomes.

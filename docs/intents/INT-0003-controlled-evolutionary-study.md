@@ -36,6 +36,10 @@ social class, human stereotypes, or elimination incentives.
 - **AC-5:** treat universal abstention or declining reciprocity as valid outcomes.
   Any loneliness treatment is explicitly declared, separately compared against
   the unpressured baseline, and never retroactively presented as neutral choice.
+- **AC-6:** distinguish method diversity from family size: compare equal-count,
+  equal-budget sibling batches within/across methods, and separately single-child
+  versus batch plans. Measure behavioral diversity, consent, lineage concentration,
+  and exposure; account for siblings' shared parentage in uncertainty estimates.
 
 ## Rationale
 
@@ -62,3 +66,6 @@ fine-tuning or participant distress mechanism is included by default.
   and real merge validation and remains unscheduled.
 - 2026-09-27: revised while `proposed` following the merger-choice follow-up;
   separate partner/method effects and live-lineage consent from offline controls.
+- 2026-09-27: refined while `proposed` after the sibling question: treat optional
+  method-diverse batches as a hypothesis with count/budget controls and shared-
+  parentage accounting, not guaranteed novelty or a hidden elimination contest.

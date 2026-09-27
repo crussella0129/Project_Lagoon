@@ -29,13 +29,15 @@ the same clauses rather than introduce additional acceptance claims.
 | INT-0001 | AC-4 | T-005 E1 | abstainers_and_unmatched_agents_keep_memory |
 | INT-0001 | AC-5 | T-005 E2 | incomplete_or_incompatible_metadata_blocks_requests |
 | INT-0001 | AC-5 | T-005 E2 | compatible_metadata_creates_unverified_pending_request |
-| INT-0001 | AC-5 | T-005 E2 | mutual_recipe_consent_is_required_without_fallback |
+| INT-0001 | AC-5 | T-005 E2 | mutual_plan_consent_is_required_without_fallback |
+| INT-0001 | AC-5, AC-6 | T-005 E2, T-006 E3 | sibling_requests_preserve_parents_count_and_recipes |
 | INT-0001 | AC-6, AC-2 | T-006 E1 | operator_record_and_public_projection_are_separate |
 | INT-0001 | AC-6 | T-006 E2 | replay_matches_recording_without_backend_calls |
 | INT-0001 | AC-6 | T-006 E2 | unsupported_or_inconsistent_records_are_rejected |
 | INT-0001 | AC-6 | T-006 E3 | reports_keep_denominators_and_failure_categories |
 | INT-0001 | AC-6 | T-006 E3 | random_nomination_baseline_matches_enumerated_cases |
 | INT-0001 | AC-7 | T-007 E1 | cli_fixture_run_replay_report |
+| INT-0001 | AC-7 | T-007 E1 | cli_sibling_plan_records_requests_only |
 | INT-0001 | AC-7 | T-007 E2 | cli_local_http_pipeline |
 | INT-0001 | AC-7 | T-007 E2 | cli_local_failures_preserve_status |
 | INT-0001 | AC-7 | T-007 E3 | documented_smoke_and_required_checks |
@@ -54,7 +56,9 @@ the same clauses rather than introduce additional acceptance claims.
 - `recipe_catalog_validates_ids_payloads_and_mode` (E4): valid catalogs plus
   duplicate/altered IDs, unsupported methods, incomplete payloads, nonfinite or
   out-of-range values, asymmetric coefficients, invalid DELLA probabilities,
-  fixed mode with zero/multiple recipes, and executable text -> validate or fail
+  fixed mode with zero/multiple plans, missing recipe references, empty/oversized
+  sibling batches, duplicate child recipe/seed jobs, unbounded budgets, and
+  executable text -> validate or fail
   before any backend call. Validity never implies measured quality.
 
 ### T-002 unit tests
@@ -93,11 +97,17 @@ the same clauses rather than introduce additional acceptance claims.
 - `compatible_metadata_creates_unverified_pending_request` (E2): complete matching
   metadata -> pending/unverified manifest with immutable parent/base references,
   no execution timestamp, output checkpoint, admitted child, or weight claim.
-- `mutual_recipe_consent_is_required_without_fallback` (E2): same exact recipe
+- `mutual_plan_consent_is_required_without_fallback` (E2): same exact single/
+  batch plan fingerprint
   -> pending if metadata permits; different/missing/declined/deferred/invalid
   recipes -> distinct blocked reasons while retaining the reciprocal pair.
-  Reject same display-name recipes with different payload fingerprints; fixed
-  mode also permits refusal, and no alternate recipe is substituted.
+  Reject same display-name plans with different child recipes/count/fingerprints;
+  fixed mode also permits refusal, and no alternate plan is substituted.
+- `sibling_requests_preserve_parents_count_and_recipes` (T-005 E2; T-006 E3):
+  consent to a two-method batch -> two distinct child requests sharing the exact
+  original parent/base revisions, one batch count and two requested-child counts.
+  No silent count expansion/truncation, claimed births, or child-as-parent chaining;
+  any blocked metadata/consent remains explicit at batch/child level.
 
 ### T-006 unit tests
 - **Intent:** [INT-0001](../../../intents/INT-0001-voluntary-observable-partner-choice.md)
@@ -107,8 +117,9 @@ the same clauses rather than introduce additional acceptance claims.
 - `reports_keep_denominators_and_failure_categories` (E3): hand-calculated mixed
   outcomes and all-failure runs -> exact counts, clear denominators, no NaN/Inf or
   false abstention; no inferred equilibrium or child-quality metric.
-  Recipe consent/decline/deferral/disagreement counts stay separate from partner
-  abstention and pairing, with mode/catalog/card order recorded (T-006 E3).
+  Plan consent/decline/deferral/disagreement counts stay separate from partner
+  abstention and pairing; batch/requested-child denominators differ and
+  mode/catalog/card order remain recorded (T-006 E3).
 - `random_nomination_baseline_matches_enumerated_cases` (E3): exhaustively enumerate
   all directed single-nomination outcomes for n=2,3,4 -> average paired fraction
   1/(n-1); handle zero/single-agent denominators explicitly.
@@ -147,6 +158,10 @@ All integration tests concern [INT-0001](../../../intents/INT-0001-voluntary-obs
   and reports metrics. Expect one pair per declared fixture round, an explicit
   abstainer who persists, correct manifests, identical derived replay artifacts,
   and no network backend calls or claimed children.
+- `cli_sibling_plan_records_requests_only` (T-007 E1; T-005 E2; T-006 E1/E2/E3):
+  binary runs and replays the opt-in sibling fixture -> one agreed batch with two
+  per-child method requests, exact count/parentage, no real children or network
+  inference, correct metrics and identical replay outputs.
 - `cli_local_http_pipeline` (T-007 E2; T-004 E1): binary uses a disposable loopback
   server through all phases and validates pair, records, and public projection.
 - `cli_local_failures_preserve_status` (T-007 E2; T-004 E2): malformed/timeouting

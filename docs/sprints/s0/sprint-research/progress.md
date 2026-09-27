@@ -8,6 +8,8 @@
 - [x] Write the research report and verify its budget and Book structure.
 - [x] Research merger alternatives and update the proposed recipe-consent design
   after the user's follow-up; record the justified source-budget override.
+- [x] Refine proposed consent to optional bounded sibling plans after the user's
+  question, preserving explicit per-child recipes and single-child controls.
 - [ ] Obtain approval for the concrete scratch build/test plans before locking.
 - [ ] Implement, test, critique, and close the approved sprint.
 
