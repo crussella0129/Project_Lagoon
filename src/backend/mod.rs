@@ -5,6 +5,7 @@ use crate::{
 };
 use std::{future::Future, pin::Pin, sync::Arc};
 pub mod fixture;
+pub mod local_http;
 
 #[derive(Clone, Debug)]
 pub struct Request {
@@ -25,6 +26,8 @@ pub fn configured(config: &BackendConfig) -> Result<Arc<dyn Backend>, ConfigErro
         BackendConfig::Fixture { responses } => Ok(Arc::new(fixture::Fixture {
             responses: responses.clone(),
         })),
-        BackendConfig::LocalHttp { .. } => Err(ConfigError("local adapter not yet configured")),
+        BackendConfig::LocalHttp { endpoint, model } => {
+            Ok(Arc::new(local_http::LocalHttp::new(endpoint, model)?))
+        }
     }
 }
