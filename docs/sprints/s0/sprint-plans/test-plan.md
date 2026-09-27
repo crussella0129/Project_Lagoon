@@ -1,3 +1,5 @@
+Finalized - DO NOT EDIT
+
 # Sprint 0 Test Plan
 
 Approved by the user on 2026-09-27. Verification uses fixtures and local test servers; no real fusion is claimed.

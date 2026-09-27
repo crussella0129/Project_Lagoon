@@ -1,3 +1,5 @@
+Finalized - DO NOT EDIT
+
 # Sprint 0 Build Plan
 
 Approved by the user on 2026-09-27: 'ok now proceed'.
