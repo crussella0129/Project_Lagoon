@@ -96,11 +96,11 @@ is inert data and cannot change harness policy or grant tools. Provider inferenc
 can be stochastic even with recorded seeds; only replay promises exactness.
 The neutral prompt still influences behavior and is itself recorded evidence.
 
-## Transition history
-
 The first recipe catalog uses symmetric parent coefficients with typed bounded
 parameters. Asymmetric inheritance, arbitrary executable recipes, and automatic
 recipe optimization require a subsequent extension of this intent and its tests.
+
+## Transition history
 
 - 2026-09-27: created as `proposed` from README.md and the requested idea review;
   first-sprint implementation boundaries await concrete plan approval.
