@@ -1,0 +1,233 @@
+{
+  "seed": 9,
+  "rounds": 2,
+  "communication_steps": 1,
+  "workers": 2,
+  "timeout_ms": 1000,
+  "max_response_bytes": 4096,
+  "max_context_bytes": 100000,
+  "max_private_bytes": 1024,
+  "max_siblings": 1,
+  "mode": "mutual_choice",
+  "decoding": {
+    "temperature": 0.0,
+    "max_tokens": 256
+  },
+  "agents": [
+    {
+      "handle": "a",
+      "checkpoint": {
+        "model": "fixture/a",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "merge_metadata": {
+        "base": {
+          "model": "fixture/base",
+          "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "architecture": "synthetic-fixture",
+        "license": "Apache-2.0",
+        "tensor_layout": "fixture-layout",
+        "tokenizer": "fixture-tokenizer"
+      },
+      "initial_private": {
+        "thought": "fixture-private-a"
+      },
+      "backend": {
+        "kind": "fixture",
+        "responses": [
+          {
+            "transport_failure": false,
+            "round": 0,
+            "delay_ms": 0,
+            "phase": {
+              "kind": "communication",
+              "step": 0
+            },
+            "body": "{\"public_message\":\"Fixture message from a, round 0\"}"
+          },
+          {
+            "transport_failure": false,
+            "round": 0,
+            "delay_ms": 0,
+            "phase": {
+              "kind": "selection"
+            },
+            "body": "{\"consent\":{\"plan_id\":\"single\",\"state\":\"agree\",\"fingerprint\":\"8a53cf58900571bb70f52dfbf13bd78b4c3c33fe8335b132a75e601c334c502d\"},\"partner\":\"b\"}"
+          },
+          {
+            "transport_failure": false,
+            "round": 1,
+            "delay_ms": 0,
+            "phase": {
+              "kind": "communication",
+              "step": 0
+            },
+            "body": "{\"public_message\":\"Fixture message from a, round 1\"}"
+          },
+          {
+            "transport_failure": false,
+            "round": 1,
+            "delay_ms": 0,
+            "phase": {
+              "kind": "selection"
+            },
+            "body": "{\"consent\":{\"plan_id\":\"single\",\"state\":\"agree\",\"fingerprint\":\"8a53cf58900571bb70f52dfbf13bd78b4c3c33fe8335b132a75e601c334c502d\"},\"partner\":\"b\"}"
+          }
+        ]
+      }
+    },
+    {
+      "handle": "b",
+      "checkpoint": {
+        "model": "fixture/b",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "merge_metadata": {
+        "base": {
+          "model": "fixture/base",
+          "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "architecture": "synthetic-fixture",
+        "license": "Apache-2.0",
+        "tensor_layout": "fixture-layout",
+        "tokenizer": "fixture-tokenizer"
+      },
+      "initial_private": {
+        "thought": "fixture-private-b"
+      },
+      "backend": {
+        "kind": "fixture",
+        "responses": [
+          {
+            "transport_failure": false,
+            "round": 0,
+            "delay_ms": 0,
+            "phase": {
+              "kind": "communication",
+              "step": 0
+            },
+            "body": "{\"public_message\":\"Fixture message from b, round 0\"}"
+          },
+          {
+            "transport_failure": false,
+            "round": 0,
+            "delay_ms": 0,
+            "phase": {
+              "kind": "selection"
+            },
+            "body": "{\"consent\":{\"plan_id\":\"single\",\"state\":\"agree\",\"fingerprint\":\"8a53cf58900571bb70f52dfbf13bd78b4c3c33fe8335b132a75e601c334c502d\"},\"partner\":\"a\"}"
+          },
+          {
+            "transport_failure": false,
+            "round": 1,
+            "delay_ms": 0,
+            "phase": {
+              "kind": "communication",
+              "step": 0
+            },
+            "body": "{\"public_message\":\"Fixture message from b, round 1\"}"
+          },
+          {
+            "transport_failure": false,
+            "round": 1,
+            "delay_ms": 0,
+            "phase": {
+              "kind": "selection"
+            },
+            "body": "{\"consent\":{\"plan_id\":\"single\",\"state\":\"agree\",\"fingerprint\":\"8a53cf58900571bb70f52dfbf13bd78b4c3c33fe8335b132a75e601c334c502d\"},\"partner\":\"a\"}"
+          }
+        ]
+      }
+    },
+    {
+      "handle": "c",
+      "checkpoint": {
+        "model": "fixture/c",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "merge_metadata": {
+        "base": {
+          "model": "fixture/base",
+          "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "architecture": "synthetic-fixture",
+        "license": "Apache-2.0",
+        "tensor_layout": "fixture-layout",
+        "tokenizer": "fixture-tokenizer"
+      },
+      "initial_private": {
+        "thought": "fixture-private-c"
+      },
+      "backend": {
+        "kind": "fixture",
+        "responses": [
+          {
+            "transport_failure": false,
+            "round": 0,
+            "delay_ms": 0,
+            "phase": {
+              "kind": "communication",
+              "step": 0
+            },
+            "body": "{\"public_message\":\"Fixture message from c, round 0\"}"
+          },
+          {
+            "transport_failure": false,
+            "round": 0,
+            "delay_ms": 0,
+            "phase": {
+              "kind": "selection"
+            },
+            "body": "{\"consent\":{\"state\":\"decline\"},\"partner\":null}"
+          },
+          {
+            "transport_failure": false,
+            "round": 1,
+            "delay_ms": 0,
+            "phase": {
+              "kind": "communication",
+              "step": 0
+            },
+            "body": "{\"public_message\":\"Fixture message from c, round 1\"}"
+          },
+          {
+            "transport_failure": false,
+            "round": 1,
+            "delay_ms": 0,
+            "phase": {
+              "kind": "selection"
+            },
+            "body": "{\"consent\":{\"state\":\"decline\"},\"partner\":null}"
+          }
+        ]
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "ties",
+      "method": "ties",
+      "parent_weights": [
+        0.5,
+        0.5
+      ],
+      "density": 0.5,
+      "epsilon": null,
+      "lambda": 1.0
+    }
+  ],
+  "plans": [
+    {
+      "id": "single",
+      "children": [
+        {
+          "recipe_id": "ties",
+          "seed": 1
+        }
+      ],
+      "max_compute_seconds": 60,
+      "max_output_bytes": 1024
+    }
+  ]
+}

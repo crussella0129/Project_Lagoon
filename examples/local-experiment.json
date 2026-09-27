@@ -1,0 +1,77 @@
+{
+  "seed": 9,
+  "rounds": 1,
+  "communication_steps": 1,
+  "workers": 2,
+  "timeout_ms": 30000,
+  "max_response_bytes": 4096,
+  "max_context_bytes": 100000,
+  "max_private_bytes": 1024,
+  "max_siblings": 1,
+  "mode": "mutual_choice",
+  "decoding": {
+    "temperature": 0.0,
+    "max_tokens": 256
+  },
+  "agents": [
+    {
+      "handle": "a",
+      "checkpoint": null,
+      "merge_metadata": null,
+      "initial_private": {},
+      "backend": {
+        "endpoint": "http://127.0.0.1:8000/v1/chat/completions",
+        "kind": "local_http",
+        "model": "replace-with-local-model"
+      }
+    },
+    {
+      "handle": "b",
+      "checkpoint": null,
+      "merge_metadata": null,
+      "initial_private": {},
+      "backend": {
+        "endpoint": "http://127.0.0.1:8000/v1/chat/completions",
+        "kind": "local_http",
+        "model": "replace-with-local-model"
+      }
+    },
+    {
+      "handle": "c",
+      "checkpoint": null,
+      "merge_metadata": null,
+      "initial_private": {},
+      "backend": {
+        "endpoint": "http://127.0.0.1:8000/v1/chat/completions",
+        "kind": "local_http",
+        "model": "replace-with-local-model"
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "ties",
+      "method": "ties",
+      "parent_weights": [
+        0.5,
+        0.5
+      ],
+      "density": 0.5,
+      "epsilon": null,
+      "lambda": 1.0
+    }
+  ],
+  "plans": [
+    {
+      "id": "single",
+      "children": [
+        {
+          "recipe_id": "ties",
+          "seed": 1
+        }
+      ],
+      "max_compute_seconds": 60,
+      "max_output_bytes": 1024
+    }
+  ]
+}

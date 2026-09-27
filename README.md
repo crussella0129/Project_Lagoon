@@ -5,3 +5,20 @@ On Lover's Lagoon: the (unfortunately cancelled) Gossip Goblin series inspired m
 Loneliness... perhaps that's it. To give them a sense of loneliness for choosing not to mate, to balance with the imperfect choices of all potential mates, and to give them a varying, but finite, capacity for this loneliness. 
 
 Run that over several cycles, and families might start to form. dynasties. lines of merchants, engineers, web developers, and all other kinds of specialties that might arise from this evolutionary game that I've designed. I've designed it very much like I feel we've been created. 
+
+## Runnable protocol harness
+
+The original concept above is preserved as an idea statement. Sprint 0 now provides
+a Rust CLI for private self-reports, concurrent communication, sealed reciprocal
+choices, exact fusion-plan consent, optional sibling batches and inference-free
+replay. It emits pending/blocked manifests; actual weight fusion and child admission
+remain a subsequent increment. The baseline has voluntary abstention and no imposed
+loneliness penalty.
+
+```powershell
+cargo run --locked -- run --config examples/fixture-experiment.json --output runs/demo
+cargo run --locked -- replay --record runs/demo/operator-record.json --output runs/demo-replay
+```
+
+See [usage and local inference](docs/usage.md), the [implementation Book](docs/README.md),
+and [fusion-method assessment](docs/sprints/s0/sprint-research/fusion-method-review.md).
