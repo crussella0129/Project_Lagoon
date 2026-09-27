@@ -21,6 +21,10 @@ social class, human stereotypes, or elimination incentives.
 - **AC-1:** compare self-selection, random compatible pairing, and a benchmark-
   based pairing control under matched model pools, inference/merge budgets,
   exposure opportunities, merger settings, and held-out evaluation.
+- **AC-1b:** distinguish partner selection from method selection. Compare fixed,
+  search-selected, and mutually model-selected recipes for fixed parent pairs;
+  record refusals and disagreements. Only consented recipes create live-lineage
+  descendants; approved offline controls remain separate research artifacts.
 - **AC-2:** repeat across recorded seeds and report uncertainty, abstention,
   reciprocity, admission failures, capability profiles, and lineage concentration.
   Do not infer Nash equilibria without a defined game, payoff model, and analysis.
@@ -56,3 +60,5 @@ fine-tuning or participant distress mechanism is included by default.
 
 - 2026-09-27: created as `proposed`; the multi-generation study follows protocol
   and real merge validation and remains unscheduled.
+- 2026-09-27: revised while `proposed` following the merger-choice follow-up;
+  separate partner/method effects and live-lineage consent from offline controls.

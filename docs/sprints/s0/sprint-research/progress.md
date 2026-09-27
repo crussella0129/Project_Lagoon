@@ -6,6 +6,8 @@
   and single-pool matching using five selected primary sources.
 - [x] Share the assessment and preserve the long-term goals in proposed intents.
 - [x] Write the research report and verify its budget and Book structure.
+- [x] Research merger alternatives and update the proposed recipe-consent design
+  after the user's follow-up; record the justified source-budget override.
 - [ ] Obtain approval for the concrete scratch build/test plans before locking.
 - [ ] Implement, test, critique, and close the approved sprint.
 

@@ -1,4 +1,4 @@
-# INT-0002 — Evaluated DARE descendants
+# INT-0002 — Evaluated model-fusion descendants
 
 <!-- sprint-loop-intent-v2 -->
 - **Intent ID:** INT-0002
@@ -11,7 +11,7 @@
 
 ## Intent
 
-Turn voluntary, reciprocal partner selections into real DARE-derived checkpoint
+Turn voluntary, reciprocal partner selections into real method-declared checkpoint
 artifacts, evaluate them, and admit usable descendants without replacing their
 parents. This preserves the README's eventual family and lineage exploration.
 This is follow-on work, not an acceptance claim for Sprint 0.
@@ -21,8 +21,9 @@ This is follow-on work, not an acceptance claim for Sprint 0.
 - **AC-1:** verify immutable model revisions, actual tensor names/shapes, shared
   base provenance, tokenizer mapping/chat template, accessible weights, licenses,
   and resource bounds before executing a merge.
-- **AC-2:** record the merger version, exact method (DARE plus task arithmetic or
-  DARE-TIES), recipe, seed, parent/base hashes, and child hash. A failed job creates
+- **AC-2:** use a method registry and record both parents' exact recipe consent,
+  merger version, method, parameters, seed, parent/base hashes, and child hash.
+  Revalidate consent and compatibility before execution. A failed job creates
   no active child and never destroys either parent.
 - **AC-3:** test loading, finite weights, coherent generation, held-out capability
   retention, and behavioral regressions before admitting a child. Criteria and
@@ -32,13 +33,18 @@ This is follow-on work, not an acceptance claim for Sprint 0.
   parental memories are not silently copied into a child or shared with peers.
 - **AC-5:** demonstrate at least one real compatible-checkpoint merge end to end
   using declared hardware/storage limits; report measured costs and limitations.
+- **AC-6:** compare an initial shortlist (linear, TIES, DARE-TIES, DELLA) on
+  compatible pairs at reported equal tuning budgets and held-out tests. Report
+  pool-specific capability trade-offs and failures rather than a universal winner.
 
 ## Rationale
 
 DARE sparsifies parameter deltas relative to a base and can retain complementary
 abilities in studied settings. Neither conversation nor mutual selection proves
-compatible weights or superior descendants. Use a maintained merger such as
-mergekit behind a Rust job boundary instead of reimplementing tensor merging.
+compatible weights or superior descendants. DELLA/TIES are credible alternatives;
+recent multi-objective work also finds different best operators across settings.
+Use a maintained merger such as mergekit behind a Rust job boundary instead of
+reimplementing tensor merging.
 
 ## Alternatives
 
@@ -56,3 +62,5 @@ Recursively merged descendants may drift away from the small-delta regime.
 
 - 2026-09-27: created as `proposed`; preserves the fusion objective while the
   protocol is investigated first. No fusion run has been scheduled or performed.
+- 2026-09-27: revised while `proposed` after the user's request: generalized
+  beyond DARE and added mutual recipe consent and pool-specific comparison.

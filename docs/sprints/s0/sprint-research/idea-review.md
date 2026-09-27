@@ -107,6 +107,11 @@ bounds; otherwise growth changes attention and compute independently of choice.
 
 ## Recommended first increment
 
+The subsequent [fusion-method review](fusion-method-review.md) incorporates the
+user's request to compare alternatives and model agency. DARE is a candidate in
+a method-independent design with proposed separate exact-recipe consent and
+fixed versus mutual-choice policies; no recipe executes in Sprint 0.
+
 Implement a bounded Rust CLI with fixture and explicitly configured local HTTP
 backends, owner-private state, staged communication, sealed reciprocal selection,
 separate public/operator logs, replay, descriptive metrics, and pending or blocked

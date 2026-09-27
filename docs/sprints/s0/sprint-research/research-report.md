@@ -2,9 +2,9 @@
 
 ## Intents Reviewed
 
-- [INT-0001](../../../intents/INT-0001-voluntary-observable-partner-choice.md) — created; relevance: first executable protocol baseline; current state: proposed.
-- [INT-0002](../../../intents/INT-0002-evaluated-dare-descendants.md) — created; relevance: preserves real fusion and descendant admission as follow-on work; current state: proposed.
-- [INT-0003](../../../intents/INT-0003-controlled-evolutionary-study.md) — created; relevance: preserves the multi-generation experimental objective; current state: proposed.
+- [INT-0001](../../../intents/INT-0001-voluntary-observable-partner-choice.md) — created and revised; relevance: protocol baseline plus exact-recipe consent; current state: proposed.
+- [INT-0002](../../../intents/INT-0002-evaluated-dare-descendants.md) — created and revised; relevance: method-independent fusion and pool-specific comparisons; current state: proposed.
+- [INT-0003](../../../intents/INT-0003-controlled-evolutionary-study.md) — created and revised; relevance: separate partner-choice and method-choice experiments; current state: proposed.
 
 ## 1. Sprint Goal
 
@@ -46,7 +46,16 @@ artifact tracks this intake and the Book ledger will track approved build tasks.
 - [Signs of introspection in large language models — Anthropic](https://www.anthropic.com/research/introspection) — limited, unreliable functional introspection; self-report alone cannot establish experience or accurate internal state.
 - [The random stable roommates problem typically has no solution — Chin and Michelen](https://arxiv.org/abs/2601.07612) — single-pool stability is not a universal matching guarantee; do not import two-sided assumptions.
 
-Sources accessed 2026-09-27. These five primary sources inform the bounded
+- [mergekit official Merge Method Guide](https://github.com/arcee-ai/mergekit/blob/main/docs/merge_methods.md) — method registry, variants and prerequisites; no universal best method.
+- [TIES-Merging — Yadav et al.](https://arxiv.org/abs/2306.01708) — trimming and sign-conflict resolution as a candidate alongside DARE.
+- [DELLA-Merging — Deep et al.](https://arxiv.org/abs/2406.11617) — magnitude-based sampling; reported language/math/code gains over DARE/TIES are setting-specific.
+- [DARE the Extreme — Deng et al.](https://arxiv.org/abs/2410.09344) — failure at large deltas/extreme pruning; modified rescaling and training-time variants.
+- [Model Stock — Jang et al.](https://arxiv.org/abs/2403.19522) — geometry-based few-model combination; original CLIP evidence does not establish LLM-specialty transfer.
+- [Behavior Knowledge Merge in Reinforced Agentic Models — Yuan et al.](https://arxiv.org/abs/2601.13572) — 2026 preprint; RAM targets RL-specific sparse heterogeneous updates.
+- [Multi-Objective Bayesian Optimization for Model Merging — Agarwal et al.](https://arxiv.org/abs/2608.14264) — August 2026 preprint; different best operators across evaluated settings and a capability-trade-off search layer.
+- [Stay Unique, Stay Efficient — Guo et al.](https://arxiv.org/abs/2512.01461) — task-specific information preservation; terminology about personality does not imply emotional continuity.
+
+Sources accessed 2026-09-27. These thirteen primary sources inform the bounded
 recommendation; exploratory search results were not treated as supporting evidence.
 
 ## 4. Risks, Unknowns, Dependencies
@@ -74,6 +83,10 @@ recommendation; exploratory search results were not treated as supporting eviden
 - **Risk R-9 — Harness manipulation:** model messages remain data, cannot become
   system prompts, invoke tools, change config, or cross the private-state boundary.
   Textual persuasion may still influence agents; this is part of the environment.
+- **Risk R-10 — Method choice is not method quality:** models may choose familiar
+  names or disagree. Separate pairing from exact recipe consent; no fallback.
+  Record fixed/mutual mode and card order. Later fixed-pair comparisons, held-out
+  tests, and budget-matched search controls belong to INT-0002/INT-0003.
 - **Unknown:** starting checkpoint family/revisions, hardware and storage budget,
   descendant memory policy, child thresholds, and scientific payoff model. None
   blocks fixtures/local-adapter construction; all block claims about real fusion.
@@ -94,6 +107,11 @@ and operator-only records; replay and descriptive report commands. Record exact
 procedural prompts and decoding metadata. Match decisions do not use capability
 rankings. No automatic model downloads, weight jobs, or fine-tuning occur.
 
+Following the user's method-comparison request, expose declared immutable recipes
+in fixed or mutual-choice mode. Permit independent exact-recipe consent, decline,
+or deferral. Pairing alone never authorizes fusion; recipe disagreements create
+blocked requests without changing the social pair. Compare real methods later.
+
 Alternative considered: integrate Python/mergekit and real multi-generation runs
 immediately. Rejected for this sprint because parent pool, compute, inheritance,
 and evaluation criteria are unresolved and protocol correctness is prerequisite.
@@ -108,6 +126,17 @@ retained in the follow-on intents.
 ## Artifacts
 
 - [Idea assessment](idea-review.md) — review, research findings, and derived random-matching sanity check.
+- [Fusion-method review](fusion-method-review.md) — alternatives, evidence limits, recipe consent, and comparative experiment design.
 - [Research progress](progress.md) — completed intake and remaining approval gate.
 - [Sprint metadata](../sprint-meta.md) — initialized sprint provenance.
 - [INT-0001](../../../intents/INT-0001-voluntary-observable-partner-choice.md), [INT-0002](../../../intents/INT-0002-evaluated-dare-descendants.md), [INT-0003](../../../intents/INT-0003-controlled-evolutionary-study.md) — stable proposed outcomes.
+
+## Budget Override
+
+The user explicitly expanded the research during planning to ask whether DARE is
+best, what alternatives exist, and whether models should choose. This spans merge
+operators, newer RL-specific approaches, multi-objective search, and behavioral
+inheritance. Thirteen selected primary sources exceed the default five-source
+limit for that cross-cutting comparison; the code survey stays below twenty and
+the added research remains within the phase's thirty-minute research allowance.
+No tensor experiments or extra implementation scope have been silently approved.

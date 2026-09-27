@@ -42,8 +42,13 @@ INT-0003. These are proposed implementation boundaries for plan approval.
   A selecting B and B selecting A creates a pair. Each agent occurs in at most
   one pair per round. Abstention and failed pairing preserve the participant and
   its memory; there is no imposed loneliness cost, replacement, or exclusion.
-- **AC-5 — Honest merge boundary:** each reciprocal pair produces a pending merge
-  request or a clearly blocked request. Missing or incompatible declared common
+- **AC-5 — Honest merge boundary:** configuration declares immutable bounded
+  recipe IDs and either fixed-recipe or mutual-choice mode. Each agent separately
+  consents to one offered exact recipe, declines, or defers fusion. Reciprocal
+  partner selection does not imply recipe consent. A pair produces a pending
+  request only when both parents agree to the same allowed recipe; absent,
+  declined, different, or invalid consent creates a clearly blocked request.
+  Never silently substitute a method. Missing or incompatible declared common
   base revision, architecture/tensor-layout signature, tokenizer signature, or
   license metadata blocks automatic execution eligibility. Metadata compatibility
   is a preliminary claim, not verified tensor compatibility. No request is
@@ -53,7 +58,8 @@ INT-0003. These are proposed implementation boundaries for plan approval.
   self-reports and ballots in an operator-only record, and a separate public event
   projection. Replay uses recorded responses without new inference. Reports count
   participation, explicit abstention, invalid/failure outcomes, nominations,
-  reciprocal pairs, and blocked/eligible requests with clear denominators. A
+  reciprocal pairs, recipe-consent outcomes, and blocked/eligible requests with
+  clear denominators. Record mode, recipe payloads, card order, and exact consent. A
   fixed recorded fixture run replays identically, regardless of completion order.
 - **AC-7 — Usable vertical slice:** fixture and local HTTP workflows run through
   the CLI with tests covering privacy, ordering, failures, pairing, and replay.
@@ -74,6 +80,8 @@ persistent textual preferences are contextual memory, not weight updates.
   reciprocal single nominations implement the initial procedural commitment.
 - A loneliness penalty may be a future experimental treatment, but changes the
   incentives and conflicts with an unpressured baseline.
+- Hardcoding DARE precludes useful comparators and method choice. Offer a bounded
+  immutable catalog with fixed-recipe controls; method names alone are not recipes.
 - Full Python orchestration would ease direct mergekit integration; Rust suits
   the user's preference and the typed protocol, with an external merger later.
 - A desktop interface is premature before the protocol is testable. If pursued,
@@ -90,5 +98,12 @@ The neutral prompt still influences behavior and is itself recorded evidence.
 
 ## Transition history
 
+The first recipe catalog uses symmetric parent coefficients with typed bounded
+parameters. Asymmetric inheritance, arbitrary executable recipes, and automatic
+recipe optimization require a subsequent extension of this intent and its tests.
+
 - 2026-09-27: created as `proposed` from README.md and the requested idea review;
   first-sprint implementation boundaries await concrete plan approval.
+- 2026-09-27: revised while `proposed` following the user's method-comparison
+  request; added exact-recipe consent, fixed versus mutual-choice mode, and no
+  automatic fallback. This recommendation awaits plan approval.
