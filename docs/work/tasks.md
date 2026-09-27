@@ -1,6 +1,5 @@
 # Agent Tasks (Persistent Backlog)
 
-- [ ] T-002 (sprint 0) [intent: INT-0001]: Define owner-private state and explicit public observations
 - [ ] T-003 (sprint 0) [intent: INT-0001]: Run bounded concurrent communication and sealed decision phases
 - [ ] T-004 (sprint 0) [intent: INT-0001]: Add an explicitly configured local chat-completions adapter
 - [ ] T-005 (sprint 0) [intent: INT-0001]: Resolve reciprocal pairs and emit screened merge requests
