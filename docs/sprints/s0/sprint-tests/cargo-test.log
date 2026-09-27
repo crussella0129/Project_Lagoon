@@ -1,0 +1,54 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.27s
+     Running unittests src\lib.rs (target\debug\deps\lovers_lagoon-e64a7445d10a61dc.exe)
+
+running 25 tests
+test config::tests::recipe_catalog_validates_ids_payloads_and_mode ... ok
+test observation::tests::forged_peer_instructions_cannot_mutate_harness ... ok
+test observation::tests::owner_updates_preserve_omitted_fields ... ok
+test observation::tests::peer_projection_excludes_private_canaries ... ok
+test merge_request::tests::compatible_metadata_creates_unverified_pending_request ... ok
+test config::tests::rejects_invalid_config_before_backend_call ... ok
+test config::tests::valid_fixture_and_local_configs ... ok
+test merge_request::tests::sibling_requests_preserve_parents_count_and_recipes ... ok
+test runner::tests::invalid_configuration_makes_zero_backend_calls ... ok
+test merge_request::tests::mutual_plan_consent_is_required_without_fallback ... ok
+test report::tests::random_nomination_baseline_matches_enumerated_cases ... ok
+test merge_request::tests::incomplete_or_incompatible_metadata_blocks_requests ... ok
+test config::tests::rejects_invalid_bounds_and_incomplete_catalogs ... ok
+test matching::tests::reciprocal_pairs_are_exclusive_and_order_independent ... ok
+test runner::tests::invalid_timeout_failure_are_not_abstention ... ok
+test runner::tests::all_abstain_and_all_fail_runs_terminate ... ok
+test backend::local_http::tests::local_server_receives_only_owner_projection ... ok
+test report::tests::reports_keep_denominators_and_failure_categories ... ok
+test runner::tests::concurrency_cap_and_ballot_barrier ... ok
+test runner::tests::reordered_workers_share_frozen_snapshot ... ok
+test merge_request::tests::abstainers_and_unmatched_agents_keep_memory ... ok
+test replay::tests::unsupported_or_inconsistent_records_are_rejected ... ok
+test replay::tests::replay_matches_recording_without_backend_calls ... ok
+test replay::tests::operator_record_and_public_projection_are_separate ... ok
+test backend::local_http::tests::local_transport_failures_are_bounded_and_redacted ... ok
+
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running unittests src\main.rs (target\debug\deps\lovers_lagoon-448a45fe6f235189.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\cli.rs (target\debug\deps\cli-b9570244d13a7e5e.exe)
+
+running 4 tests
+test cli_local_http_pipeline ... ok
+test cli_sibling_plan_records_requests_only ... ok
+test cli_fixture_run_replay_report ... ok
+test cli_local_failures_preserve_status ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s
+
+   Doc-tests lovers_lagoon
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

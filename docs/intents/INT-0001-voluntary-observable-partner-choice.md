@@ -4,10 +4,10 @@
 - **Intent ID:** INT-0001
 - **State:** active
 - **Work evidence:** [Sprint 0 build plan](../sprints/s0/sprint-plans/build-plan.md)
-- **Completion evidence:** none
-- **Code evidence:** none
-- **Test evidence:** none
-- **Documentation evidence:** [Research assessment](../sprints/s0/sprint-research/idea-review.md)
+- **Completion evidence:** [T-001 through T-007 implementation](../work/completed-tasks.md)
+- **Code evidence:** [Rust harness](../../src/lib.rs); tested implementation head `2683e908854d1635645e23e5970bca2a4f1e9023`
+- **Test evidence:** [Local unit](../sprints/s0/sprint-tests/unit-tests.md), [integration](../sprints/s0/sprint-tests/integration-tests.md), [E2E](../sprints/s0/sprint-tests/e2e-tests.md); [external CI block](../sprints/s0/failure-report.md)
+- **Documentation evidence:** [Usage](../usage.md); [Research assessment](../sprints/s0/sprint-research/idea-review.md)
 
 ## Intent
 
@@ -22,7 +22,7 @@ The first increment is a Rust command-line harness with deterministic fixtures a
 an explicitly configured local inference backend. It records reciprocal selections
 and pending merge requests. It does not claim to create children or measure
 consciousness. Actual fusion and multi-generation studies belong to INT-0002 and
-INT-0003. These are proposed implementation boundaries for plan approval.
+INT-0003. These boundaries were approved for Sprint 0.
 
 ## Acceptance criteria
 
@@ -123,3 +123,7 @@ recipe optimization require a subsequent extension of this intent and its tests.
 - 2026-09-27: `proposed` → `planned` after the user approved the revised plan
   with "ok now proceed"; work is scheduled in the Sprint 0 build plan.
 - 2026-09-27: `planned` → `active` as T-001 implementation begins.
+- 2026-09-27: implementation T-001 through T-007 and all local checks complete.
+  State remains `active` because hosted CI could not start due to GitHub account
+  runner availability; no duplicate lifecycle transition is recorded. Preserve
+  implementation evidence and carry verification forward as T-008.
