@@ -19,4 +19,4 @@
 - **Intent:** [INT-0001](../intents/INT-0001-voluntary-observable-partner-choice.md)
 - **Completed:** 2026-09-27
 - **Files modified:** src/lib.rs, src/backend/mod.rs, src/backend/fixture.rs, src/runner.rs
-- **Commit:** PENDING
+- **Commit:** `a82b126e6b47430d9a0677560bb63550b0cb53c0`
