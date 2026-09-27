@@ -26,4 +26,4 @@
 - **Intent:** [INT-0001](../intents/INT-0001-voluntary-observable-partner-choice.md)
 - **Completed:** 2026-09-27
 - **Files modified:** src/backend/mod.rs, src/backend/local_http.rs
-- **Commit:** PENDING
+- **Commit:** `debc7d99e553d3076224c1911dc6a0bc1803d78c`
