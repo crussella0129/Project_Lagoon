@@ -436,6 +436,26 @@ pub(crate) mod tests {
         };
         value.validate().unwrap();
         assert!(validate_endpoint("http://[::1]:8000/v1/chat/completions").is_ok());
+        value.mode = Mode::FixedPlan;
+        for method in [
+            Method::Linear,
+            Method::Ties,
+            Method::DareTies,
+            Method::Della,
+        ] {
+            value.recipes[0].method = method.clone();
+            value.recipes[0].density = if method == Method::Linear {
+                None
+            } else {
+                Some(0.5)
+            };
+            value.recipes[0].epsilon = if method == Method::Della {
+                Some(0.1)
+            } else {
+                None
+            };
+            value.validate().unwrap();
+        }
     }
 
     #[test]
@@ -460,6 +480,60 @@ pub(crate) mod tests {
             model: "x".into(),
             revision: "main".into(),
         });
+        assert!(value.validate().is_err());
+    }
+
+    #[test]
+    fn rejects_invalid_bounds_and_incomplete_catalogs() {
+        use serde_json::json;
+        let original = serde_json::to_value(config()).unwrap();
+        for (pointer, invalid) in [
+            ("/workers", json!(0)),
+            ("/rounds", json!(101)),
+            ("/communication_steps", json!(11)),
+            ("/timeout_ms", json!(300001)),
+            ("/max_response_bytes", json!(127)),
+            ("/max_context_bytes", json!(0)),
+            ("/max_private_bytes", json!(0)),
+            ("/decoding/temperature", json!(3.0)),
+            ("/decoding/max_tokens", json!(0)),
+            (
+                "/agents/0/backend",
+                json!({"kind":"local_http","endpoint":"http://127.0.0.1/","model":""}),
+            ),
+            (
+                "/agents/0/backend",
+                json!({"kind":"local_http","endpoint":"http://127.0.0.1/"}),
+            ),
+            (
+                "/agents/0/merge_metadata",
+                json!({"base":{"model":"base","revision":"a".repeat(40)},"architecture":"","tensor_layout":"x","tokenizer":"x","license":"x"}),
+            ),
+            ("/recipes", json!([])),
+            ("/plans", json!([])),
+            ("/plans/0/children", json!([])),
+            ("/plans/0/max_compute_seconds", json!(0)),
+            ("/plans/0/max_output_bytes", json!(0)),
+            ("/recipes/0/lambda", json!(0)),
+            ("/recipes/0/density", json!(1.1)),
+            ("/recipes/0/method", json!("execute arbitrary code")),
+        ] {
+            let mut value = original.clone();
+            *value.pointer_mut(pointer).unwrap() = invalid;
+            assert!(
+                !serde_json::from_value::<Experiment>(value).is_ok_and(|v| v.validate().is_ok()),
+                "{pointer}"
+            );
+        }
+        let mut value = config();
+        let duplicate = value.recipes[0].clone();
+        value.recipes.push(duplicate);
+        assert!(value.validate().is_err());
+        let mut value = config();
+        let mut extra = value.plans[0].clone();
+        extra.id = "extra".into();
+        value.plans.push(extra);
+        value.mode = Mode::FixedPlan;
         assert!(value.validate().is_err());
     }
 

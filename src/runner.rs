@@ -444,4 +444,44 @@ mod tests {
                 .all(|c| c.outcome.status == Status::ContextLimit)
         );
     }
+
+    #[tokio::test]
+    async fn invalid_configuration_makes_zero_backend_calls() {
+        struct Counter(Arc<AtomicUsize>);
+        impl Backend for Counter {
+            fn respond(&self, _: Request) -> ResponseFuture {
+                self.0.fetch_add(1, Ordering::SeqCst);
+                Box::pin(async { Ok("{}".into()) })
+            }
+        }
+        let calls = Arc::new(AtomicUsize::new(0));
+        for case in 0..6 {
+            let mut config = config();
+            match case {
+                0 => config.workers = 0,
+                1 => config.agents[1].handle = "a".into(),
+                2 => config.rounds = 0,
+                3 => {
+                    config.agents[0].backend = BackendConfig::LocalHttp {
+                        endpoint: "http://example.com/".into(),
+                        model: "x".into(),
+                    }
+                }
+                4 => config.recipes[0].density = Some(2.0),
+                _ => config.plans[0].children.clear(),
+            }
+            let backends = config
+                .agents
+                .iter()
+                .map(|a| {
+                    (
+                        a.handle.clone(),
+                        Arc::new(Counter(calls.clone())) as Arc<dyn Backend>,
+                    )
+                })
+                .collect();
+            assert!(run_with(&config, backends).await.is_err());
+            assert_eq!(calls.load(Ordering::SeqCst), 0);
+        }
+    }
 }

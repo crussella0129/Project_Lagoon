@@ -41,3 +41,10 @@
 - **Completed:** 2026-09-27
 - **Files modified:** src/lib.rs, src/record.rs, src/replay.rs, src/report.rs, src/merge_request.rs
 - **Commit:** `a3e8559c89f1582137d99e663798323d026f2cd2`
+
+## T-007 (sprint 0)
+- **Description:** expose tested CLI workflows and complete manifest accounting
+- **Intent:** [INT-0001](../intents/INT-0001-voluntary-observable-partner-choice.md)
+- **Completed:** 2026-09-27
+- **Files modified:** src/main.rs, examples/fixture-experiment.json, examples/sibling-experiment.json, examples/local-experiment.json, tests/cli.rs, docs/usage.md, README.md, docs/SUMMARY.md, src/config.rs, src/merge_request.rs, src/report.rs, src/runner.rs
+- **Commit:** PENDING

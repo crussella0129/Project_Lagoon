@@ -1,5 +1,5 @@
 use crate::{
-    config::{Checkpoint, Experiment, Recipe},
+    config::{Checkpoint, Experiment, MergeMetadata, Mode, Recipe, ReproductionPlan},
     matching::reciprocal_pairs,
     protocol::{Consent, Pair},
     runner::SelectionRound,
@@ -47,6 +47,13 @@ pub struct ChildRequest {
 pub struct BatchDecision {
     pub round: u32,
     pub pair: Pair,
+    pub mode: Mode,
+    pub consents: [Consent; 2],
+    pub parents: [Option<Checkpoint>; 2],
+    pub declared_metadata: [Option<MergeMetadata>; 2],
+    pub plan: Option<ReproductionPlan>,
+    pub artifacts_verified: bool,
+    pub executed: bool,
     pub plan_id: Option<String>,
     pub plan_fingerprint: Option<String>,
     pub max_compute_seconds: Option<u64>,
@@ -160,6 +167,16 @@ pub fn resolve_round(config: &Experiment, selection: &SelectionRound) -> Vec<Bat
             BatchDecision {
                 round: selection.round,
                 pair,
+                mode: config.mode.clone(),
+                consents: [consent[0].clone(), consent[1].clone()],
+                parents: [parents[0].checkpoint.clone(), parents[1].checkpoint.clone()],
+                declared_metadata: [
+                    parents[0].merge_metadata.clone(),
+                    parents[1].merge_metadata.clone(),
+                ],
+                plan: plan.cloned(),
+                artifacts_verified: false,
+                executed: false,
                 plan_id: plan.map(|p| p.id.clone()),
                 plan_fingerprint: plan.map(|p| config.plan_fingerprint(p)),
                 max_compute_seconds: plan.map(|p| p.max_compute_seconds),
@@ -293,6 +310,16 @@ mod tests {
         let config = compatible();
         let decisions = resolve_round(&config, &paired(&config));
         assert_eq!(decisions[0].status, RequestStatus::PendingUnverified);
+        assert!(!decisions[0].artifacts_verified);
+        assert!(!decisions[0].executed);
+        assert_eq!(decisions[0].plan, Some(config.plans[0].clone()));
+        assert_eq!(decisions[0].mode, config.mode);
+        assert!(
+            decisions[0]
+                .consents
+                .iter()
+                .all(|c| matches!(c, Consent::Agree { .. }))
+        );
         assert_eq!(
             decisions[0].children[0].parents[0],
             config.agents[0].checkpoint
@@ -343,6 +370,12 @@ mod tests {
             assert_eq!(decisions.len(), 1);
             assert_eq!(decisions[0].blocked_reasons, vec![reason]);
             assert!(decisions[0].children.is_empty());
+            assert_eq!(decisions[0].parents[0], config.agents[0].checkpoint);
+            assert_eq!(
+                decisions[0].consents[1],
+                selection.outcomes["b"].ballot.as_ref().unwrap().consent
+            );
+            assert!(!decisions[0].artifacts_verified && !decisions[0].executed);
         }
         let mut selection = paired(&config);
         selection

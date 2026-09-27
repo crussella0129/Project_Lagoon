@@ -12,12 +12,14 @@ use std::collections::BTreeMap;
 pub struct Counts {
     pub decision_slots: u64,
     pub valid_nominations: u64,
+    pub nonreciprocal_nominations: u64,
     pub voluntary_abstentions: u64,
     pub failed_decisions: u64,
     pub social_pairs: u64,
     pub paired_fraction_of_decision_slots: Option<f64>,
     pub agreed_plan_batches: u64,
     pub pending_batches: u64,
+    pub blocked_batches: u64,
     pub blocked_pairs: u64,
     pub consented_child_jobs: u64,
     pub pending_child_requests: u64,
@@ -111,6 +113,9 @@ pub fn describe(config: &Experiment, session: &Session) -> Report {
             counts.social_pairs += 1;
             if batch.plan_id.is_some() {
                 counts.agreed_plan_batches += 1;
+                if batch.status == RequestStatus::Blocked {
+                    counts.blocked_batches += 1;
+                }
             }
             if batch.status == RequestStatus::PendingUnverified {
                 counts.pending_batches += 1;
@@ -129,15 +134,18 @@ pub fn describe(config: &Experiment, session: &Session) -> Report {
                 count(&mut counts.blocked_reason_counts, key(reason));
             }
         }
+        counts.nonreciprocal_nominations = counts.valid_nominations - 2 * counts.social_pairs;
         counts.paired_fraction_of_decision_slots =
             Some(2.0 * counts.social_pairs as f64 / counts.decision_slots as f64);
         total.decision_slots += counts.decision_slots;
         total.valid_nominations += counts.valid_nominations;
+        total.nonreciprocal_nominations += counts.nonreciprocal_nominations;
         total.voluntary_abstentions += counts.voluntary_abstentions;
         total.failed_decisions += counts.failed_decisions;
         total.social_pairs += counts.social_pairs;
         total.agreed_plan_batches += counts.agreed_plan_batches;
         total.pending_batches += counts.pending_batches;
+        total.blocked_batches += counts.blocked_batches;
         total.blocked_pairs += counts.blocked_pairs;
         total.consented_child_jobs += counts.consented_child_jobs;
         total.pending_child_requests += counts.pending_child_requests;
@@ -222,10 +230,30 @@ mod tests {
         );
         assert_eq!(report.total.voluntary_abstentions, 1);
         assert_eq!(report.total.failed_decisions, 0);
+        assert_eq!(report.total.nonreciprocal_nominations, 0);
         assert_eq!(report.total.consent_counts["decline"], 1);
         assert_eq!(report.total.consent_counts["defer"], 1);
         assert_eq!(report.total.blocked_pairs, 1);
         assert_eq!(report.total.pending_child_requests, 0);
+        if let BackendConfig::Fixture { responses } = &mut config.agents[2].backend {
+            responses[0].body = Some(r#"{"partner":"a","consent":{"state":"defer"}}"#.into());
+        }
+        let nonreciprocal = describe(&config, &crate::runner::run(&config).await.unwrap());
+        assert_eq!(nonreciprocal.total.valid_nominations, 3);
+        assert_eq!(nonreciprocal.total.nonreciprocal_nominations, 1);
+        assert_eq!(nonreciprocal.total.voluntary_abstentions, 0);
+        let fingerprint = config.plan_fingerprint(&config.plans[0]);
+        for (a, partner) in config.agents[..2].iter_mut().zip(["b", "a"]) {
+            if let BackendConfig::Fixture { responses } = &mut a.backend {
+                responses[0].body=Some(serde_json::json!({"partner":partner,"consent":{"state":"agree","plan_id":"single","fingerprint":fingerprint}}).to_string());
+            }
+        }
+        let metadata_blocked = describe(&config, &crate::runner::run(&config).await.unwrap());
+        assert_eq!(metadata_blocked.total.agreed_plan_batches, 1);
+        assert_eq!(metadata_blocked.total.blocked_batches, 1);
+        assert_eq!(metadata_blocked.total.consented_child_jobs, 1);
+        assert_eq!(metadata_blocked.total.blocked_child_jobs, 1);
+        assert_eq!(metadata_blocked.total.pending_child_requests, 0);
         for a in &mut config.agents {
             a.backend = BackendConfig::Fixture { responses: vec![] };
         }

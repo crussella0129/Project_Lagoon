@@ -12,3 +12,4 @@
 - [Fusion methods and model choice](sprints/s0/sprint-research/fusion-method-review.md)
 - [Sprint 0 approval preview](sprints/s0/sprint-plans/approval-preview.md)
 - [Optional sibling batches](sprints/s0/sprint-research/sibling-batch-review.md)
+- [Running the harness](usage.md)
