@@ -14,8 +14,13 @@ use std::{
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Reply {
-    Response { body: String },
-    Failure { status: Status },
+    Response {
+        body: String,
+        finish_reason: Option<String>,
+    },
+    Failure {
+        status: Status,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -239,12 +244,15 @@ pub async fn run_with(
                                 status: Status::Timeout,
                             },
                             Ok(Err(status)) => Reply::Failure { status },
-                            Ok(Ok(body)) if body.len() > limits.max_response_bytes => {
+                            Ok(Ok(response)) if response.body.len() > limits.max_response_bytes => {
                                 Reply::Failure {
                                     status: Status::OversizedResponse,
                                 }
                             }
-                            Ok(Ok(body)) => Reply::Response { body },
+                            Ok(Ok(response)) => Reply::Response {
+                                body: response.body,
+                                finish_reason: response.finish_reason,
+                            },
                         }
                     };
                     (
@@ -289,7 +297,11 @@ pub fn outcome_from_reply(
     config: &Experiment,
 ) -> Outcome {
     match reply {
-        Reply::Response { body } => normalize(body, observation, config),
+        Reply::Response {
+            finish_reason: Some(reason),
+            ..
+        } if reason == "length" => Outcome::failure(Status::GenerationLimit),
+        Reply::Response { body, .. } => normalize(body, observation, config),
         Reply::Failure { status } => Outcome::failure(status.clone()),
     }
 }
@@ -332,7 +344,9 @@ mod tests {
                 Ok(if request.observation.phase == Phase::Selection {
                     r#"{"partner":null,"consent":{"state":"defer"}}"#.into()
                 } else {
-                    serde_json::json!({"public_message":request.observation.owner}).to_string()
+                    serde_json::json!({"public_message":request.observation.owner})
+                        .to_string()
+                        .into()
                 })
             })
         }

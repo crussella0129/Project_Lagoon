@@ -1,4 +1,6 @@
-use super::{Backend, Request, ResponseFuture, TokenCount, TokenFuture};
+use super::{
+    Backend, Generation, Request, ResponseFuture, TokenCount, TokenFuture, valid_finish_reason,
+};
 use crate::{
     config::{ConfigError, TokenizerConfig, validate_endpoint},
     protocol::Status,
@@ -133,15 +135,29 @@ impl Backend for LocalHttp {
                 .and_then(|v| v.as_array())
                 .filter(|v| v.len() == 1)
                 .ok_or(Status::MalformedContent)?;
+            let finish_reason = match choices[0].get("finish_reason") {
+                None | Some(serde_json::Value::Null) => None,
+                Some(serde_json::Value::String(reason)) if valid_finish_reason(reason) => {
+                    Some(reason.clone())
+                }
+                _ => return Err(Status::MalformedContent),
+            };
             let content = choices[0]
                 .get("message")
                 .and_then(|v| v.get("content"))
-                .and_then(|v| v.as_str())
                 .ok_or(Status::MalformedContent)?;
+            let content = match content {
+                serde_json::Value::String(content) => content.as_str(),
+                serde_json::Value::Null if finish_reason.as_deref() == Some("length") => "",
+                _ => return Err(Status::MalformedContent),
+            };
             if content.len() > request.max_response_bytes {
                 return Err(Status::OversizedResponse);
             }
-            Ok(content.into())
+            Ok(Generation {
+                body: content.into(),
+                finish_reason,
+            })
         })
     }
 }
@@ -255,7 +271,7 @@ mod tests {
 
     #[tokio::test]
     async fn local_server_receives_only_owner_projection() {
-        let body=serde_json::json!({"choices":[{"message":{"content":r#"{"partner":null,"consent":{"state":"defer"},"private_update":{"thought":"owner reply"}}"#}}]}).to_string();
+        let body=serde_json::json!({"choices":[{"finish_reason":"stop","message":{"content":r#"{"partner":null,"consent":{"state":"defer"},"private_update":{"thought":"owner reply"}}"#}}]}).to_string();
         let (endpoint, server) = server(response("200 OK", &body, ""), 0).await;
         let mut config = config();
         config.rounds = 1;
@@ -280,11 +296,63 @@ mod tests {
         assert!(payload.contains("OWNER_CANARY"));
         assert!(!payload.contains("PEER_CANARY"));
         assert_eq!(session.calls[0].outcome.status, Status::Abstained);
+        assert!(
+            matches!(&session.calls[0].reply, crate::runner::Reply::Response { finish_reason: Some(reason), .. } if reason == "stop")
+        );
         assert_eq!(
             session.private_states["a"].thought.as_deref(),
             Some("owner reply")
         );
         assert!(session.public.messages.is_empty());
+    }
+
+    #[tokio::test]
+    async fn token_limit_receipts_preserve_partial_text_and_replay_without_publishing() {
+        for content in [
+            serde_json::json!("{\"partner\":"),
+            serde_json::json!(r#"{"partner":null,"private_update":{"thought":"do not apply"}}"#),
+            serde_json::Value::Null,
+        ] {
+            let body = serde_json::json!({"choices":[{"finish_reason":"length","message":{"content":content}}]}).to_string();
+            let (endpoint, task) = server(response("200 OK", &body, ""), 0).await;
+            let mut config = config();
+            config.rounds = 1;
+            config.communication_steps = 0;
+            config.timeout_ms = 1000;
+            config.agents[0].backend = BackendConfig::LocalHttp {
+                tokenizer: TokenizerConfig::Vllm {
+                    endpoint: endpoint.clone(),
+                },
+                endpoint,
+                model: "local".into(),
+            };
+            let session = runner::run(&config).await.unwrap();
+            task.await.unwrap();
+            assert_eq!(
+                session.calls[0].outcome,
+                crate::protocol::Outcome::failure(Status::GenerationLimit)
+            );
+            assert!(session.public.messages.is_empty());
+            assert_eq!(session.private_states["a"].thought, None);
+            assert!(
+                matches!(&session.calls[0].reply, crate::runner::Reply::Response { body, finish_reason: Some(reason) } if body == content.as_str().unwrap_or("") && reason == "length")
+            );
+            let record = crate::record::Record::from_session(config, session, 100, 200);
+            assert_eq!(record.report.all_call_status_counts["generation_limit"], 1);
+            assert_eq!(record.report.finish_reason_counts["length"], 1);
+            let root = tempfile::tempdir().unwrap();
+            crate::record::save(&record, &root.path().join("run")).unwrap();
+            let loaded: crate::record::Record =
+                crate::record::read_json(&root.path().join("run/operator-record.json")).unwrap();
+            assert_eq!(crate::replay::reconstruct(&loaded).unwrap(), record.session);
+            let mut altered = record.clone();
+            if let crate::runner::Reply::Response { finish_reason, .. } =
+                &mut altered.session.calls[0].reply
+            {
+                *finish_reason = Some("stop".into());
+            }
+            assert!(crate::replay::reconstruct(&altered).is_err());
+        }
     }
 
     #[tokio::test]
@@ -306,6 +374,8 @@ mod tests {
                 0,
                 Status::MalformedContent,
             ),
+            (response("200 OK", r#"{"choices":[{"finish_reason":17,"message":{"content":"{}"}}]}"#, ""), 0, Status::MalformedContent),
+            (response("200 OK", &serde_json::json!({"choices":[{"finish_reason":"x".repeat(65),"message":{"content":"{}"}}]}).to_string(), ""), 0, Status::MalformedContent),
             (
                 response("200 OK", &"x".repeat(40_000), ""),
                 0,

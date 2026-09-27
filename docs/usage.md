@@ -138,6 +138,10 @@ The protocol templates live in `schemas/communication.schema.json` and
 the observation before submission; the template placeholders are never offered.
 Constrained schemas use required nullable private fields. Parsing also accepts
 omitted private fields and missing consent for diagnostic/fixture compatibility.
+Schemas bound public messages to 128 Unicode characters and each private note to
+64; peer aliases, plan IDs and consent strings are bounded too. The parser enforces
+the public/private character limits as well as byte guards, including initial notes.
+Excess text returns `oversized_response`; fields are not silently shortened.
 One complete JSON markdown fence is accepted and counted in
 `fenced_json_responses`; surrounding prose, guessed targets and unknown plan IDs
 are not repaired. An obsolete echoed fingerprint is ignored, never used as consent.
@@ -153,6 +157,26 @@ its recorded window. Oldest complete messages/pair events are removed first to f
 the byte guard and then the tokenizer budget. A base prompt that cannot fit gives
 `context_limit` without generation. Output tokens and the safety margin are reserved.
 Do not intentionally set a budget larger than the actual server slot.
+
+Example configurations reserve 4096 output tokens, 3968 prompt tokens and 128
+safety tokens within 8192 context tokens. Compact, maximally Unicode-escaped text
+at the public/private character limits fits the examples' 4096-byte response guard.
+This is not a worst-case token guarantee: tokenization, repeated whitespace and
+model reasoning can consume additional tokens. XGrammar exposes whitespace limits
+but allows flexible whitespace by default; pin and test the actual decoder/server
+configuration ([compiler API](https://xgrammar.mlc.ai/docs/latest/api/python/grammar_compiler.html)).
+Use a non-reasoning deployment or explicitly validate its reasoning budget/template
+before research use. The client does not guess model-specific reasoning options.
+
+HTTP responses retain the choice's `finish_reason` in the operator record. A
+`length` finish produces `generation_limit` even if the content is complete JSON;
+partial content is retained for diagnostics, with no public message, memory update
+or nomination applied. Null content with `length` is recorded as empty text.
+Missing/null reasons are recorded as null and counted as `unreported`; fixtures
+also have unreported reasons. They do not prove that generation completed normally.
+Other bounded reason strings are retained and content follows normal parsing.
+Invalid reason metadata gives `malformed_content`. Servers that omit termination
+metadata cannot reliably distinguish token exhaustion from formatting failure.
 
 Tokenization and generation share one timeout after worker acquisition.
 Tokenizer/HTTP/parse errors become `tokenization_failure`; timeout remains
@@ -195,8 +219,8 @@ are consented future budgets, not measured resource consumption.
 
 Configuration caps population at 128, rounds at 100, communication steps at ten,
 workers at 128, and call timeout at five minutes. Response text is capped at 1 MiB,
-serialized observation at 4 MiB, and private-state text at 64 KiB, with smaller
-configurable limits. Oversized observations skip inference with `context_limit`;
+serialized observation at 4 MiB, and the configurable private-state byte guard at
+64 KiB; the stricter per-field character limits also apply. Oversized observations skip inference with `context_limit`;
 there is no silent truncation. File reads and individual persisted artifacts have
 a 64 MiB limit. Aggregate memory/runtime depend on population, history and configured
 bounds; large experiments may exceed the artifact limit. HTTP envelopes have a
@@ -220,6 +244,9 @@ abstentions and failed decisions. Paired fraction is twice the social-pair count
 divided by **all agent-round decision slots**, including failures and abstentions.
 Consent counts cover valid ballots; blocked-reason counts cover paired groups.
 `nonreciprocal_nominations` counts valid nominations outside a reciprocal pair.
+`finish_reason_counts` counts responses with available content (including length
+termination); transport/HTTP failures have no finish-reason receipt. All-call and
+selection status counts include `generation_limit` in their existing denominators.
 `blocked_pairs` includes every paired group whose request cannot proceed;
 `blocked_batches` counts the subset with an agreed exact plan blocked by metadata.
 Agreed batches include metadata-blocked plans. `consented_child_jobs` counts their
@@ -244,6 +271,7 @@ dependent field consistently.
 
 ```powershell
 cargo fmt --check
+cargo build --locked
 cargo clippy --locked --all-targets -- -D warnings
 cargo test --locked --all-targets
 ```
@@ -251,8 +279,9 @@ cargo test --locked --all-targets
 Tests cover frozen snapshots, owner-only projections, bounded concurrent calls,
 real HTTP to disposable loopback test servers, failures, exact consent, sibling
 parentage, persistence, replay and CLI workflows. They establish protocol behavior,
-not real-model preferences or fusion quality. CI uses the same checks on `main`
-and `codex/dev`; a hosted pass requires an actual remote run.
+not real-model preferences or fusion quality. Local validation is the current
+acceptance gate at the user's request (GitHub minutes exhausted). Hosted workflow
+configuration remains available; no hosted result is required or claimed here.
 
 [INT-0002](intents/INT-0002-evaluated-dare-descendants.md) supplies real checked
 checkpoints, a pinned external merger and evaluation before child admission.
@@ -261,9 +290,10 @@ comparisons and generational studies. [Method research](sprints/s0/sprint-resear
 and [sibling research](sprints/s0/sprint-research/sibling-batch-review.md) explain
 why the current catalog permits exact single-child or opt-in sibling plans.
 
-The v0.2 record format is schema version 2, with required memory/tokenizer settings.
-It rejects v0.1 records rather than silently reinterpret old prompts and consent.
-Use the v0.1 code revision to replay archived Sprint 0 records. Historical evidence
+The v0.3 record format is schema version 3, with finish-reason metadata, bounded
+response schemas and finish-reason report counts. It rejects v0.1/schema-1 and
+v0.2/schema-2 records rather than silently reinterpret old output contracts.
+Use each archived record's matching code revision for replay. Historical evidence
 in `docs/sprints/s0` is preserved unchanged.
 
 See the [variance study](research/variance-review.md), [useful-protocol assessment](research/useful-protocol-review.md)

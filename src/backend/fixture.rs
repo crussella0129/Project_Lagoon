@@ -25,7 +25,7 @@ impl Backend for Fixture {
             if body.len() > request.max_response_bytes {
                 return Err(Status::OversizedResponse);
             }
-            Ok(body)
+            Ok(body.into())
         })
     }
 }
