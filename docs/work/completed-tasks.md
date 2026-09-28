@@ -94,3 +94,11 @@
 - **Files modified:** ORIGIN.md, ETHICS.md, PREREG.md, prereg/, README.md, docs/roadmap.md, docs/SUMMARY.md, docs/intents/INT-0006-publication-and-ethics.md, docs/work/improvement-plan.md, docs/sprints/s1/sprint-plans/plan-amendment.md and work ledgers.
 - **Commit:** `ff6dbceb73ae8fb242c1691ebfcca76532ea42b9`
 - **Verification:** [Original-blob equality, preserved Study B content, working relative links and design review](improvement-plan.md#t-015-and-t-016-documentation-evidence).
+
+## T-016 (sprint 1)
+- **Description:** Add validated citation metadata and document archival activation/release requirements; leave Zenodo explicitly deferred by the user.
+- **Intent:** [INT-0006](../intents/INT-0006-publication-and-ethics.md)
+- **Completed:** 2026-09-28 UTC (citation preparation only; activation is T-017)
+- **Files modified:** CITATION.cff, docs/publication.md and work ledgers.
+- **Commit:** PENDING
+- **Verification:** Official CFF 1.2.0 schema validation passes. [Archival access receipt and user deferral](improvement-plan.md#t-015-and-t-016-documentation-evidence).

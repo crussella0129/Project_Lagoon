@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, cite Project_Lagoon and identify the exact commit or archived release used."
+type: software
+title: Project_Lagoon
+authors:
+  - family-names: Russella
+    given-names: Charles
+    website: "https://github.com/crussella0129"
+repository-code: "https://github.com/crussella0129/Project_Lagoon"
+url: "https://github.com/crussella0129/Project_Lagoon"
+license: Apache-2.0
+version: "0.3.0"
+abstract: >-
+  A Rust research harness for voluntary partner selection and explicit model-fusion
+  agreements among language-model participants. It records bounded communication,
+  private self-reports, sealed nominations and pending fusion requests with offline
+  replay. It does not execute weight fusion or establish model experience.
+keywords:
+  - language models
+  - partner selection
+  - reproducible research
+  - model merging
