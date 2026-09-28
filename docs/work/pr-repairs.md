@@ -30,6 +30,10 @@ This reduces fragmented upgrades; API changes still require local validation.
 
 GitHub resolves the former `Lovers_Lagoon` remote to the user's renamed
 `crussella0129/Project_Lagoon` repository. Current PR links use that canonical name.
+At the user's request, local origin, the remote-profile metadata and current
+README/usage titles now use `Project_Lagoon`. The existing Rust package/CLI name
+remains `lovers-lagoon` for compatibility. The user explicitly approved publishing
+these tested repairs and maintenance docs to the now-public canonical repository.
 
 ## Local evidence
 
