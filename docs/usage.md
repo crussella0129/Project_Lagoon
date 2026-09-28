@@ -281,9 +281,9 @@ cargo test --locked --all-targets
 Tests cover frozen snapshots, owner-only projections, bounded concurrent calls,
 real HTTP to disposable loopback test servers, failures, exact consent, sibling
 parentage, persistence, replay and CLI workflows. They establish protocol behavior,
-not real-model preferences or fusion quality. Local validation is the current
-acceptance gate at the user's request (GitHub minutes exhausted). Hosted workflow
-configuration remains available; no hosted result is required or claimed here.
+not real-model preferences or fusion quality. Local and hosted validation are both
+enabled. The user restored GitHub CI after making the repository public; main now
+requires the current-stable `check` job. See the sprint receipts for tested heads.
 
 [INT-0002](intents/INT-0002-evaluated-dare-descendants.md) supplies real checked
 checkpoints, a pinned external merger and evaluation before child admission.
@@ -292,12 +292,40 @@ comparisons and generational studies. [Method research](sprints/s0/sprint-resear
 and [sibling research](sprints/s0/sprint-research/sibling-batch-review.md) explain
 why the current catalog permits exact single-child or opt-in sibling plans.
 
-The v0.3 record format is schema version 3, with finish-reason metadata, bounded
-response schemas and finish-reason report counts. It rejects v0.1/schema-1 and
-v0.2/schema-2 records rather than silently reinterpret old output contracts.
+The v0.4 record format is schema version 4. It adds per-call seeds, configured
+response bounds and optional private peer memory. It rejects older records rather
+than silently reinterpret their seeds, schemas or outcomes.
 Use each archived record's matching code revision for replay. Historical evidence
 in `docs/sprints/s0` is preserved unchanged.
 
 See the [variance study](research/variance-review.md), [useful-protocol assessment](research/useful-protocol-review.md)
 and [unfrozen next-study preregistration](../PREREG.md). No training or real fusion
 has been executed by this follow-up.
+
+## Reproducible sampling and private memory (v0.4)
+
+Temperature is declared in each experiment's `decoding.temperature`. The existing
+examples retain greedy decoding as controls; `stochastic-local-experiment.json`
+illustrates temperature 0.7. A seed does not guarantee identical real-server output
+across hardware/software changes; offline replay validates the recorded result.
+
+Every call logs and sends its own u64 seed. Encoding is UTF-8 compact JSON of
+`["lagoon-call-seed-v1", run_seed, round, phase, step, handle]`, where phase is
+`"communication"` or `"selection"`, step is an integer or null, and handle is the
+operator handle. SHA-256's first eight bytes are interpreted big-endian. The same
+seed is used for token counting and generation. Replay rejects a changed seed.
+
+Optional `string_limits` has `communication` and `selection` objects, each with
+`public_message_chars` and `private_note_chars` (1–4096 Unicode characters).
+Defaults remain 128/64. These values enter runtime schemas, schema fingerprints,
+observations and parser checks. Selection has no public-message output. Limits
+constrain new text; a longer note validly written in another phase is retained.
+The separate UTF-8 response, context and total-private-state byte limits still apply.
+Changing limits does not justify reducing the output-token reserve without G1.
+
+With `peer_memory: true`, private updates may include `peers`, an object mapping
+known peer aliases to `{"trust": 0..10, "note": "up to 64 Unicode characters"}`.
+Only other configured participants are allowed. Omitted/null maps retain the
+ledger; a supplied map replaces it, and `{}` clears it. Entries and aggregate bytes
+are bounded. The owner writes all entries; the harness never invents a reputation.
+Peer observations and public transcripts do not include another owner's ledger.

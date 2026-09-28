@@ -39,3 +39,15 @@ for the user's current-stable-only Rust policy.
 - Zenodo could not be authenticated: browser initialization failed. The user
   explicitly deferred activation and authorized continued implementation. T-017
   remains a release prerequisite; integration is not claimed.
+
+## T-022 instrument evidence
+
+Implemented versioned per-call seed receipts (including independently calculated
+golden encoding), backend transmission and replay checks; per-phase Unicode
+limits generated into schemas; and opt-in bounded owner-written peer memory.
+Package/record versions are 0.4.0/4, with explicit old-record rejection.
+
+Formatting and warning-free Clippy pass. All 48 local tests pass, including new
+seed/tamper, configured-bound/retention and peer-ledger privacy/replay tests.
+The existing local HTTP test now asserts the derived seed received by the server.
+Cargo.lock changes only the package version at this boundary.

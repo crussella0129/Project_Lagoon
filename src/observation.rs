@@ -1,5 +1,7 @@
 use crate::{
-    config::{Experiment, MemoryPolicy, Mode, Recipe, ReproductionPlan, fingerprint},
+    config::{
+        Experiment, MemoryPolicy, Mode, Recipe, ReproductionPlan, ResponseLimits, fingerprint,
+    },
     protocol::{Phase, PrivateState, PublicView},
 };
 use serde::{Deserialize, Serialize};
@@ -31,6 +33,8 @@ pub struct Observation {
     pub public: PublicView,
     pub memory: MemoryPolicy,
     pub omitted_public_events: usize,
+    pub response_limits: ResponseLimits,
+    pub peer_memory_aliases: Option<Vec<String>>,
 }
 
 impl Observation {
@@ -52,10 +56,25 @@ impl Observation {
             fingerprint(&("lagoon-handles-v1", config.seed, owner, round, id))
         });
         let mut result = Self {
-            procedure: PROCEDURE.into(),
+            procedure: if config.peer_memory {
+                format!(
+                    "{PROCEDURE} Optional peers is an owner-private ledger: trust is 0..10 and note is at most 64 Unicode characters. Omitted or null peers retains the ledger; a supplied map replaces it, and an empty map clears it. Recording a peer opinion is optional and has no automatic consequence."
+                )
+            } else {
+                PROCEDURE.into()
+            },
             owner: config.alias(owner),
             handles,
             round,
+            response_limits: config.string_limits.for_phase(&phase).clone(),
+            peer_memory_aliases: config.peer_memory.then(|| {
+                config
+                    .agents
+                    .iter()
+                    .filter(|agent| agent.handle != owner)
+                    .map(|agent| config.alias(&agent.handle))
+                    .collect()
+            }),
             phase,
             rounds: config.rounds,
             communication_steps: config.communication_steps,
@@ -149,6 +168,40 @@ impl Observation {
             Phase::Selection => include_str!("../schemas/selection.schema.json"),
         };
         let mut schema: serde_json::Value = serde_json::from_str(source).expect("bundled schema");
+        if matches!(self.phase, Phase::Communication { .. }) {
+            schema["properties"]["public_message"]["maxLength"] =
+                serde_json::json!(self.response_limits.public_message_chars);
+        }
+        let private = &mut schema["properties"]["private_update"]["anyOf"][1];
+        for field in ["feeling", "learned_preference", "thought"] {
+            private["properties"][field]["maxLength"] =
+                serde_json::json!(self.response_limits.private_note_chars);
+        }
+        if let Some(aliases) = &self.peer_memory_aliases {
+            let properties: serde_json::Map<String, serde_json::Value> = aliases
+                .iter()
+                .map(|alias| {
+                    (
+                        alias.clone(),
+                        serde_json::json!({
+                            "type":"object", "additionalProperties":false,
+                            "properties": {
+                                "trust":{"type":"integer","minimum":0,"maximum":10},
+                                "note":{"type":"string","maxLength":64}
+                            }, "required":["trust","note"]
+                        }),
+                    )
+                })
+                .collect();
+            private["properties"]["peers"] = serde_json::json!({
+                "type":["object","null"], "properties":properties,
+                "additionalProperties":false, "maxProperties":aliases.len()
+            });
+            private["required"]
+                .as_array_mut()
+                .unwrap()
+                .push(serde_json::json!("peers"));
+        }
         if self.phase == Phase::Selection {
             let mut partners: Vec<_> = self.handles.iter().map(|h| serde_json::json!(h)).collect();
             partners.push(serde_json::Value::Null);
@@ -403,6 +456,7 @@ mod tests {
             feeling: Some("old".into()),
             learned_preference: Some("keep".into()),
             thought: Some("keep too".into()),
+            ..Default::default()
         };
         let observation = Observation::new(
             &config,

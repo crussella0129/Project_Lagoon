@@ -290,7 +290,10 @@ mod tests {
         let request = server.await.unwrap();
         assert_eq!(request["model"], "configured-local");
         assert_eq!(request["max_tokens"], config.decoding.max_tokens);
-        assert_eq!(request["seed"], config.seed);
+        assert_eq!(
+            request["seed"],
+            crate::config::call_seed(config.seed, 0, &crate::protocol::Phase::Selection, "a")
+        );
         assert_eq!(request["messages"][0]["role"], "system");
         let payload = request.to_string();
         assert!(payload.contains("OWNER_CANARY"));

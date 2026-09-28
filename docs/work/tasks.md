@@ -1,6 +1,5 @@
 # Agent Tasks (Persistent Backlog)
 
-- [ ] T-022 (sprint 1) [intent: INT-0005]: Add call seeds, phase limits and bounded private peer ledger
 - [ ] T-023 (sprint 1) [intent: INT-0005]: Implement optional matched exit and replay/accounting
 - [ ] T-024 (sprint 1) [intent: INT-0005]: Record server provenance and implement conformance kit
 - [ ] T-025 (sprint 1) [intent: INT-0005]: Export tidy tables and verify planted-parameter recovery

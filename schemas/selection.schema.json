@@ -25,22 +25,19 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "maxLength": 64
+              ]
             },
             "learned_preference": {
               "type": [
                 "string",
                 "null"
-              ],
-              "maxLength": 64
+              ]
             },
             "thought": {
               "type": [
                 "string",
                 "null"
-              ],
-              "maxLength": 64
+              ]
             }
           },
           "required": [

@@ -9,7 +9,7 @@ authors:
 repository-code: "https://github.com/crussella0129/Project_Lagoon"
 url: "https://github.com/crussella0129/Project_Lagoon"
 license: Apache-2.0
-version: "0.3.0"
+version: "0.4.0"
 abstract: >-
   A Rust research harness for voluntary partner selection and explicit model-fusion
   agreements among language-model participants. It records bounded communication,

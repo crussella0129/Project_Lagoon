@@ -102,3 +102,11 @@
 - **Files modified:** CITATION.cff, docs/publication.md and work ledgers.
 - **Commit:** `ed44e22a7b085b333a7e71ef6960b605df22bdb5`
 - **Verification:** Official CFF 1.2.0 schema validation passes. [Archival access receipt and user deferral](improvement-plan.md#t-015-and-t-016-documentation-evidence).
+
+## T-022 (sprint 1)
+- **Description:** Implement versioned per-call seeds, configurable phase string limits and optional bounded private peer memory, with record version 4.
+- **Intent:** [INT-0005](../intents/INT-0005-observability-and-analysis.md)
+- **Completed:** 2026-09-28 UTC
+- **Files modified:** Cargo.toml, Cargo.lock, CITATION.cff, schemas/, src/config.rs, src/protocol.rs, src/observation.rs, src/runner.rs, src/replay.rs, src/record.rs, src/backend/local_http.rs, tests/instrument.rs, examples/stochastic-local-experiment.json, README.md, docs/usage.md, docs/publication.md and work ledgers/evidence.
+- **Commit:** PENDING
+- **Verification:** [48 tests, formatting and warning-free Clippy](improvement-plan.md#t-022-instrument-evidence).

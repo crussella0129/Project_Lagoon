@@ -10,7 +10,7 @@ use std::{
     path::Path,
     time::{SystemTime, UNIX_EPOCH},
 };
-pub const SCHEMA_VERSION: u32 = 3;
+pub const SCHEMA_VERSION: u32 = 4;
 pub const MAX_FILE_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, thiserror::Error)]

@@ -27,7 +27,7 @@ need to reproduce the hash.
 
 ## Current implementation
 
-The v0.3 CLI provides:
+The v0.4 CLI provides:
 
 - Deterministic fixtures and explicitly configured local HTTP inference.
 - Phase-specific JSON schemas and recorded, shuffled opaque peer and plan
@@ -40,6 +40,8 @@ The v0.3 CLI provides:
   distinct abstention and technical-failure outcomes.
 - Operator records, separate public transcripts, descriptive reports, and offline
   replay.
+- Recorded per-call sampling seeds, configurable phase response bounds and an
+  optional bounded owner-private peer ledger.
 - Pending or blocked fusion manifests with exact plan receipts and declared
   compatibility checks.
 

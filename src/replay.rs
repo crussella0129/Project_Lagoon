@@ -36,6 +36,8 @@ pub fn reconstruct(record: &Record) -> Result<Session, RecordError> {
             let calls = &record.session.calls[cursor..cursor + observations.len()];
             for (call, mut observation) in calls.iter().zip(observations) {
                 if config.alias(&call.handle) != observation.owner
+                    || call.seed
+                        != crate::config::call_seed(config.seed, round, &phase, &call.handle)
                     || !config.agents.iter().any(|a| a.handle == call.handle)
                 {
                     return Err(fail());

@@ -2,7 +2,7 @@
 
 [CITATION.cff](../CITATION.cff) supplies machine-readable author, license, repository
 and package-version metadata. Charles Russella is the name on the repository
-owner's public GitHub profile. No DOI or release date is claimed. Version 0.3.0 is
+owner's public GitHub profile. No DOI or release date is claimed. Version 0.4.0 is
 the Cargo package version, not evidence of a published archival release.
 
 ## Current integration status

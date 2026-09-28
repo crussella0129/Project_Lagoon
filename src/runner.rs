@@ -27,6 +27,7 @@ pub enum Reply {
 #[serde(deny_unknown_fields)]
 pub struct Call {
     pub handle: String,
+    pub seed: u64,
     pub observation: Observation,
     pub elapsed_ms: u64,
     pub token_trials: Vec<TokenTrial>,
@@ -187,6 +188,7 @@ pub async fn run_with(
                     .handle_for_alias(&observation.owner)
                     .expect("known owner");
                 let backend = backends[&handle].clone();
+                let seed = crate::config::call_seed(config.seed, round, &phase, &handle);
                 let permits = permits.clone();
                 let limits = config.clone();
                 let mut fallback = observation.clone();
@@ -207,7 +209,7 @@ pub async fn run_with(
                         let request = Request {
                             observation: observation.clone(),
                             decoding: limits.decoding.clone(),
-                            seed: limits.seed,
+                            seed,
                             max_response_bytes: limits.max_response_bytes,
                         };
                         let count =
@@ -236,7 +238,7 @@ pub async fn run_with(
                         let request = Request {
                             observation: observation.clone(),
                             decoding: limits.decoding.clone(),
-                            seed: limits.seed,
+                            seed,
                             max_response_bytes: limits.max_response_bytes,
                         };
                         match tokio::time::timeout_at(deadline, backend.respond(request)).await {
@@ -276,6 +278,7 @@ pub async fn run_with(
                 ));
                 let outcome = outcome_from_reply(&reply, &observation, config);
                 calls.push(Call {
+                    seed: crate::config::call_seed(config.seed, round, &phase, &handle),
                     handle,
                     response_schema_fingerprint: fingerprint(&observation.response_format()),
                     observation,

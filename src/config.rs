@@ -24,6 +24,10 @@ pub struct Experiment {
     pub max_siblings: usize,
     pub mode: Mode,
     pub decoding: Decoding,
+    #[serde(default)]
+    pub string_limits: StringLimits,
+    #[serde(default)]
+    pub peer_memory: bool,
     pub agents: Vec<Agent>,
     pub recipes: Vec<Recipe>,
     pub plans: Vec<ReproductionPlan>,
@@ -41,6 +45,50 @@ pub enum Mode {
 pub struct Decoding {
     pub temperature: f64,
     pub max_tokens: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ResponseLimits {
+    pub public_message_chars: usize,
+    pub private_note_chars: usize,
+}
+
+impl Default for ResponseLimits {
+    fn default() -> Self {
+        Self {
+            public_message_chars: crate::protocol::PUBLIC_MESSAGE_MAX_CHARS,
+            private_note_chars: crate::protocol::PRIVATE_NOTE_MAX_CHARS,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct StringLimits {
+    pub communication: ResponseLimits,
+    pub selection: ResponseLimits,
+}
+
+impl StringLimits {
+    pub fn for_phase(&self, phase: &Phase) -> &ResponseLimits {
+        match phase {
+            Phase::Communication { .. } => &self.communication,
+            Phase::Selection => &self.selection,
+        }
+    }
+}
+
+/// UTF-8 compact JSON tuple, explicit phase tag and nullable step; big-endian u64.
+pub fn call_seed(run_seed: u64, round: u32, phase: &Phase, handle: &str) -> u64 {
+    let (tag, step) = match phase {
+        Phase::Communication { step } => ("communication", Some(*step)),
+        Phase::Selection => ("selection", None),
+    };
+    let bytes = serde_json::to_vec(&("lagoon-call-seed-v1", run_seed, round, tag, step, handle))
+        .expect("seed tuple is serializable");
+    let digest = Sha256::digest(bytes);
+    u64::from_be_bytes(digest[..8].try_into().expect("eight digest bytes"))
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -184,6 +232,16 @@ impl Experiment {
                 Err(ConfigError(message))
             }
         };
+        for limits in [
+            &self.string_limits.communication,
+            &self.string_limits.selection,
+        ] {
+            require(
+                (1..=4096).contains(&limits.public_message_chars)
+                    && (1..=4096).contains(&limits.private_note_chars),
+                "string limits must be 1..=4096 Unicode characters",
+            )?;
+        }
         require((1..=100).contains(&self.rounds), "rounds must be 1..=100")?;
         require(
             self.communication_steps <= 10,
@@ -254,7 +312,13 @@ impl Experiment {
             )?;
             require(
                 agent.initial_private.byte_len() <= self.max_private_bytes
-                    && agent.initial_private.within_note_limits(),
+                    && agent.initial_private.within_note_limit(
+                        self.string_limits
+                            .communication
+                            .private_note_chars
+                            .max(self.string_limits.selection.private_note_chars),
+                    )
+                    && agent.initial_private.valid_peers(self, &agent.handle),
                 "initial private state exceeds bound",
             )?;
             if let Some(checkpoint) = &agent.checkpoint {
@@ -477,6 +541,8 @@ pub(crate) mod tests {
 
     pub fn config() -> Experiment {
         Experiment {
+            string_limits: StringLimits::default(),
+            peer_memory: false,
             seed: 9,
             rounds: 2,
             communication_steps: 1,

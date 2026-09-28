@@ -6,8 +6,7 @@
       "type": [
         "string",
         "null"
-      ],
-      "maxLength": 128
+      ]
     },
     "private_update": {
       "anyOf": [
@@ -22,22 +21,19 @@
               "type": [
                 "string",
                 "null"
-              ],
-              "maxLength": 64
+              ]
             },
             "learned_preference": {
               "type": [
                 "string",
                 "null"
-              ],
-              "maxLength": 64
+              ]
             },
             "thought": {
               "type": [
                 "string",
                 "null"
-              ],
-              "maxLength": 64
+              ]
             }
           },
           "required": [
