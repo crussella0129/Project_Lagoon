@@ -1,4 +1,4 @@
-# Lover's Lagoon
+# Project_Lagoon
 
 A Rust research harness for voluntary partner selection and explicit model-fusion
 agreements among language-model participants.

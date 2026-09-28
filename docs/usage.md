@@ -1,4 +1,4 @@
-# Running Lover's Lagoon
+# Running Project_Lagoon
 
 Sprint 0 implements the partner-choice protocol in Rust. Agents communicate,
 retain their own optional self-reports, and independently nominate one peer or

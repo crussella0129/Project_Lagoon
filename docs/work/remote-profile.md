@@ -2,7 +2,7 @@
 
 <!-- sprint-loop-remote-profile-v2 -->
 
-Provider inferred as `github` from the origin remote `https://github.com/crussella0129/Lovers_Lagoon`.
+Provider verified as `github` from the origin remote `https://github.com/crussella0129/Project_Lagoon`.
 Edit the block below to correct it; convergence never rewrites an existing profile.
 
 ```

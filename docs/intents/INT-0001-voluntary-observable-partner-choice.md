@@ -5,7 +5,7 @@
 - **State:** realized
 - **Work evidence:** [Sprint 0 build plan](../sprints/s0/sprint-plans/build-plan.md); [T-012 build/output maintenance](../work/output-review.md)
 - **Completion evidence:** [T-001 through T-007, T-011 and T-012 implementation](../work/completed-tasks.md)
-- **Code evidence:** [Rust harness](../../src/lib.rs); [tested v0.3 implementation 28585c5](https://github.com/crussella0129/Lovers_Lagoon/commit/28585c58c6dc02c7c733794ff650fbba90d22207); [historical v0.2 implementation](https://github.com/crussella0129/Lovers_Lagoon/commit/c06cce7008297639d7f4f210714a83088dec7dbe)
+- **Code evidence:** [Rust harness](../../src/lib.rs); [tested v0.3 implementation 28585c5](https://github.com/crussella0129/Project_Lagoon/commit/28585c58c6dc02c7c733794ff650fbba90d22207); [historical v0.2 implementation](https://github.com/crussella0129/Project_Lagoon/commit/c06cce7008297639d7f4f210714a83088dec7dbe)
 - **Test evidence:** [45-test local acceptance](../work/output-review.md#local-acceptance-evidence); historical [v0.2 maintenance validation](../research/instrument-validation.md), [local unit](../sprints/s0/sprint-tests/unit-tests.md), [integration](../sprints/s0/sprint-tests/integration-tests.md), [E2E](../sprints/s0/sprint-tests/e2e-tests.md); [external CI block](../sprints/s0/failure-report.md)
 - **Documentation evidence:** [Usage](../usage.md); [Research assessment](../sprints/s0/sprint-research/idea-review.md)
 
@@ -146,7 +146,7 @@ recipe optimization require a subsequent extension of this intent and its tests.
   sha2 compatibility and records bounded output/termination accounting.
 - 2026-09-27: `active` → `realized` after the locked build, format, warning-free
   clippy, all 45 local tests and Book validation passed for implementation
-  `28585c58c6dc02c7c733794ff650fbba90d22207`. [PR #6](https://github.com/crussella0129/Lovers_Lagoon/pull/6)
+  `28585c58c6dc02c7c733794ff650fbba90d22207`. [PR #6](https://github.com/crussella0129/Project_Lagoon/pull/6)
   is the review checkpoint; merging remains a human action. This realizes the
   first harness increment, not the unfrozen research protocol, real-server
   conformance, training, fusion or INT-0002/INT-0003.

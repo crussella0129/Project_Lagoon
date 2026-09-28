@@ -29,7 +29,7 @@ T-008 carries that work forward; INT-0002/0003 retain their existing proposed sc
 
 ## Evidence
 
-- [Hosted run](https://github.com/crussella0129/Lovers_Lagoon/actions/runs/36299042116)
+- [Hosted run](https://github.com/crussella0129/Project_Lagoon/actions/runs/36299042116)
 - [CI annotations](sprint-tests/ci-annotations.json)
 - [Canonical local suite](sprint-tests/cargo-test.log)
 - [Unit results](sprint-tests/unit-tests.md), [integration results](sprint-tests/integration-tests.md), [E2E results](sprint-tests/e2e-tests.md)

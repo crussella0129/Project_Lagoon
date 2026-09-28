@@ -24,10 +24,15 @@ Read-only provenance: Animus_Ferric commit `508edfd38ae4ba1f1a9ece06d3b02002cadb
 
 Sprint 0 PR #1 was merged by the user before this follow-up was published. Its hosted checks failed before runner execution because of GitHub account payment/spending-limit availability. Local success above does not supersede that failure; T-008 remains open.
 
-[Follow-up PR #5](https://github.com/crussella0129/Lovers_Lagoon/pull/5) contains tested implementation commit `c06cce7008297639d7f4f210714a83088dec7dbe`. Both its [pull-request run 36325178794](https://github.com/crussella0129/Lovers_Lagoon/actions/runs/36325178794) and [push run 36325176040](https://github.com/crussella0129/Lovers_Lagoon/actions/runs/36325176040) concluded failure. The pull-request job had **zero steps**. Its annotation states that the job was not started because recent account payments failed or the spending limit needs increasing. [Machine-readable evidence](ci-block.json) records the check/run IDs and exact message. No billing or visibility changes were made; INT-0001 remains active and the PR remains unmerged under the remote profile's human-approval policy.
+[Follow-up PR #5](https://github.com/crussella0129/Project_Lagoon/pull/5) contains tested implementation commit `c06cce7008297639d7f4f210714a83088dec7dbe`. Both its [pull-request run 36325178794](https://github.com/crussella0129/Project_Lagoon/actions/runs/36325178794) and [push run 36325176040](https://github.com/crussella0129/Project_Lagoon/actions/runs/36325176040) concluded failure. The pull-request job had **zero steps**. Its annotation states that the job was not started because recent account payments failed or the spending limit needs increasing. [Machine-readable evidence](ci-block.json) records the check/run IDs and exact message. No billing or visibility changes were made; INT-0001 remains active and the PR remains unmerged under the remote profile's human-approval policy.
 
 Later on 2026-09-27, the user merged PR #5 and requested local validation without
 waiting for GitHub CI. The statements above preserve the status at the original
 v0.2 validation point. [T-012/current local evidence](../work/output-review.md)
 records the subsequent dependency-build repair, v0.3 output accounting and the
 explicit AC-7 override; it does not turn either historical hosted failure into a pass.
+
+Subsequently, the user restored CI use for the public Project_Lagoon repository.
+[T-008 hosted completion](../work/pr-repairs.md#hosted-ci-restored) records two new
+successful Rust check runs on the repaired RNG dependency head. The historical
+failure snapshots above remain unchanged apart from canonical repository links.
