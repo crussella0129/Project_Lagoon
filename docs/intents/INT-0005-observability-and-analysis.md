@@ -5,9 +5,9 @@
 - **State:** active
 - **Work evidence:** [T-022 through T-025 plan](../sprints/s1/sprint-plans/instrument-extension.md)
 - **Completion evidence:** none
-- **Code evidence:** none
-- **Test evidence:** none
-- **Documentation evidence:** [Roadmap](../roadmap.md)
+- **Code evidence:** [Configuration](../../src/config.rs); [runner](../../src/runner.rs); [export](../../src/export.rs); [analysis](../../analysis/analyze.py)
+- **Test evidence:** [Sprint 1 partial acceptance](../sprints/s1/sprint-tests/test-report.md); [recovery receipt](../../analysis/recovery-receipt.json)
+- **Documentation evidence:** [Usage](../usage.md); [conformance kit](../../conformance/README.md); [analysis guide](../../analysis/README.md); [roadmap](../roadmap.md)
 
 ## Intent
 
@@ -45,8 +45,9 @@ Excluding zero-pair or refusal outcomes creates selection bias.
 
 ## Consequences
 
-These are future features, not claims about v0.3. Server execution needs compatible
-hardware and pinned models. Real Study A additionally requires pilot and registration
+The v0.4 instrument implements the seed, memory, retirement and export features.
+Actual server conformance still needs compatible hardware and pinned models.
+Real Study A additionally requires pilot and registration
 gates. Study B and C retain separate evaluation and operator-executed fusion gates.
 
 ## Transition history
@@ -57,3 +58,12 @@ gates. Study B and C retain separate evaluation and operator-executed fusion gat
   after the user's Zenodo deferral; instrument tasks scheduled in Sprint 1 extension.
 - 2026-09-28: `planned` → `active`; T-022 begins. Real-server conformance remains
   separately required for G1 and is not inferred from synthetic tests.
+
+## Current evidence and remaining work
+
+T-022–25 pass local/hosted tests and fixed planted-parameter recovery. T-018 must
+still supply actual vLLM/llama.cpp receipts and justify the output reserve before G1;
+the intent remains active. T-020 covers empirical coverage and the separate pilot
+before freeze. Profiles are intentionally unavailable until INT-0004 implements
+their semantics; neither empty profile tables nor operator feature annotations
+constitute a social-layer implementation.

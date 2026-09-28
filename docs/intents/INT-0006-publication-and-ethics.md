@@ -5,9 +5,9 @@
 - **State:** active
 - **Work evidence:** [T-015 and T-016 build plan](../sprints/s1/sprint-plans/build-plan.md)
 - **Completion evidence:** none
-- **Code evidence:** none
-- **Test evidence:** none
-- **Documentation evidence:** none
+- **Code evidence:** [Citation metadata](../../CITATION.cff)
+- **Test evidence:** [Sprint 1 partial acceptance](../sprints/s1/sprint-tests/test-report.md)
+- **Documentation evidence:** [Origin](../../ORIGIN.md); [ethics](../../ETHICS.md); [publication prerequisites](../publication.md); [draft studies](../../PREREG.md)
 
 ## Intent
 
@@ -61,3 +61,10 @@ Private operator data require separate publication review even if the code is pu
 - 2026-09-28: revised while `active` after "Defer Zenodo; continue implementation";
   citation preparation remains in Phase 0, archival activation moves to the release
   gate and no longer blocks G0. T-017 remains open; no claim of activation is made.
+
+## Current evidence and remaining work
+
+Sprint 1 proves provenance, policy, study separation and citation preparation.
+The intent remains active: T-017 requires real archival activation and the later
+approved release DOI; T-021 requires a frozen, independently registered Study A.
+Documented instructions are not evidence those external actions occurred.

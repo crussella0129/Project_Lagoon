@@ -2,12 +2,12 @@
 
 <!-- sprint-loop-intent-v2 -->
 - **Intent ID:** INT-0007
-- **State:** active
+- **State:** realized
 - **Work evidence:** [T-014 build plan](../sprints/s1/sprint-plans/build-plan.md)
-- **Completion evidence:** none
-- **Code evidence:** none
-- **Test evidence:** none
-- **Documentation evidence:** none
+- **Completion evidence:** [Sprint 1 tested acceptance](../sprints/s1/sprint-tests/test-report.md)
+- **Code evidence:** [Stable toolchain](../../rust-toolchain.toml); [required CI](../../.github/workflows/sprint-loops-ci.yml); [desired main ruleset](../../.github/main-ruleset.json)
+- **Test evidence:** [Local/hosted checks and active rules](../sprints/s1/sprint-tests/e2e-tests.md)
+- **Documentation evidence:** [README](../../README.md); [implementation receipts](../work/improvement-plan.md)
 
 ## Intent
 
@@ -56,3 +56,6 @@ are checked by the same stable workflow. Local users run `rustup update stable`.
   use rolling stable only. The [plan amendment](../sprints/s1/sprint-plans/plan-amendment.md)
   supersedes numbered-floor and two-job clauses without rewriting locked history.
 - 2026-09-28: `planned` → `active`; T-014 implementation and validation started.
+- 2026-09-28: `active` → `realized`; stable local/hosted checks pass on bc5cec1,
+  active main rules require the Actions check with no bypass, and weekly grouped
+  Cargo/Actions updates remain configured (uv added for the analysis environment).
