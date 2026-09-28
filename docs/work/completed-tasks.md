@@ -84,5 +84,5 @@
 - **Intent:** [INT-0007](../intents/INT-0007-supported-builds.md)
 - **Completed:** 2026-09-28 UTC
 - **Files modified:** Cargo.toml, rust-toolchain.toml, src/merge_request.rs, src/protocol.rs, src/replay.rs, .github/, README.md, docs/usage.md, docs/intents/INT-0007-supported-builds.md, docs/sprints/s1/, docs/work/improvement-plan.md and work ledgers.
-- **Commit:** PENDING
+- **Commit:** `08e4d1a56f673d6d495d26c6793c5c50e93150df`
 - **Verification:** [45 local tests, formatting, Clippy and active ruleset receipt](improvement-plan.md#t-014-local-and-remote-evidence); hosted acceptance recorded in the sprint test phase.
