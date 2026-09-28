@@ -132,5 +132,5 @@
 - **Intent:** [INT-0005](../intents/INT-0005-observability-and-analysis.md)
 - **Completed:** 2026-09-28 UTC
 - **Files modified:** src/export.rs, src/lib.rs, src/main.rs, src/record.rs, tests/cli.rs, analysis/, conformance/probe.py, conformance/test_probe.py, .github/, README.md, docs/usage.md, docs/roadmap.md, docs/SUMMARY.md and work ledgers/evidence.
-- **Commit:** PENDING
+- **Commit:** `c2523f1df99a21a1e960d7584eb7fb3d67ce4572`
 - **Verification:** [54 Rust tests, analysis/conformance checks and planted recovery](improvement-plan.md#t-025-export-and-recovery-evidence).
