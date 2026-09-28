@@ -5,6 +5,12 @@ plans with the explicit user amendment and instrument extension, completed-task
 commits, all three test artifacts and linked INT-0005/6/7 acceptance criteria.
 Final pass reflects the successful CI result on bc5cec1472eda883c0278ebe1d7a4f58cb222d61.
 
+Checkpoint re-review: PR #10 targets main; main ancestry is included without a
+tree change. Reviewed the later `const` feature-name guard and its negative
+integration assertion (8ebe26d); both Python suites pass and no estimator,
+fixture or recovery criterion changed. The same verdict and open scientific gates
+apply. Required PR-head checks remain the final external observation.
+
 ## Concerns
 
 ### C-001: Real-server acceptance remains unproved
