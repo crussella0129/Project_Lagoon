@@ -31,3 +31,8 @@ waiting for GitHub CI. The statements above preserve the status at the original
 v0.2 validation point. [T-012/current local evidence](../work/output-review.md)
 records the subsequent dependency-build repair, v0.3 output accounting and the
 explicit AC-7 override; it does not turn either historical hosted failure into a pass.
+
+Subsequently, the user restored CI use for the public Project_Lagoon repository.
+[T-008 hosted completion](../work/pr-repairs.md#hosted-ci-restored) records two new
+successful Rust check runs on the repaired RNG dependency head. The historical
+failure snapshots above remain unchanged apart from canonical repository links.

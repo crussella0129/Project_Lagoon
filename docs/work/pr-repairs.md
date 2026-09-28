@@ -1,7 +1,8 @@
 # RNG dependency PR repairs
 
 2026-09-27. Maintenance requested before the user supplies the next sprint.
-No new sprint is active. Validation is local, without waiting for hosted CI.
+No new sprint is active. Validation began locally while CI was deferred; the user
+then restored CI use for the public repository. Both hosted Rust checks passed.
 
 - [x] Inspect open PRs and reproduce the development branch failure.
 - [x] Combine compatible RNG upgrades, migrate the example API and resolve conflicts.
@@ -56,8 +57,24 @@ rand_chacha 0.10.0, rand_distr 0.6.0 and rand_core 0.10.1.
 - `git diff --check` and Book validation: pass.
 
 No scientific protocol, model weights, response format or recorded result changed.
-Local validation is the acceptance evidence; no hosted result is claimed.
+Local validation is supplemented by the hosted evidence below.
 
 Tested repair commit: `125594c2cfe81ed491e6eb2d5e57390b056ebbe3`. Subsequent
 commits update documentation and publication evidence only. [T-013 completion](completed-tasks.md#t-013-pre-sprint-maintenance)
 records this maintenance; no next sprint has been initiated.
+
+## Hosted CI restored
+
+The user explicitly restored CI use after confirming the repository is public.
+Both `Rust checks` pull-request runs completed successfully for head
+`bcd18a9074b140b1b6e2e30c88dd9ecc6d549f65`:
+
+- [Run 36370335762](https://github.com/crussella0129/Project_Lagoon/actions/runs/36370335762).
+- [Run 36370335758](https://github.com/crussella0129/Project_Lagoon/actions/runs/36370335758).
+
+The observed job executed checkout, stable Rust setup, `cargo fmt --check`,
+`cargo clippy --locked --all-targets -- -D warnings` and
+`cargo test --locked --all-targets`; each step succeeded. Both PRs were reported
+mergeable. This closes T-008 with new hosted evidence; earlier account-blocked
+runs remain recorded as failures. The subsequent evidence-only commit does not
+alter the tested source or lockfile.

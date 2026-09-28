@@ -70,4 +70,11 @@
 - **Completed:** 2026-09-27
 - **Files modified:** Cargo.toml, Cargo.lock, examples/variance-study.rs, .github/dependabot.yml, README.md, docs/usage.md, docs/SUMMARY.md, docs/work, docs/intents/INT-0001-voluntary-observable-partner-choice.md, docs/research/instrument-validation.md, docs/research/ci-block.json, docs/sprints/s0 name/link references and CI annotation URLs.
 - **Commit:** `125594c2cfe81ed491e6eb2d5e57390b056ebbe3` (tested merge repair; subsequent documentation/evidence commits do not change code).
-- **Verification:** [local locked build, format, clippy, all 45 tests and full study-result equality](pr-repairs.md#local-evidence). [PR #8](https://github.com/crussella0129/Project_Lagoon/pull/8) and [PR #9](https://github.com/crussella0129/Project_Lagoon/pull/9) share the compatible repair history and are conflict-free. Either includes the complete fix; no force push or automatic merge. Public publication was explicitly approved by the user. No hosted CI wait or new sprint.
+- **Verification:** [local locked build, format, clippy, all 45 tests and full study-result equality](pr-repairs.md#local-evidence); [both hosted Rust checks pass](pr-repairs.md#hosted-ci-restored) after the user restored public CI use. [PR #8](https://github.com/crussella0129/Project_Lagoon/pull/8) and [PR #9](https://github.com/crussella0129/Project_Lagoon/pull/9) share the compatible repair history and are conflict-free. Either includes the complete fix; no force push or automatic merge. Public publication was explicitly approved by the user. No new sprint.
+
+## T-008 (hosted verification follow-up)
+- **Description:** Complete hosted Rust verification after the user restored CI use for the public repository.
+- **Intent:** [INT-0001](../intents/INT-0001-voluntary-observable-partner-choice.md)
+- **Completed:** 2026-09-27 (local date; hosted jobs completed 2026-09-28 UTC).
+- **Tested head:** `bcd18a9074b140b1b6e2e30c88dd9ecc6d549f65`.
+- **Verification:** [successful run 36370335762](https://github.com/crussella0129/Project_Lagoon/actions/runs/36370335762) and [successful run 36370335758](https://github.com/crussella0129/Project_Lagoon/actions/runs/36370335758), with formatting, warning-free clippy and all-target tests executed. [Detailed evidence](pr-repairs.md#hosted-ci-restored). Historical blocked checks retain their original failure conclusions; this records new validation rather than relabeling them.
