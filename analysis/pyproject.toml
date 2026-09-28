@@ -1,0 +1,16 @@
+[project]
+name = "lagoon-analysis"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "jsonschema>=4.23,<5",
+  "numpy>=2,<3",
+  "pandas>=2.2,<4",
+  "statsmodels>=0.14,<0.16",
+]
+
+[dependency-groups]
+dev = ["ruff>=0.12,<1"]
+
+[tool.ruff]
+target-version = "py311"

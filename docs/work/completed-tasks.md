@@ -118,3 +118,11 @@
 - **Files modified:** src/config.rs, src/protocol.rs, src/observation.rs, src/runner.rs, src/replay.rs, src/report.rs, tests/instrument.rs, examples/matched-exit-experiment.json, README.md, ETHICS.md, docs/usage.md, docs/roadmap.md, prereg/study-b-screening.md and work ledgers/evidence.
 - **Commit:** `71bfdf642e0c53414d7ce61d278c21caa9956324`
 - **Verification:** [51 tests, formatting, warning-free Clippy and local build-resource workaround](improvement-plan.md#t-023-matched-exit-evidence).
+
+## T-024 (sprint 1)
+- **Description:** Require operator-only local-server provenance, expose runtime contracts and add a pinned, fail-closed conformance kit; real execution remains T-018.
+- **Intent:** [INT-0005](../intents/INT-0005-observability-and-analysis.md)
+- **Completed:** 2026-09-28 UTC
+- **Files modified:** src/config.rs, src/main.rs, tests/cli.rs, tests/instrument.rs, conformance/, analysis/pyproject.toml, analysis/uv.lock, .gitignore, local examples, docs/usage.md, docs/roadmap.md and work ledgers/evidence.
+- **Commit:** PENDING
+- **Verification:** [53 Rust tests, 5 Python tests and provenance/conformance limitations](improvement-plan.md#t-024-conformance-kit-evidence).

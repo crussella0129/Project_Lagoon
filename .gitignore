@@ -1,5 +1,8 @@
 /target/
 /runs/
+**/.venv/
+**/__pycache__/
+.ruff_cache/
 # >>> sprint-loops >>>
 # The Book is tracked. Ignore only transient helper output.
 *.tmp

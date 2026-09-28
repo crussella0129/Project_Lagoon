@@ -1,6 +1,5 @@
 # Agent Tasks (Persistent Backlog)
 
-- [ ] T-024 (sprint 1) [intent: INT-0005]: Record server provenance and implement conformance kit
 - [ ] T-025 (sprint 1) [intent: INT-0005]: Export tidy tables and verify planted-parameter recovery
 - [ ] T-017 (backlog) [intent: INT-0006]: Enable and verify Zenodo integration before archival release; explicitly deferred from G0
 - [ ] T-018 (backlog) [intent: INT-0005]: Execute real-server conformance and commit verified receipts before G1

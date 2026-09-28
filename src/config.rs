@@ -144,6 +144,19 @@ pub struct Agent {
     #[serde(default)]
     pub initial_private: PrivateState,
     pub backend: BackendConfig,
+    #[serde(default)]
+    pub inference: Option<InferenceProvenance>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct InferenceProvenance {
+    pub server: String,
+    pub server_version: String,
+    pub grammar_backend: String,
+    pub model_revision: String,
+    pub chat_template_sha256: String,
+    pub conformance_report_sha256: Option<String>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -316,6 +329,28 @@ impl Experiment {
         )?;
         let mut handles = BTreeSet::new();
         for agent in &self.agents {
+            if let Some(provenance) = &agent.inference {
+                require(
+                    [
+                        &provenance.server,
+                        &provenance.server_version,
+                        &provenance.grammar_backend,
+                    ]
+                    .into_iter()
+                    .all(|s| valid_metadata(s))
+                        && [40, 64].contains(&provenance.model_revision.len())
+                        && provenance
+                            .model_revision
+                            .bytes()
+                            .all(|b| b.is_ascii_hexdigit())
+                        && valid_sha256(&provenance.chat_template_sha256)
+                        && provenance
+                            .conformance_report_sha256
+                            .as_deref()
+                            .is_none_or(valid_sha256),
+                    "invalid inference provenance",
+                )?;
+            }
             require(
                 valid_id(&agent.handle) && handles.insert(&agent.handle),
                 "invalid or duplicate handle",
@@ -354,6 +389,10 @@ impl Experiment {
                     model,
                     tokenizer,
                 } => {
+                    require(
+                        agent.inference.is_some(),
+                        "local inference requires server/model/template provenance",
+                    )?;
                     validate_endpoint(endpoint)?;
                     require(valid_metadata(model), "missing local model")?;
                     match tokenizer {
@@ -508,6 +547,10 @@ fn valid_id(value: &str) -> bool {
             .all(|b| b.is_ascii_alphanumeric() || b"_-".contains(&b))
 }
 
+fn valid_sha256(value: &str) -> bool {
+    value.len() == 64 && value.bytes().all(|b| b.is_ascii_hexdigit())
+}
+
 fn valid_metadata(value: &str) -> bool {
     !value.trim().is_empty() && value.len() <= 256 && !value.chars().any(char::is_control)
 }
@@ -572,6 +615,14 @@ pub(crate) mod tests {
             agents: ["a", "b", "c"]
                 .into_iter()
                 .map(|handle| Agent {
+                    inference: Some(InferenceProvenance {
+                        server: "test-double".into(),
+                        server_version: "fixture".into(),
+                        grammar_backend: "fixture".into(),
+                        model_revision: "f".repeat(40),
+                        chat_template_sha256: "f".repeat(64),
+                        conformance_report_sha256: None,
+                    }),
                     handle: handle.into(),
                     checkpoint: None,
                     merge_metadata: None,

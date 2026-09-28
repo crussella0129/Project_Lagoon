@@ -1,0 +1,9 @@
+{
+  "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "model_revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+  "license": "Apache-2.0",
+  "chat_template_sha256": "872be49dbb638044ad01b60388f48d469ff2980e5f0dccdc22ec907db54d0788",
+  "vllm_version": "0.30.0",
+  "llama_cpp_commit": "505b1ed15ca80e2a19f12ff4ac365e40fb374053",
+  "llama_cpp_build": "10034"
+}

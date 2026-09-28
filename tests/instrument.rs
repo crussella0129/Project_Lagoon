@@ -15,6 +15,45 @@ fn config() -> Experiment {
     serde_json::from_str(include_str!("../examples/fixture-experiment.json")).unwrap()
 }
 
+#[tokio::test]
+async fn server_provenance_privacy() {
+    let mut config = config();
+    config.agents[0].inference = Some(lovers_lagoon::config::InferenceProvenance {
+        server: "SERVER_PRIVATE_CANARY".into(),
+        server_version: "fixture".into(),
+        grammar_backend: "GRAMMAR_PRIVATE_CANARY".into(),
+        model_revision: "a".repeat(40),
+        chat_template_sha256: "b".repeat(64),
+        conformance_report_sha256: None,
+    });
+    let session = runner::run(&config).await.unwrap();
+    assert!(session.calls.iter().all(|call| {
+        !call
+            .observation
+            .messages()
+            .to_string()
+            .contains("PRIVATE_CANARY")
+    }));
+    let record = Record::from_session(config.clone(), session, 0, 1);
+    assert!(
+        serde_json::to_string(&record)
+            .unwrap()
+            .contains("SERVER_PRIVATE_CANARY")
+    );
+    replay::reconstruct(&record).unwrap();
+    config.agents[0].inference.as_mut().unwrap().model_revision = "main".into();
+    assert!(config.validate().is_err());
+    config.agents[0].inference = None;
+    config.agents[0].backend = BackendConfig::LocalHttp {
+        endpoint: "http://127.0.0.1:8000/v1/chat/completions".into(),
+        model: "unverified".into(),
+        tokenizer: lovers_lagoon::config::TokenizerConfig::Vllm {
+            endpoint: "http://127.0.0.1:8000/tokenize".into(),
+        },
+    };
+    assert!(config.validate().is_err());
+}
+
 fn exit_config() -> Experiment {
     let mut config = config();
     config.pairing = lovers_lagoon::config::PairingProtocol::MatchedExit;

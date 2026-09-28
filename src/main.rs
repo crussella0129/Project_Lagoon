@@ -23,6 +23,15 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
+    /// Inspect one initial runtime contract without inference (operator-only output).
+    Schema {
+        #[arg(long)]
+        config: PathBuf,
+        #[arg(long)]
+        owner: String,
+        #[arg(long, default_value = "selection")]
+        phase: SchemaPhase,
+    },
     /// Run explicitly configured fixtures or literal-loopback HTTP backends.
     Run {
         #[arg(long)]
@@ -49,6 +58,12 @@ enum Command {
     },
 }
 
+#[derive(Clone, clap::ValueEnum)]
+enum SchemaPhase {
+    Communication,
+    Selection,
+}
+
 fn configuration(path: &Path) -> Result<Experiment, RecordError> {
     let value: Experiment = record::read_json(path)?;
     value
@@ -67,6 +82,39 @@ fn print_json<T: serde::Serialize>(value: &T) -> Result<(), RecordError> {
 
 async fn execute(cli: Cli) -> Result<(), RecordError> {
     match cli.command {
+        Command::Schema {
+            config,
+            owner,
+            phase,
+        } => {
+            let config = configuration(&config)?;
+            let agent = config
+                .agents
+                .iter()
+                .find(|agent| agent.handle == owner)
+                .ok_or(RecordError("unknown schema owner"))?;
+            let phase = match phase {
+                SchemaPhase::Communication => Phase::Communication { step: 0 },
+                SchemaPhase::Selection => Phase::Selection,
+            };
+            let observation = Observation::new(
+                &config,
+                &owner,
+                &agent.initial_private,
+                &PublicView::default(),
+                0,
+                phase.clone(),
+            );
+            let response_format = observation.response_format();
+            print_json(&serde_json::json!({
+                "config_fingerprint":lovers_lagoon::config::fingerprint(&config),
+                "response_schema_fingerprint":lovers_lagoon::config::fingerprint(&response_format),
+                "response_format":response_format,"messages":observation.messages(),
+                "seed":lovers_lagoon::config::call_seed(config.seed,0,&phase,&owner),
+                "inference":agent.inference,"backend":agent.backend,
+                "decoding":config.decoding
+            }))
+        }
         Command::Run { config, output } => {
             let config = configuration(&config)?;
             if output.exists() {

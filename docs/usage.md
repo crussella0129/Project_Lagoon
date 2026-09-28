@@ -348,3 +348,19 @@ random-nomination references use that round's eligible population. The top-level
 reference uses the initial population and is not a cumulative matched-exit prediction.
 Replay reconstructs eligibility and rejects missing, extra or forged calls/retirements.
 Choosing this option as a study's primary endpoint still requires a frozen decision.
+
+## Server provenance and conformance
+
+Every `local_http` agent requires an `inference` object with `server`,
+`server_version`, `grammar_backend`, an immutable 40/64-hex `model_revision`,
+64-hex `chat_template_sha256` and optional `conformance_report_sha256`.
+These operator declarations are retained in records and excluded from participant
+observations. They are not independently verified by the runner. Fixture agents
+may omit them. The local example files deliberately contain invalid replacement
+placeholders: pin actual artifacts before running.
+
+`schema --config <file> --owner <handle> --phase communication|selection`
+exports the initial runtime contract, schema fingerprint and seed without
+inference. This is operator-only output, including the owner's initial notes.
+See the [conformance kit](../conformance/README.md) for pinned launch/probe commands,
+empirical reserve limitations and the still-open G1 evidence requirements.

@@ -63,6 +63,38 @@ fn check_replay(original: &Path, copy: &Path) {
 }
 
 #[test]
+fn cli_runtime_schema_contract() {
+    for phase in ["communication", "selection"] {
+        let output = success(
+            binary()
+                .args(["schema", "--config"])
+                .arg(example("fixture-experiment.json"))
+                .args(["--owner", "a", "--phase", phase])
+                .output()
+                .unwrap(),
+        );
+        let value: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(
+            value["response_schema_fingerprint"],
+            lovers_lagoon::config::fingerprint(&value["response_format"])
+        );
+        assert_eq!(value["messages"].as_array().unwrap().len(), 2);
+        assert!(value["seed"].as_u64().is_some());
+        assert_eq!(value["response_format"]["json_schema"]["strict"], true);
+    }
+    assert!(
+        !binary()
+            .args(["schema", "--config"])
+            .arg(example("fixture-experiment.json"))
+            .args(["--owner", "missing"])
+            .output()
+            .unwrap()
+            .status
+            .success()
+    );
+}
+
+#[test]
 fn cli_fixture_run_replay_report() {
     let root = tempfile::tempdir().unwrap();
     let run = root.path().join("run");
@@ -170,6 +202,14 @@ fn local_config(endpoint: String, root: &Path) -> PathBuf {
     let mut config: Experiment = record::read_json(&example("fixture-experiment.json")).unwrap();
     config.rounds = 1;
     for agent in &mut config.agents {
+        agent.inference = Some(lovers_lagoon::config::InferenceProvenance {
+            server: "test-double".into(),
+            server_version: "fixture".into(),
+            grammar_backend: "fixture".into(),
+            model_revision: "f".repeat(40),
+            chat_template_sha256: "f".repeat(64),
+            conformance_report_sha256: None,
+        });
         agent.backend = BackendConfig::LocalHttp {
             endpoint: endpoint.clone(),
             model: "test-local".into(),

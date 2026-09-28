@@ -65,3 +65,17 @@ cases. A Windows linker failure was environmental: C: had zero free bytes. Remov
 only the verified workspace `target/debug/incremental` build cache (about 3.7 GiB),
 then tested with one build job, incremental compilation off and dev/test debug
 symbols off. These local resource settings do not change the test suite or CI policy.
+
+## T-024 conformance-kit evidence
+
+53 Rust tests, formatting and warning-free Clippy passed; Python's five negative
+fixture tests, ruff formatting and lint checks passed. Runtime contracts and declared
+server/model/template/grammar provenance are recorded without peer disclosure.
+The kit pins server versions, model revision and template digest, verifies received
+schemas/usage/finish reasons and only proposes a reserve after all probes pass.
+
+[Primary sources, exact commands and limitations](../../conformance/README.md)
+are retained with the kit. No actual vLLM or llama.cpp probe was executed: vLLM is
+absent and Docker's Linux engine is unavailable locally. G1 remains open; empirical
+sample maxima do not establish worst-case schema token bounds. Both local templates
+require replacement provenance values before use. No token reserve was reduced.
