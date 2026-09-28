@@ -55,7 +55,7 @@
 - **Completed:** 2026-09-27
 - **Files modified:** Cargo.toml, Cargo.lock, src/backend, src/config.rs, src/observation.rs, src/protocol.rs, src/runner.rs, src/record.rs, src/replay.rs, src/report.rs, src/main.rs, tests/cli.rs, schemas, examples, .github/workflows/sprint-loops-ci.yml, README.md, PREREG.md, docs/usage.md, docs/intents, docs/research, docs/work/instrument-review.md, docs/SUMMARY.md
 - **Commit:** `c06cce7008297639d7f4f210714a83088dec7dbe`
-- **Verification:** [38 local tests, format and clippy](../research/instrument-validation.md); [PR #5](https://github.com/crussella0129/Lovers_Lagoon/pull/5). Hosted CI failed before runner execution; this maintenance completion does not realize INT-0001 or close T-008.
+- **Verification:** [38 local tests, format and clippy](../research/instrument-validation.md); [PR #5](https://github.com/crussella0129/Project_Lagoon/pull/5). Hosted CI failed before runner execution; this maintenance completion does not realize INT-0001 or close T-008.
 
 ## T-012 (post-Sprint 0 maintenance)
 - **Description:** Restore main's sha2 0.11 build compatibility, bound response strings and diagnose output token limits with replayable finish-reason receipts; verify matching-reference probabilities and revise pilot coverage/opportunity criteria while deferring training.
@@ -63,4 +63,11 @@
 - **Completed:** 2026-09-27
 - **Files modified:** Cargo.toml, Cargo.lock, src/backend, src/config.rs, src/observation.rs, src/protocol.rs, src/runner.rs, src/record.rs, src/replay.rs, src/report.rs, schemas, examples, README.md, PREREG.md, docs/usage.md, docs/research/output-review.md, docs/work/output-review.md, docs/intents/INT-0001-voluntary-observable-partner-choice.md, docs/work/tasks.md, docs/SUMMARY.md
 - **Commit:** `28585c58c6dc02c7c733794ff650fbba90d22207` (tested implementation; subsequent evidence-only commit reconciles acceptance state).
-- **Verification:** [locked build, format, clippy and 45 passing local tests](output-review.md#local-acceptance-evidence); [PR #6](https://github.com/crussella0129/Lovers_Lagoon/pull/6). Per the user's explicit local-testing override, hosted CI is optional and INT-0001 is realized for the harness increment. T-008 remains an optional backlog follow-up. No real server conformance, training, fusion, external registration or live matched-exit treatment occurred.
+- **Verification:** [locked build, format, clippy and 45 passing local tests](output-review.md#local-acceptance-evidence); [PR #6](https://github.com/crussella0129/Project_Lagoon/pull/6). Per the user's explicit local-testing override, hosted CI is optional and INT-0001 is realized for the harness increment. T-008 remains an optional backlog follow-up. No real server conformance, training, fusion, external registration or live matched-exit treatment occurred.
+
+## T-013 (pre-sprint maintenance)
+- **Description:** Repair the coupled RNG dependency PRs, resolve their conflicts, migrate the variance-study API and group future RNG updates. Synchronize local origin and all documentation names/links with Project_Lagoon.
+- **Completed:** 2026-09-27
+- **Files modified:** Cargo.toml, Cargo.lock, examples/variance-study.rs, .github/dependabot.yml, README.md, docs/usage.md, docs/SUMMARY.md, docs/work, docs/intents/INT-0001-voluntary-observable-partner-choice.md, docs/research/instrument-validation.md, docs/research/ci-block.json, docs/sprints/s0 name/link references and CI annotation URLs.
+- **Commit:** `125594c2cfe81ed491e6eb2d5e57390b056ebbe3` (tested merge repair; subsequent documentation/evidence commits do not change code).
+- **Verification:** [local locked build, format, clippy, all 45 tests and full study-result equality](pr-repairs.md#local-evidence). [PR #8](https://github.com/crussella0129/Project_Lagoon/pull/8) and [PR #9](https://github.com/crussella0129/Project_Lagoon/pull/9) share the compatible repair history and are conflict-free. Either includes the complete fix; no force push or automatic merge. Public publication was explicitly approved by the user. No hosted CI wait or new sprint.

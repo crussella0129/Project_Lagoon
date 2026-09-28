@@ -1,4 +1,4 @@
-# Lover's Lagoon — idea assessment
+# Project_Lagoon — idea assessment
 
 Reviewed 2026-09-27. This is research commentary; the stable desired outcomes live
 in INT-0001, INT-0002, and INT-0003.

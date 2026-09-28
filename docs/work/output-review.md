@@ -5,7 +5,7 @@
 - [x] Reproduce main's locked build failure and preserve fingerprints while fixing sha2 0.11 compatibility. The restored build and all 38 pre-existing tests passed before the output changes.
 - [x] Bound response strings, retain finish reasons, distinguish generation limits, and validate replay locally. Partial/complete/null-content length responses are rejected as generation limits without applying memory or ballots.
 - [x] Revise pilot coverage/opportunity criteria and assess the proposed matched-exit protocol and registration services. Exact uniform references reproduce the review's ~8% and ~57% probabilities; preference-crowding estimates remain underspecified.
-- [x] Run the locked local build, all-target tests, formatting and clippy; record completion and publish a reviewable follow-up. [PR #6](https://github.com/crussella0129/Lovers_Lagoon/pull/6) is attached to this task and awaits human merge approval.
+- [x] Run the locked local build, all-target tests, formatting and clippy; record completion and publish a reviewable follow-up. [PR #6](https://github.com/crussella0129/Project_Lagoon/pull/6) is attached to this task and awaits human merge approval.
 
 Training, actual merging, changing the live matching protocol, and external registration remain outside this repair. The draft can identify a matched-exit treatment requiring implementation before freezing; the existing voluntary matching behavior remains the baseline.
 

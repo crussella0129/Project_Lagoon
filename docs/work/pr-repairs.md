@@ -6,7 +6,7 @@ No new sprint is active. Validation is local, without waiting for hosted CI.
 - [x] Inspect open PRs and reproduce the development branch failure.
 - [x] Combine compatible RNG upgrades, migrate the example API and resolve conflicts.
 - [x] Validate the locked build, all-target tests, format, clippy and study reproducibility locally.
-- [ ] Update both existing PRs with the tested revision and final scope.
+- [x] Update both existing PRs with the tested revision and final scope. Both branch heads are shared and GitHub reports them mergeable; merging remains a user action.
 
 ## Findings
 
@@ -28,12 +28,15 @@ Future version updates group these three dependencies, using Dependabot's
 documented [dependency grouping](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/optimizing-pr-creation-version-updates).
 This reduces fragmented upgrades; API changes still require local validation.
 
-GitHub resolves the former `Lovers_Lagoon` remote to the user's renamed
-`crussella0129/Project_Lagoon` repository. Current PR links use that canonical name.
+The canonical GitHub repository is `crussella0129/Project_Lagoon`.
+Current PR links use that name.
 At the user's request, local origin, the remote-profile metadata and current
 README/usage titles now use `Project_Lagoon`. The existing Rust package/CLI name
 remains `lovers-lagoon` for compatibility. The user explicitly approved publishing
 these tested repairs and maintenance docs to the now-public canonical repository.
+The subsequent request to update all docs also normalized names and repository
+links throughout the Book, sprint documents and archived CI metadata. Recorded
+results, compiler logs, failure messages and commit/run identifiers remain intact.
 
 ## Local evidence
 
@@ -54,3 +57,7 @@ rand_chacha 0.10.0, rand_distr 0.6.0 and rand_core 0.10.1.
 
 No scientific protocol, model weights, response format or recorded result changed.
 Local validation is the acceptance evidence; no hosted result is claimed.
+
+Tested repair commit: `125594c2cfe81ed491e6eb2d5e57390b056ebbe3`. Subsequent
+commits update documentation and publication evidence only. [T-013 completion](completed-tasks.md#t-013-pre-sprint-maintenance)
+records this maintenance; no next sprint has been initiated.
