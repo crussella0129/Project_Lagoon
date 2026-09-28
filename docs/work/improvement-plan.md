@@ -113,3 +113,8 @@ and full recovery. Weekly grouped Dependabot updates include the `uv` ecosystem
 at `/analysis`, as documented by [uv](https://docs.astral.sh/uv/guides/integration/dependabot/).
 Real conformance, social profiles, empirical coverage/pilot, freeze and registration
 remain open; no real study, training or fusion was run.
+
+The first extended hosted run [36378555673](https://github.com/crussella0129/Project_Lagoon/actions/runs/36378555673)
+failed before executing tests because setup-uv has release `v10.2.0` but no floating
+`v10` ref. Replaced the workflow reference with the verified exact release. This
+is a CI setup correction, not a test exclusion; all required checks remain enabled.
