@@ -21,3 +21,10 @@ test receipts. Verdict: clean for this amendment; prior Zenodo caveat remains.
 Current stable validation exposed three `collapsible_if` Clippy warnings in
 src/merge_request.rs, src/protocol.rs and src/replay.rs. Equivalent let-chain
 rewrites are included in T-014, verified by its existing full-suite requirement.
+
+## Zenodo deferral
+
+The user answered "Defer Zenodo; continue implementation". T-016's citation and
+honest-readiness requirements remain; T-017 archival activation moves to a release
+prerequisite and no longer blocks G0. Preserve the access receipt and open task.
+The initial critique's G0 caveat is superseded by this explicit user decision.

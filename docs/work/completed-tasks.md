@@ -86,3 +86,11 @@
 - **Files modified:** Cargo.toml, rust-toolchain.toml, src/merge_request.rs, src/protocol.rs, src/replay.rs, .github/, README.md, docs/usage.md, docs/intents/INT-0007-supported-builds.md, docs/sprints/s1/, docs/work/improvement-plan.md and work ledgers.
 - **Commit:** `08e4d1a56f673d6d495d26c6793c5c50e93150df`
 - **Verification:** [45 local tests, formatting, Clippy and active ruleset receipt](improvement-plan.md#t-014-local-and-remote-evidence); hosted acceptance recorded in the sprint test phase.
+
+## T-015 (sprint 1)
+- **Description:** Preserve the original concept verbatim, document ethics, separate Study A/B drafts and track the complete staged roadmap.
+- **Intent:** [INT-0006](../intents/INT-0006-publication-and-ethics.md)
+- **Completed:** 2026-09-28 UTC
+- **Files modified:** ORIGIN.md, ETHICS.md, PREREG.md, prereg/, README.md, docs/roadmap.md, docs/SUMMARY.md, docs/intents/INT-0006-publication-and-ethics.md, docs/work/improvement-plan.md, docs/sprints/s1/sprint-plans/plan-amendment.md and work ledgers.
+- **Commit:** PENDING
+- **Verification:** [Original-blob equality, preserved Study B content, working relative links and design review](improvement-plan.md#t-015-and-t-016-documentation-evidence).

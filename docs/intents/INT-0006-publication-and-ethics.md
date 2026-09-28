@@ -2,7 +2,7 @@
 
 <!-- sprint-loop-intent-v2 -->
 - **Intent ID:** INT-0006
-- **State:** planned
+- **State:** active
 - **Work evidence:** [T-015 and T-016 build plan](../sprints/s1/sprint-plans/build-plan.md)
 - **Completion evidence:** none
 - **Code evidence:** none
@@ -27,9 +27,9 @@ frozen, independently registered protocol and its operational gates exist.
   Study A draft covers treatments, sampling, outcomes, hypotheses, exclusions,
   parameter recovery, registration and unresolved freeze decisions.
 - **AC-4:** Valid citation metadata names the repository and verified author without
-  inventing a DOI; Zenodo repository integration is enabled and verified before G0
-  is considered complete. A later approved GitHub release must yield an archived
-  DOI before any claim of immutable archival publication.
+  inventing a DOI. Zenodo integration and a verified release DOI remain required
+  before any claim of immutable archival publication. Per the user's explicit
+  deferral, they no longer block G0 or further implementation.
 
 ## Rationale
 
@@ -46,8 +46,9 @@ DOI is not an independent archive. A single preregistration conflates distinct s
 ## Consequences
 
 Zenodo authentication and GitHub release publication are external dependencies.
-Unavailable access leaves AC-4 open; it must not be replaced by a claim that setup
-instructions satisfy integration. No paid compute, real experiments, external
+Unavailable access leaves archival activation open; setup instructions do not
+satisfy integration. The user explicitly deferred it to allow implementation.
+No paid compute, real experiments, external
 registration, release, training or generational execution is part of Phase 0.
 Private operator data require separate publication review even if the code is public.
 
@@ -56,3 +57,7 @@ Private operator data require separate publication review even if the code is pu
 - 2026-09-28: created as `proposed` from the authorized improvement plan.
 - 2026-09-28: `proposed` → `planned`; Phase 0 documentation and integration scheduled
   in Sprint 1, with external access recorded as a dependency.
+- 2026-09-28: `planned` → `active`; T-015 documentation implementation started.
+- 2026-09-28: revised while `active` after "Defer Zenodo; continue implementation";
+  citation preparation remains in Phase 0, archival activation moves to the release
+  gate and no longer blocks G0. T-017 remains open; no claim of activation is made.

@@ -1,8 +1,6 @@
 # Agent Tasks (Persistent Backlog)
 
-- [ ] T-015 (sprint 1) [intent: INT-0006]: Preserve origin, add ethics and split study drafts
-- [ ] T-016 (sprint 1) [intent: INT-0006]: Validate citation metadata and archival setup readiness
-- [ ] T-017 (backlog) [intent: INT-0006]: Enable and verify Zenodo integration; retain G0 until complete
+- [ ] T-017 (backlog) [intent: INT-0006]: Enable and verify Zenodo integration before archival release; explicitly deferred from G0
 - [ ] T-018 (backlog) [intent: INT-0005]: Implement instrument v0.4, conformance kit, matched exit and export after G0
 - [ ] T-019 (backlog) [intent: INT-0004]: Implement profiles, events, promises, bonds, whispers, exit and manipulation checks after G0
 - [ ] T-020 (backlog) [intent: INT-0005]: Recover planted parameters, run separate Study A pilot and freeze analysis after G1

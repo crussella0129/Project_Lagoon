@@ -3,10 +3,9 @@
 A Rust research harness for voluntary partner selection and explicit model-fusion
 agreements among language-model participants.
 
-The central research question is whether interaction-based mutual selection can
-identify model pairs whose merged descendants retain useful capabilities. A later
-objective is to examine how partner selection, fusion methods, and sources of
-variation affect capability diversity and lineage structure across generations.
+The research program separates three questions: which observable traits predict
+partner choice, whether mutual choice identifies useful model-fusion pairs, and
+how selection and variation affect capability diversity across generations.
 
 ## Protocol
 
@@ -70,18 +69,26 @@ tokenizer requirements, and record-version compatibility.
 
 ## Research direction
 
-The proposed first study compares mutual-choice screening against random pairing,
-skill-profile complementarity, and weight-geometry selectors under matched budgets.
-Evaluation should include child capability retention, absolute performance,
-selection coverage, failures, and measured cost.
+Study A is an inference-only comparison of profiles, communication, skill events
+and revealed promise histories. Study B compares mutual-choice merge screening
+against random pairing, skill-profile complementarity and weight-geometry selectors
+under matched budgets. Study C examines generational change after those instruments
+and evaluation gates are established.
 
 DARE is a candidate transformation, not a prescribed optimum. The included toy
 variance study examines averaging, DARE followed by averaging, and coordinate or
 block crossover. Parameter variance is distinct from behavioral diversity; these
 results do not establish the quality of real merged models.
 
-The [draft preregistration](PREREG.md) remains unfrozen. No real specialist-training,
-fusion, or generational study has been performed by this implementation.
+The [Study A](prereg/study-a-social.md) and [Study B](prereg/study-b-screening.md)
+preregistrations remain drafts. Study A's social features are not implemented yet.
+No real social-selection, specialist-training, fusion or generational study has
+been performed by this implementation. The [roadmap](docs/roadmap.md) tracks the
+required implementation and evidence gates.
+
+See [design values and origin](ORIGIN.md), the [ethics policy](ETHICS.md) and
+[citation metadata](CITATION.cff). Archival integration status and release
+requirements are tracked in the [publication guide](docs/publication.md).
 
 - [Proposal assessment](docs/research/useful-protocol-review.md)
 - [Variance analysis and reproducible study](docs/research/variance-review.md)
