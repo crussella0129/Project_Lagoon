@@ -52,7 +52,7 @@ stays gated. The user superseded minimum-version search with **current stable Ru
 
 | Gate | Required evidence | Current state |
 |---|---|---|
-| G0 | Phase 0 code/docs, current-stable checks and protected main | Local checks pass; hosted verification pending |
+| G0 | Phase 0 code/docs, current-stable checks and protected main | Passed on 46fb66f; [hosted run](https://github.com/crussella0129/Project_Lagoon/actions/runs/36374666278) |
 | G1 | Committed conformance receipts from pinned real servers | Open; no real inference study |
 | G2 | Pilot criteria justified/frozen and parameter recovery verified | Open; no confirmation |
 | G3 | Study B oracle headroom meets frozen margin | Open; no Study B dialogue |

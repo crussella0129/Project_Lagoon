@@ -2,8 +2,8 @@
 
 <!-- sprint-loop-intent-v2 -->
 - **Intent ID:** INT-0005
-- **State:** proposed
-- **Work evidence:** none
+- **State:** active
+- **Work evidence:** [T-022 through T-025 plan](../sprints/s1/sprint-plans/instrument-extension.md)
 - **Completion evidence:** none
 - **Code evidence:** none
 - **Test evidence:** none
@@ -53,3 +53,7 @@ gates. Study B and C retain separate evaluation and operator-executed fusion gat
 
 - 2026-09-28: created as `proposed`; follows the realized first harness and is
   scheduled after G0 rather than modifying terminal INT-0001.
+- 2026-09-28: `proposed` → `planned`; G0 verified with current-stable hosted checks
+  after the user's Zenodo deferral; instrument tasks scheduled in Sprint 1 extension.
+- 2026-09-28: `planned` → `active`; T-022 begins. Real-server conformance remains
+  separately required for G1 and is not inferred from synthetic tests.

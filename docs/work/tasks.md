@@ -1,7 +1,11 @@
 # Agent Tasks (Persistent Backlog)
 
+- [ ] T-022 (sprint 1) [intent: INT-0005]: Add call seeds, phase limits and bounded private peer ledger
+- [ ] T-023 (sprint 1) [intent: INT-0005]: Implement optional matched exit and replay/accounting
+- [ ] T-024 (sprint 1) [intent: INT-0005]: Record server provenance and implement conformance kit
+- [ ] T-025 (sprint 1) [intent: INT-0005]: Export tidy tables and verify planted-parameter recovery
 - [ ] T-017 (backlog) [intent: INT-0006]: Enable and verify Zenodo integration before archival release; explicitly deferred from G0
-- [ ] T-018 (backlog) [intent: INT-0005]: Implement instrument v0.4, conformance kit, matched exit and export after G0
+- [ ] T-018 (backlog) [intent: INT-0005]: Execute real-server conformance and commit verified receipts before G1
 - [ ] T-019 (backlog) [intent: INT-0004]: Implement profiles, events, promises, bonds, whispers, exit and manipulation checks after G0
 - [ ] T-020 (backlog) [intent: INT-0005]: Recover planted parameters, run separate Study A pilot and freeze analysis after G1
 - [ ] T-021 (backlog) [intent: INT-0006]: Register Study A after G2; publish approved code/data releases and DOI receipts
