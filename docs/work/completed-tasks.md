@@ -100,5 +100,5 @@
 - **Intent:** [INT-0006](../intents/INT-0006-publication-and-ethics.md)
 - **Completed:** 2026-09-28 UTC (citation preparation only; activation is T-017)
 - **Files modified:** CITATION.cff, docs/publication.md and work ledgers.
-- **Commit:** PENDING
+- **Commit:** `ed44e22a7b085b333a7e71ef6960b605df22bdb5`
 - **Verification:** Official CFF 1.2.0 schema validation passes. [Archival access receipt and user deferral](improvement-plan.md#t-015-and-t-016-documentation-evidence).
