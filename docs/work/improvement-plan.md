@@ -118,3 +118,9 @@ The first extended hosted run [36378555673](https://github.com/crussella0129/Pro
 failed before executing tests because setup-uv has release `v10.2.0` but no floating
 `v10` ref. Replaced the workflow reference with the verified exact release. This
 is a CI setup correction, not a test exclusion; all required checks remain enabled.
+
+Checkpoint review additionally reserves the feature name `const`, preventing an
+external feature from colliding with OLS's intercept and overwriting a coefficient
+in the result mapping. The existing feature-join integration test now asserts this
+rejection. Both Python suites and ruff were rerun; test counts remain six plus six.
+No recovery data, coefficient, fitting method or threshold changed.

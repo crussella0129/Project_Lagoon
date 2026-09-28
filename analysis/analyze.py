@@ -131,6 +131,7 @@ def join_features(rows, features, keys, columns):
     if set(columns) & set(rows.columns) or set(columns) & {
         "source",
         "visible_from_round",
+        "const",
     }:
         raise ValueError("feature names collide with audit columns")
     features = features.copy()

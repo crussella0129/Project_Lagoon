@@ -112,6 +112,10 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(
             len(join_features(choices, features, ROW_KEYS, ["x"])), len(choices)
         )
+        with self.assertRaisesRegex(ValueError, "collide"):
+            join_features(
+                choices, features.rename(columns={"x": "const"}), ROW_KEYS, ["const"]
+            )
         with self.assertRaisesRegex(ValueError, "not identified"):
             fit_choice(choices, features, ["x"])
         with self.assertRaisesRegex(ValueError, "exactly"):

@@ -54,6 +54,7 @@ Joins reject missing/extra/duplicate keys, nonfinite data, post-decision visibil
 and unidentified designs. Standardization, missing-profile rules, interactions,
 quadratic terms and outside-option coding must be explicitly constructed in the
 feature file and frozen for the intended study. No automatic imputation occurs.
+`const` is reserved for the fitted OLS intercept so coefficient labels cannot collide.
 For example, a chooser's loyalty alone is constant within a choice set and cannot
 be estimated in conditional logit; `loyalty × candidate reputation` can be.
 

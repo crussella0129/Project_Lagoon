@@ -28,3 +28,9 @@ No passing real-model conformance, coverage calibration, social-layer implementa
 study registration, training/fusion execution or DOI is claimed. The next action is
 the one main-targeted sprint checkpoint and its required-check inspection; merge
 remains a human approval boundary.
+
+Checkpoint addendum: the final join review reserved `const` against OLS coefficient
+label collisions and added that rejection to the existing integration test. All
+12 Python tests and ruff pass after this guard; the required PR-head CI covers the
+final tree. The successful code receipt above precedes this narrow input validation
+guard and remains the original full-scenario receipt, not a claim about a later SHA.
