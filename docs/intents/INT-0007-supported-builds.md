@@ -4,7 +4,7 @@
 - **Intent ID:** INT-0007
 - **State:** realized
 - **Work evidence:** [T-014 build plan](../sprints/s1/sprint-plans/build-plan.md)
-- **Completion evidence:** [Sprint 1 tested acceptance](../sprints/s1/sprint-tests/test-report.md)
+- **Completion evidence:** [T-014 implementation](../work/completed-tasks.md#t-014-sprint-1); [Sprint 1 tested acceptance](../sprints/s1/sprint-tests/test-report.md)
 - **Code evidence:** [Stable toolchain](../../rust-toolchain.toml); [required CI](../../.github/workflows/sprint-loops-ci.yml); [desired main ruleset](../../.github/main-ruleset.json)
 - **Test evidence:** [Local/hosted checks and active rules](../sprints/s1/sprint-tests/e2e-tests.md)
 - **Documentation evidence:** [README](../../README.md); [implementation receipts](../work/improvement-plan.md)
