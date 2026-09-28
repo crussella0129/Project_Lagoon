@@ -92,5 +92,5 @@
 - **Intent:** [INT-0006](../intents/INT-0006-publication-and-ethics.md)
 - **Completed:** 2026-09-28 UTC
 - **Files modified:** ORIGIN.md, ETHICS.md, PREREG.md, prereg/, README.md, docs/roadmap.md, docs/SUMMARY.md, docs/intents/INT-0006-publication-and-ethics.md, docs/work/improvement-plan.md, docs/sprints/s1/sprint-plans/plan-amendment.md and work ledgers.
-- **Commit:** PENDING
+- **Commit:** `ff6dbceb73ae8fb242c1691ebfcca76532ea42b9`
 - **Verification:** [Original-blob equality, preserved Study B content, working relative links and design review](improvement-plan.md#t-015-and-t-016-documentation-evidence).
