@@ -199,19 +199,17 @@ pub fn normalize(
                 Some(mut value) => {
                     // The immutable observation binds the receipt. An obsolete copied hash
                     // is ignored, never interpreted as a different authorization.
-                    if value.get("state").and_then(|v| v.as_str()) == Some("agree") {
-                        if let Some(fields) = value.as_object_mut() {
-                            fields.remove("fingerprint");
-                            if let Some(card) = fields
-                                .get("plan_id")
-                                .and_then(|v| v.as_str())
-                                .and_then(|id| observation.plans.iter().find(|p| p.plan.id == id))
-                            {
-                                fields.insert(
-                                    "fingerprint".into(),
-                                    serde_json::json!(card.fingerprint),
-                                );
-                            }
+                    if value.get("state").and_then(|v| v.as_str()) == Some("agree")
+                        && let Some(fields) = value.as_object_mut()
+                    {
+                        fields.remove("fingerprint");
+                        if let Some(card) = fields
+                            .get("plan_id")
+                            .and_then(|v| v.as_str())
+                            .and_then(|id| observation.plans.iter().find(|p| p.plan.id == id))
+                        {
+                            fields
+                                .insert("fingerprint".into(), serde_json::json!(card.fingerprint));
                         }
                     }
                     match serde_json::from_value::<Consent>(value) {

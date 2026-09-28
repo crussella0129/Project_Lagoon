@@ -1,6 +1,5 @@
 # Agent Tasks (Persistent Backlog)
 
-- [ ] T-014 (sprint 1) [intent: INT-0007]: Support current Rust, pin CI and protect main
 - [ ] T-015 (sprint 1) [intent: INT-0006]: Preserve origin, add ethics and split study drafts
 - [ ] T-016 (sprint 1) [intent: INT-0006]: Validate citation metadata and archival setup readiness
 - [ ] T-017 (backlog) [intent: INT-0006]: Enable and verify Zenodo integration; retain G0 until complete

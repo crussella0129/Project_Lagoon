@@ -87,10 +87,10 @@ pub fn resolve_round(config: &Experiment, selection: &SelectionRound) -> Vec<Bat
                     Consent::Defer => Some(BlockReason::Deferred),
                     Consent::Agree { .. } => None,
                 };
-                if let Some(reason) = reason {
-                    if !reasons.contains(&reason) {
-                        reasons.push(reason);
-                    }
+                if let Some(reason) = reason
+                    && !reasons.contains(&reason)
+                {
+                    reasons.push(reason);
                 }
             }
             let plan = match (consent[0], consent[1]) {

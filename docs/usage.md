@@ -9,7 +9,9 @@ change the population, prescribe personalities, or impose a loneliness penalty.
 
 ## Fixture workflow
 
-Install Rust with Cargo (edition 2024; minimum Rust 1.85). From the repository:
+Install Rust with Cargo (edition 2024; current stable supported). Run
+`rustup update stable` to update the channel selected by `rust-toolchain.toml`.
+From the repository:
 
 ```powershell
 cargo run --locked -- run --config examples/fixture-experiment.json --output runs/demo

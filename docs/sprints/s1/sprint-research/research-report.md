@@ -73,3 +73,16 @@ Research evidence is recorded here; implementation receipts and exact CI links
 will be retained under `sprint-tests/` and the work ledger. The supplied plan is
 represented by the linked stable intents and `docs/roadmap.md` without publishing
 the user's local attachment path.
+
+## Subsequent user clarification
+
+The user explicitly requested a `current` support floor rather than a numbered
+minimum. See the approved plan amendment: no compiler bisection or pinned MSRV job.
+[Dependabot options](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference)
+do not provide a Rust floor field; [the toolchain action](https://github.com/dtolnay/rust-toolchain)
+supports the rolling `stable` channel. Both local toolchain and CI follow that policy.
+
+## Budget Override
+
+Two additional primary documentation sources were checked after the user's
+toolchain-policy clarification to avoid inventing a Dependabot configuration key.

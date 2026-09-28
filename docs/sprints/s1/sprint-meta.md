@@ -11,3 +11,8 @@
 - **Summary:** Improvement-plan Phase 0: supported current Rust, protected main, provenance, ethics and study drafts.
 - **Intents:** [INT-0007](../../intents/INT-0007-supported-builds.md); [INT-0006](../../intents/INT-0006-publication-and-ethics.md)
 - **Completion evidence:** (filled at Loop Phase)
+
+## Approved amendment
+
+The user's current-stable-only instruction supersedes the numbered minimum and
+two-job plan clauses: [amendment](sprint-plans/plan-amendment.md).

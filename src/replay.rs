@@ -106,8 +106,8 @@ pub fn reconstruct(record: &Record) -> Result<Session, RecordError> {
                     }
                     _ => {}
                 }
-                if let Reply::Failure { status } = &call.reply {
-                    if (*status == Status::TokenizationFailure && fits)
+                if let Reply::Failure { status } = &call.reply
+                    && ((*status == Status::TokenizationFailure && fits)
                         || (!fits
                             && !over_context
                             && !matches!(
@@ -115,10 +115,9 @@ pub fn reconstruct(record: &Record) -> Result<Session, RecordError> {
                                 Status::TokenizationFailure
                                     | Status::Timeout
                                     | Status::TransportFailure
-                            ))
-                    {
-                        return Err(fail());
-                    }
+                            )))
+                {
+                    return Err(fail());
                 }
                 if call.outcome != outcome_from_reply(&call.reply, &observation, config) {
                     return Err(fail());

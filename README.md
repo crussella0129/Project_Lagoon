@@ -52,9 +52,13 @@ notes alter context, not model weights.
 
 ## Quick start
 
-Requires Rust 1.85 or later. From the repository, use new output directories:
+Requires current stable Rust. The repository and CI follow the `stable` channel;
+no older compiler minimum is supported. Dependabot groups Cargo and GitHub Actions
+updates weekly, with changes tested against current stable.
+From the repository, update your toolchain and use new output directories:
 
 ```powershell
+rustup update stable
 cargo run --locked -- run --config examples/fixture-experiment.json --output runs/demo
 cargo run --locked -- replay --record runs/demo/operator-record.json --output runs/demo-replay
 cargo run --locked -- report --record runs/demo/operator-record.json

@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      # The support floor is current stable; no historical MSRV is promised.
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy

@@ -78,3 +78,11 @@
 - **Completed:** 2026-09-27 (local date; hosted jobs completed 2026-09-28 UTC).
 - **Tested head:** `bcd18a9074b140b1b6e2e30c88dd9ecc6d549f65`.
 - **Verification:** [successful run 36370335762](https://github.com/crussella0129/Project_Lagoon/actions/runs/36370335762) and [successful run 36370335758](https://github.com/crussella0129/Project_Lagoon/actions/runs/36370335758), with formatting, warning-free clippy and all-target tests executed. [Detailed evidence](pr-repairs.md#hosted-ci-restored). Historical blocked checks retain their original failure conclusions; this records new validation rather than relabeling them.
+
+## T-014 (sprint 1)
+- **Description:** Support rolling current stable Rust, fix its Clippy warnings, group weekly dependency updates and activate main protection.
+- **Intent:** [INT-0007](../intents/INT-0007-supported-builds.md)
+- **Completed:** 2026-09-28 UTC
+- **Files modified:** Cargo.toml, rust-toolchain.toml, src/merge_request.rs, src/protocol.rs, src/replay.rs, .github/, README.md, docs/usage.md, docs/intents/INT-0007-supported-builds.md, docs/sprints/s1/, docs/work/improvement-plan.md and work ledgers.
+- **Commit:** PENDING
+- **Verification:** [45 local tests, formatting, Clippy and active ruleset receipt](improvement-plan.md#t-014-local-and-remote-evidence); hosted acceptance recorded in the sprint test phase.

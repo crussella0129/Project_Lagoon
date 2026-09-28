@@ -2,7 +2,7 @@
 name = "lovers-lagoon"
 version = "0.3.0"
 edition = "2024"
-rust-version = "1.85"
+# Support policy: current stable Rust (see rust-toolchain.toml and CI).
 license = "Apache-2.0"
 description = "A research harness for voluntary model partner and fusion-plan choices"
 
