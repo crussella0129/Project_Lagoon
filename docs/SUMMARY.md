@@ -21,3 +21,8 @@
 - [Useful merge screening protocol](research/useful-protocol-review.md)
 - [Draft next-study preregistration](../PREREG.md)
 - [Sprint 0 verification blockage](sprints/s0/failure-report.md)
+- [Sprint 1](sprints/s1/sprint-meta.md)
+- [Social selection layer](intents/INT-0004-social-layer.md)
+- [Observability and analysis](intents/INT-0005-observability-and-analysis.md)
+- [Publication and ethics](intents/INT-0006-publication-and-ethics.md)
+- [Supported builds](intents/INT-0007-supported-builds.md)
