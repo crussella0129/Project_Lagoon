@@ -108,5 +108,5 @@
 - **Intent:** [INT-0005](../intents/INT-0005-observability-and-analysis.md)
 - **Completed:** 2026-09-28 UTC
 - **Files modified:** Cargo.toml, Cargo.lock, CITATION.cff, schemas/, src/config.rs, src/protocol.rs, src/observation.rs, src/runner.rs, src/replay.rs, src/record.rs, src/backend/local_http.rs, tests/instrument.rs, examples/stochastic-local-experiment.json, README.md, docs/usage.md, docs/publication.md and work ledgers/evidence.
-- **Commit:** PENDING
+- **Commit:** `6828aad499d9278672979215703dce5702265f8e`
 - **Verification:** [48 tests, formatting and warning-free Clippy](improvement-plan.md#t-022-instrument-evidence).
