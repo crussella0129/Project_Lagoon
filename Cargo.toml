@@ -19,7 +19,7 @@ tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"
 
 [dev-dependencies]
 rand = "0.10"
-rand_chacha = "0.9"
+rand_chacha = "0.10"
 rand_distr = "0.6"
 tempfile = "3"
 tokio = { version = "1", features = ["test-util"] }
