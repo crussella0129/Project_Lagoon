@@ -124,5 +124,5 @@
 - **Intent:** [INT-0005](../intents/INT-0005-observability-and-analysis.md)
 - **Completed:** 2026-09-28 UTC
 - **Files modified:** src/config.rs, src/main.rs, tests/cli.rs, tests/instrument.rs, conformance/, analysis/pyproject.toml, analysis/uv.lock, .gitignore, local examples, docs/usage.md, docs/roadmap.md and work ledgers/evidence.
-- **Commit:** PENDING
+- **Commit:** `2841483686dee6897d2155ebaaea479c1998e2ca`
 - **Verification:** [53 Rust tests, 5 Python tests and provenance/conformance limitations](improvement-plan.md#t-024-conformance-kit-evidence).
