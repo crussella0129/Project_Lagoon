@@ -1,4 +1,4 @@
-name: Rust checks
+name: Instrument checks
 on:
   push:
     branches: [main, codex/dev]
@@ -18,3 +18,20 @@ jobs:
       - run: cargo fmt --check
       - run: cargo clippy --locked --all-targets -- -D warnings
       - run: cargo test --locked --all-targets
+      - uses: astral-sh/setup-uv@v10
+        with:
+          version: "0.12.17"
+      - run: uv sync --project analysis --locked --python 3.12
+      - run: uv run --project analysis --locked ruff format --check analysis conformance
+      - run: uv run --project analysis --locked ruff check analysis conformance
+      - run: uv run --project analysis --locked python -m unittest discover -s conformance -v
+      - run: uv run --project analysis --locked python -m unittest discover -s analysis -v
+      - run: uv run --project analysis --locked python analysis/recover.py --binary target/debug/lovers-lagoon --output target/recovery-ci
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: synthetic-recovery-receipts
+          path: |
+            target/recovery-ci/recovery-spec.json
+            target/recovery-ci/recovery-report.json
+            target/recovery-ci/failure.json

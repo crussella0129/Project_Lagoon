@@ -126,3 +126,11 @@
 - **Files modified:** src/config.rs, src/main.rs, tests/cli.rs, tests/instrument.rs, conformance/, analysis/pyproject.toml, analysis/uv.lock, .gitignore, local examples, docs/usage.md, docs/roadmap.md and work ledgers/evidence.
 - **Commit:** `2841483686dee6897d2155ebaaea479c1998e2ca`
 - **Verification:** [53 Rust tests, 5 Python tests and provenance/conformance limitations](improvement-plan.md#t-024-conformance-kit-evidence).
+
+## T-025 (sprint 1)
+- **Description:** Export replay-checked research CSV tables and recover planted conditional-logit and OLS parameters through the actual runner/export path; extend required CI to Python checks.
+- **Intent:** [INT-0005](../intents/INT-0005-observability-and-analysis.md)
+- **Completed:** 2026-09-28 UTC
+- **Files modified:** src/export.rs, src/lib.rs, src/main.rs, src/record.rs, tests/cli.rs, analysis/, conformance/probe.py, conformance/test_probe.py, .github/, README.md, docs/usage.md, docs/roadmap.md, docs/SUMMARY.md and work ledgers/evidence.
+- **Commit:** PENDING
+- **Verification:** [54 Rust tests, analysis/conformance checks and planted recovery](improvement-plan.md#t-025-export-and-recovery-evidence).

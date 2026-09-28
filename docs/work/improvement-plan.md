@@ -79,3 +79,37 @@ are retained with the kit. No actual vLLM or llama.cpp probe was executed: vLLM 
 absent and Docker's Linux engine is unavailable locally. G1 remains open; empirical
 sample maxima do not establish worst-case schema token bounds. Both local templates
 require replacement provenance values before use. No token reserve was reduced.
+
+## T-025 export and recovery evidence
+
+The replay-validated exporter writes bounded CSV choices/messages/events/outcomes/
+profiles plus record/config fingerprints and table digests. Profiles are explicitly
+unavailable. Tests cover Unicode/quote/newline round-trip, private-note exclusion,
+outside options versus missing failed decisions, matched exit, changed data,
+feature joins/visibility and unidentifiable or undefined analyses.
+
+54 Rust tests, formatting and warning-free Clippy pass. Six analysis integration
+tests pass. Conformance fixtures additionally exercise complete and interrupted
+report assembly; endpoint/model/tokenizer must match the contract being probed.
+Ruff formatting/lint and conformance tests pass at the task boundary.
+
+[Fixed synthetic recovery receipt](../../analysis/recovery-receipt.json): eight
+seeds × 40 rounds × eight participants per estimator, 2,560 decisions each.
+Conditional logit retains 142 voluntary outside choices; both scenarios have zero
+technical failures. All eight planted slopes fall within 99% seed-cluster sandwich
+intervals and the predeclared absolute-error tolerances. OLS uses its own linear
+probability generator; it does not equate nonlinear choice coefficients to linear
+selection gradients. This is an implementation check, not coverage calibration.
+
+The initial fit stopped at an independent gradient convergence check: statsmodels
+0.15.0's ConditionalLogit wrapper ignores solver keyword arguments. Switched to
+the supported Newton method and retained the independent gradient check. Seeds,
+coefficients, sample sizes and acceptance limits were not changed. Two subsequent
+full pipeline runs passed, including the final table-digest path. The local first
+attempt remains in ignored `target/recovery-v1`; no failure was recast as a pass.
+
+Required CI now covers Rust, the locked Python environment, ruff, both test suites
+and full recovery. Weekly grouped Dependabot updates include the `uv` ecosystem
+at `/analysis`, as documented by [uv](https://docs.astral.sh/uv/guides/integration/dependabot/).
+Real conformance, social profiles, empirical coverage/pilot, freeze and registration
+remain open; no real study, training or fusion was run.

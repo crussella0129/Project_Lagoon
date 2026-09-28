@@ -22,3 +22,12 @@ updates:
       cargo-dependencies:
         patterns:
           - "*"
+  - package-ecosystem: "uv"
+    directory: "/analysis"
+    schedule:
+      interval: "weekly"
+    target-branch: "codex/dev"
+    groups:
+      analysis-dependencies:
+        patterns:
+          - "*"

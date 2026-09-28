@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "status": "synthetic instrument test; not a study registration",
+  "seeds": [4701, 4702, 4703, 4704, 4705, 4706, 4707, 4708],
+  "rounds": 40,
+  "population": 8,
+  "choice_coefficients": {"looks": 0.55, "skill": -0.35, "reputation": 0.7, "loyalty_reputation": 0.4, "outside": -0.5},
+  "ols_coefficients": {"looks": 0.12, "skill": -0.1, "reputation": 0.08},
+  "alpha": 0.01,
+  "max_absolute_error_choice": 0.25,
+  "max_absolute_error_ols": 0.18,
+  "assertions": ["all planted coefficients inside reported intervals", "absolute error within declared limits", "finite identified converged fits", "all generated selections valid or voluntary abstentions"],
+  "interpretation": "One fixed eight-run scenario per estimator; this is not a coverage or power study. Keep seeds and thresholds unchanged on failure."
+}

@@ -23,6 +23,13 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
+    /// Export replay-validated research CSV tables, excluding private notes.
+    Export {
+        #[arg(long)]
+        record: PathBuf,
+        #[arg(long)]
+        output: PathBuf,
+    },
     /// Inspect one initial runtime contract without inference (operator-only output).
     Schema {
         #[arg(long)]
@@ -82,6 +89,13 @@ fn print_json<T: serde::Serialize>(value: &T) -> Result<(), RecordError> {
 
 async fn execute(cli: Cli) -> Result<(), RecordError> {
     match cli.command {
+        Command::Export {
+            record: input,
+            output,
+        } => {
+            let record: Record = record::read_json(&input)?;
+            print_json(&lovers_lagoon::export::save(&record, &output)?)
+        }
         Command::Schema {
             config,
             owner,

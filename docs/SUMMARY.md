@@ -32,3 +32,5 @@
 - [Observability and analysis](intents/INT-0005-observability-and-analysis.md)
 - [Publication and ethics](intents/INT-0006-publication-and-ethics.md)
 - [Supported builds](intents/INT-0007-supported-builds.md)
+- [Server conformance kit](../conformance/README.md)
+- [Research exports and analysis](../analysis/README.md)

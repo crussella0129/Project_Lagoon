@@ -44,6 +44,10 @@ The v0.4 CLI provides:
   replay.
 - Recorded per-call sampling seeds, configurable phase response bounds and an
   optional bounded owner-private peer ledger.
+- Operator-only server provenance, runtime schema export and a pinned conformance
+  kit; actual server verification remains required before study runs.
+- Replay-checked research CSV tables and a Python planted-parameter recovery
+  pipeline for conditional logit and relative-nomination OLS.
 - Pending or blocked fusion manifests with exact plan receipts and declared
   compatibility checks.
 
@@ -65,11 +69,14 @@ rustup update stable
 cargo run --locked -- run --config examples/fixture-experiment.json --output runs/demo
 cargo run --locked -- replay --record runs/demo/operator-record.json --output runs/demo-replay
 cargo run --locked -- report --record runs/demo/operator-record.json
+cargo run --locked -- export --record runs/demo/operator-record.json --output runs/demo-tables
 ```
 
 The fixture uses synthetic participants and produces pending requests, not merged
 models. See [usage and local inference](docs/usage.md) for configuration, privacy,
 tokenizer requirements, and record-version compatibility.
+The [conformance kit](conformance/README.md) and [analysis guide](analysis/README.md)
+describe server evidence requirements and research-table use.
 
 ## Research direction
 

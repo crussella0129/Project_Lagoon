@@ -364,3 +364,18 @@ exports the initial runtime contract, schema fingerprint and seed without
 inference. This is operator-only output, including the owner's initial notes.
 See the [conformance kit](../conformance/README.md) for pinned launch/probe commands,
 empirical reserve limitations and the still-open G1 evidence requirements.
+
+## Research table export
+
+`export --record <operator-record.json> --output <new-directory>` first reconstructs
+and validates the record, then writes `choices.csv`, `messages.csv`, `events.csv`,
+`outcomes.csv`, `profiles.csv` and a versioned manifest with input and table digests.
+Each artifact is bounded to 64 MiB. Existing destinations are rejected. CSV quotes
+preserve Unicode, commas, quotes and multiline messages.
+
+Choice rows include actual shown positions, candidate aliases, an explicit outside
+option and status. Missing choice flags indicate technical failure. Retired agents
+receive no later synthetic rows. Private notes and ledgers are excluded; ballots
+remain trusted research data. Social profiles/features are not yet generated.
+See the [analysis guide](../analysis/README.md) for exact joins, external measurements,
+failure rules, uncertainty limitations and planted-parameter recovery.

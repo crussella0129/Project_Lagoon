@@ -1,7 +1,14 @@
+import contextlib
 import copy
+import hashlib
+import io
+import json
+import tempfile
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
-from probe import compact_json, inspect_response, local_base, reserve
+from probe import compact_json, inspect_response, local_base, main, reserve
 
 SCHEMA = {
     "type": "object",
@@ -22,6 +29,95 @@ def response(content='{"peer":"a","note":"yes"}'):
 
 
 class ConformanceTests(unittest.TestCase):
+    def test_complete_and_interrupted_probe_reports(self):
+        pins = json.loads(Path(__file__).with_name("pins.json").read_text())
+        response_format = {"type": "json_schema", "json_schema": {"schema": SCHEMA}}
+        base = "http://127.0.0.1:8000"
+        contract = {
+            "response_format": response_format,
+            "response_schema_fingerprint": hashlib.sha256(
+                json.dumps(
+                    response_format, sort_keys=True, separators=(",", ":")
+                ).encode()
+            ).hexdigest(),
+            "inference": {
+                "server": "vllm",
+                "server_version": pins["vllm_version"],
+                "grammar_backend": "xgrammar",
+                "model_revision": pins["model_revision"],
+                "chat_template_sha256": pins["chat_template_sha256"],
+            },
+            "backend": {
+                "kind": "local_http",
+                "model": pins["model"],
+                "endpoint": base + "/v1/chat/completions",
+                "tokenizer": {"kind": "vllm", "endpoint": base + "/tokenize"},
+            },
+            "messages": [],
+            "seed": 9,
+            "decoding": {"max_tokens": 4096},
+        }
+        launch = {
+            "backend": "vllm",
+            "pins": pins,
+            "port": 8000,
+            "server_version": pins["vllm_version"],
+        }
+        for failure in [False, True]:
+            with tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                (root / "contract.json").write_text(json.dumps(contract))
+                (root / "launch.json").write_text(json.dumps(launch))
+                requests = []
+
+                def exchange(
+                    _base, path, payload=None, *, requests=requests, failure=failure
+                ):
+                    if path == "/version":
+                        return {"version": pins["vllm_version"]}
+                    if path == "/tokenize":
+                        return {"count": 100}
+                    requests.append(payload)
+                    if failure and len(requests) == 3:
+                        raise OSError("synthetic interruption")
+                    value = response()
+                    if payload["max_tokens"] == 1:
+                        value["choices"][0].update(
+                            finish_reason="length", message={"content": "{"}
+                        )
+                        value["usage"]["completion_tokens"] = 1
+                    return value
+
+                argv = [
+                    "probe",
+                    "--base-url",
+                    base,
+                    "--contract",
+                    str(root / "contract.json"),
+                    "--launch-receipt",
+                    str(root / "launch.json"),
+                    "--output",
+                    str(root / "result.json"),
+                    "--samples",
+                    "6",
+                ]
+                with (
+                    patch("sys.argv", argv),
+                    patch("probe.exchange", side_effect=exchange),
+                    contextlib.redirect_stdout(io.StringIO()),
+                    self.assertRaises(SystemExit) as exit_info,
+                ):
+                    main()
+                self.assertEqual(exit_info.exception.code, 1 if failure else 0)
+                result = json.loads((root / "result.json").read_text())
+                self.assertEqual(result["passed"], not failure)
+                if failure:
+                    self.assertTrue(result["errors"])
+                else:
+                    self.assertEqual(len(result["receipts"]), 7)
+                    self.assertEqual(result["suggested_output_reserve_tokens"], 23)
+                    self.assertEqual(len({r["seed"] for r in requests}), 7)
+
     def test_enum_length_whitespace_and_reasoning_fail_independently(self):
         self.assertEqual(inspect_response(response(), SCHEMA), ([], 15))
         for content in [

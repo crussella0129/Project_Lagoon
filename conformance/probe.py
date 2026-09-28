@@ -198,6 +198,25 @@ def main():
         pins["vllm_version"] if backend == "vllm" else pins["llama_cpp_commit"]
     )
     expected_grammar = "xgrammar" if backend == "vllm" else "llama.cpp-json-schema"
+    configured = contract["backend"]
+    expected_tokenizer = (
+        {"kind": "vllm", "endpoint": base + "/tokenize"}
+        if backend == "vllm"
+        else {
+            "kind": "llama_cpp",
+            "template_endpoint": base + "/apply-template",
+            "tokenize_endpoint": base + "/tokenize",
+        }
+    )
+    if (
+        configured.get("kind") != "local_http"
+        or configured.get("model") != pins["model"]
+        or configured.get("endpoint") != base + "/v1/chat/completions"
+        or configured.get("tokenizer") != expected_tokenizer
+    ):
+        parser.error(
+            "contract backend differs from the probed endpoint/model/tokenizer"
+        )
     if (
         not provenance
         or provenance["model_revision"] != pins["model_revision"]

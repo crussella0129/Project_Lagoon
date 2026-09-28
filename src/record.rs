@@ -94,7 +94,7 @@ pub fn read_json<T: DeserializeOwned>(path: &Path) -> Result<T, RecordError> {
     serde_json::from_slice(&bytes).map_err(|_| RecordError("invalid input JSON or schema"))
 }
 
-struct BoundedBuffer(Vec<u8>);
+pub(crate) struct BoundedBuffer(pub(crate) Vec<u8>);
 impl Write for BoundedBuffer {
     fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
         if bytes.len() as u64 > MAX_FILE_BYTES - self.0.len() as u64 {
@@ -123,6 +123,13 @@ pub fn save(record: &Record, output: &Path) -> Result<(), RecordError> {
         ("report.json", encode(&record.report)?),
         ("merge-requests.json", encode(&record.session.batches)?),
     ];
+    save_artifacts(output, artifacts)
+}
+
+pub(crate) fn save_artifacts<'a>(
+    output: &Path,
+    artifacts: impl IntoIterator<Item = (&'a str, Vec<u8>)>,
+) -> Result<(), RecordError> {
     if let Some(parent) = output.parent().filter(|p| !p.as_os_str().is_empty()) {
         fs::create_dir_all(parent).map_err(|_| RecordError("cannot create output parent"))?;
     }

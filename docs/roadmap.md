@@ -20,7 +20,7 @@ minimum-version search with **current stable Rust**.
 | 1.3 | Bounded private peer/trust ledger and privacy tests | Implemented; INT-0005 |
 | 1.4 | Pinned vLLM/llama.cpp conformance, receipts, measured output reserve | Kit implemented; real-server receipts remain T-018 / G1 |
 | 1.5 | Matched exit, eligibility/enums/singletons/replay | Implemented; INT-0005 |
-| 1.6 | Choice/message/event/outcome/profile export and Python analysis | Pending G0; INT-0005 |
+| 1.6 | Choice/message/event/outcome/profile export and Python analysis | Implemented; profiles explicitly unavailable until social layer |
 | 2.1 | Optional typed profile states, history and write-once appearance | Pending G0; [INT-0004](intents/INT-0004-social-layer.md) |
 | 2.2 | Four deterministic event types, random teams and fixtures | Pending G0; INT-0004 |
 | 2.3 | Structured promises and optional delayed reveal | Pending G0; INT-0004 |
@@ -32,7 +32,7 @@ minimum-version search with **current stable Rust**.
 | 2.9 | Factual post-reveal manipulation checks | Pending G0; INT-0004 |
 | 3.1 | Study A draft covering four arms and joint hypotheses | Draft prepared, not frozen/registered |
 | 3.2 | Exploratory pilot with coverage/failure/disclaimer receipts | Requires G1 and completed instrument/social layer |
-| 3.3 | Planted-parameter recovery through runner/export/analysis | Implement before any real Study A data; INT-0005 |
+| 3.3 | Planted-parameter recovery through runner/export/analysis | Synthetic pipeline implemented; coverage/pilot/freeze remain T-020 |
 | 3.4 | Frozen manifest, OSF registration, verified timestamp, confirmation | Requires G2; [INT-0006](intents/INT-0006-publication-and-ethics.md) |
 | 3.5 | Paper 1 and approved data/export DOI | Requires completed study, rights/privacy review and release approval |
 | 4.1 | Pinned base plus eight LoRA specialists and disjoint datasets | Future [INT-0002](intents/INT-0002-evaluated-dare-descendants.md); training deferred |
