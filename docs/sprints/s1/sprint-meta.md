@@ -11,6 +11,7 @@
 - **Summary:** Current-stable build protection, study documentation and the v0.4 research instrument.
 - **Intents:** [INT-0007](../../intents/INT-0007-supported-builds.md); [INT-0006](../../intents/INT-0006-publication-and-ethics.md); [INT-0005](../../intents/INT-0005-observability-and-analysis.md)
 - **Completion evidence:** 54 Rust and 12 Python tests pass; planted recovery passes; required CI 36378653944 succeeds on bc5cec1; real conformance and archive remain explicit prerequisites.
+- **Checkpoint:** https://github.com/crussella0129/Project_Lagoon/pull/10
 
 ## Approved amendment
 
