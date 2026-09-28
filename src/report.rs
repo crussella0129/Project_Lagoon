@@ -36,12 +36,17 @@ pub struct Counts {
 pub struct RoundReport {
     pub round: u32,
     pub counts: Counts,
+    pub baseline: Baseline,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Report {
-    pub population_per_round: usize,
+    pub initial_population: usize,
+    pub pairing: crate::config::PairingProtocol,
+    pub remaining_eligible: Vec<String>,
+    pub unique_paired_participants: usize,
+    pub unique_paired_fraction_initial: f64,
     pub configured_rounds: u32,
     pub mode: Mode,
     pub offered_plan_ids_in_order: Vec<String>,
@@ -98,7 +103,7 @@ pub fn describe(config: &Experiment, session: &Session) -> Report {
     let mut per_round = Vec::new();
     for selection in &session.selections {
         let mut counts = Counts {
-            decision_slots: config.agents.len() as u64,
+            decision_slots: selection.outcomes.len() as u64,
             ..Default::default()
         };
         for outcome in selection.outcomes.values() {
@@ -149,8 +154,8 @@ pub fn describe(config: &Experiment, session: &Session) -> Report {
             }
         }
         counts.nonreciprocal_nominations = counts.valid_nominations - 2 * counts.social_pairs;
-        counts.paired_fraction_of_decision_slots =
-            Some(2.0 * counts.social_pairs as f64 / counts.decision_slots as f64);
+        counts.paired_fraction_of_decision_slots = (counts.decision_slots > 0)
+            .then(|| 2.0 * counts.social_pairs as f64 / counts.decision_slots as f64);
         total.decision_slots += counts.decision_slots;
         total.valid_nominations += counts.valid_nominations;
         total.nonreciprocal_nominations += counts.nonreciprocal_nominations;
@@ -181,6 +186,7 @@ pub fn describe(config: &Experiment, session: &Session) -> Report {
         }
         per_round.push(RoundReport {
             round: selection.round,
+            baseline: random_baseline(counts.decision_slots as usize),
             counts,
         });
     }
@@ -251,8 +257,23 @@ pub fn describe(config: &Experiment, session: &Session) -> Report {
             }
         }
     }
+    let unique_paired_participants = session
+        .batches
+        .iter()
+        .flat_map(|batch| batch.pair.agents.iter())
+        .collect::<std::collections::BTreeSet<_>>()
+        .len();
     Report {
-        population_per_round: config.agents.len(),
+        initial_population: config.agents.len(),
+        pairing: config.pairing,
+        remaining_eligible: session
+            .active_handles
+            .iter()
+            .map(|handle| config.alias(handle))
+            .collect(),
+        unique_paired_participants,
+        unique_paired_fraction_initial: unique_paired_participants as f64
+            / config.agents.len() as f64,
         configured_rounds: config.rounds,
         mode: config.mode.clone(),
         offered_plan_ids_in_order: config.plans.iter().map(|p| p.id.clone()).collect(),

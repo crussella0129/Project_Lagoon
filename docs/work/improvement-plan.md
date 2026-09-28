@@ -51,3 +51,17 @@ Formatting and warning-free Clippy pass. All 48 local tests pass, including new
 seed/tamper, configured-bound/retention and peer-ledger privacy/replay tests.
 The existing local HTTP test now asserts the derived seed received by the server.
 Cargo.lock changes only the package version at this boundary.
+
+## T-023 matched-exit evidence
+
+Opt-in matched exit retires social pairs independently of reproduction consent,
+filters subsequent calls/peer enums and announces retirement while preserving
+private state. Terminal/singleton populations produce no synthetic abstentions.
+Reports use actual per-round decision slots and separate unique population coverage.
+
+Formatting and warning-free Clippy passed; all 51 tests pass, including retirement,
+declined-consent, singleton/empty, reduced-enum, privacy retention and replay-tamper
+cases. A Windows linker failure was environmental: C: had zero free bytes. Removed
+only the verified workspace `target/debug/incremental` build cache (about 3.7 GiB),
+then tested with one build job, incremental compilation off and dev/test debug
+symbols off. These local resource settings do not change the test suite or CI policy.

@@ -35,6 +35,7 @@ pub struct Observation {
     pub omitted_public_events: usize,
     pub response_limits: ResponseLimits,
     pub peer_memory_aliases: Option<Vec<String>>,
+    pub pairing: crate::config::PairingProtocol,
 }
 
 impl Observation {
@@ -64,6 +65,7 @@ impl Observation {
                 PROCEDURE.into()
             },
             owner: config.alias(owner),
+            pairing: config.pairing,
             handles,
             round,
             response_limits: config.string_limits.for_phase(&phase).clone(),
@@ -108,6 +110,9 @@ impl Observation {
         result.plans.sort_by_cached_key(|p| {
             fingerprint(&("lagoon-plans-v1", config.seed, owner, round, &p.plan.id))
         });
+        if config.pairing == crate::config::PairingProtocol::MatchedExit {
+            result.procedure.push_str(" Reciprocal social pairs finish this seed and retire from later calls, regardless of fusion consent. Retirement preserves their state and does not delete a model. Only the offered active handles are eligible. A remaining singleton ends the matching task without a synthetic abstention.");
+        }
         let oldest = round.saturating_sub(config.memory.recent_rounds);
         let before = result.event_count();
         result.public.messages.retain(|m| m.round >= oldest);

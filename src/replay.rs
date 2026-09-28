@@ -22,18 +22,25 @@ pub fn reconstruct(record: &Record) -> Result<Session, RecordError> {
     }
     let count =
         (config.rounds as usize) * (config.communication_steps as usize + 1) * config.agents.len();
-    if record.session.calls.len() != count {
+    if record.session.calls.len() > count {
         return Err(fail());
     }
     let mut session = Session::initial(config);
     let mut cursor = 0;
     for round in 0..config.rounds {
+        if session.terminal(config) {
+            break;
+        }
         for phase in (0..config.communication_steps)
             .map(|step| Phase::Communication { step })
             .chain(std::iter::once(Phase::Selection))
         {
             let observations = session.observations(config, round, phase.clone());
-            let calls = &record.session.calls[cursor..cursor + observations.len()];
+            let calls = record
+                .session
+                .calls
+                .get(cursor..cursor + observations.len())
+                .ok_or_else(fail)?;
             for (call, mut observation) in calls.iter().zip(observations) {
                 if config.alias(&call.handle) != observation.owner
                     || call.seed
@@ -129,7 +136,10 @@ pub fn reconstruct(record: &Record) -> Result<Session, RecordError> {
             session.publish(config, calls.to_vec(), round, &phase);
         }
     }
-    if session != record.session || crate::report::describe(config, &session) != record.report {
+    if cursor != record.session.calls.len()
+        || session != record.session
+        || crate::report::describe(config, &session) != record.report
+    {
         return Err(fail());
     }
     Ok(session)

@@ -28,6 +28,8 @@ pub struct Experiment {
     pub string_limits: StringLimits,
     #[serde(default)]
     pub peer_memory: bool,
+    #[serde(default)]
+    pub pairing: PairingProtocol,
     pub agents: Vec<Agent>,
     pub recipes: Vec<Recipe>,
     pub plans: Vec<ReproductionPlan>,
@@ -38,6 +40,14 @@ pub struct Experiment {
 pub enum Mode {
     FixedPlan,
     MutualChoice,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PairingProtocol {
+    #[default]
+    RepeatedRounds,
+    MatchedExit,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -541,6 +551,7 @@ pub(crate) mod tests {
 
     pub fn config() -> Experiment {
         Experiment {
+            pairing: PairingProtocol::default(),
             string_limits: StringLimits::default(),
             peer_memory: false,
             seed: 9,

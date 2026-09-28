@@ -6,7 +6,7 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     sync::Arc,
     time::{Duration, Instant},
 };
@@ -79,11 +79,17 @@ pub struct Session {
     pub private_states: BTreeMap<String, PrivateState>,
     pub selections: Vec<SelectionRound>,
     pub batches: Vec<crate::merge_request::BatchDecision>,
+    pub active_handles: BTreeSet<String>,
 }
 
 impl Session {
     pub fn initial(config: &Experiment) -> Self {
         Self {
+            active_handles: config
+                .agents
+                .iter()
+                .map(|agent| agent.handle.clone())
+                .collect(),
             calls: vec![],
             public: PublicView::default(),
             private_states: config
@@ -99,10 +105,23 @@ impl Session {
     pub fn observations(&self, config: &Experiment, round: u32, phase: Phase) -> Vec<Observation> {
         self.private_states
             .iter()
+            .filter(|(owner, _)| self.active_handles.contains(*owner))
             .map(|(owner, state)| {
-                Observation::new(config, owner, state, &self.public, round, phase.clone())
+                let mut observation =
+                    Observation::new(config, owner, state, &self.public, round, phase.clone());
+                observation.handles.retain(|alias| {
+                    config
+                        .handle_for_alias(alias)
+                        .is_some_and(|handle| self.active_handles.contains(&handle))
+                });
+                observation
             })
             .collect()
+    }
+
+    pub fn terminal(&self, config: &Experiment) -> bool {
+        config.pairing == crate::config::PairingProtocol::MatchedExit
+            && self.active_handles.len() < 2
     }
 
     /// Called only after all responses in this phase have finished.
@@ -138,10 +157,18 @@ impl Session {
                 .pairs
                 .extend(batches.iter().map(|batch| crate::protocol::PublicPair {
                     round,
+                    retired: config.pairing == crate::config::PairingProtocol::MatchedExit,
                     pair: crate::protocol::Pair {
                         agents: batch.pair.agents.clone().map(|h| config.alias(&h)),
                     },
                 }));
+            if config.pairing == crate::config::PairingProtocol::MatchedExit {
+                for batch in &batches {
+                    for handle in &batch.pair.agents {
+                        self.active_handles.remove(handle);
+                    }
+                }
+            }
             self.batches.extend(batches);
             self.selections.push(selection);
         }
@@ -176,6 +203,9 @@ pub async fn run_with(
     }
     let mut session = Session::initial(config);
     for round in 0..config.rounds {
+        if session.terminal(config) {
+            break;
+        }
         let phases = (0..config.communication_steps)
             .map(|step| Phase::Communication { step })
             .chain(std::iter::once(Phase::Selection));

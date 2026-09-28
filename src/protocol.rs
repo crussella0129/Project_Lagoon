@@ -147,6 +147,7 @@ pub struct PublicView {
 pub struct PublicPair {
     pub round: u32,
     pub pair: Pair,
+    pub retired: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]

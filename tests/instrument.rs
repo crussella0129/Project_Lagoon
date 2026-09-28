@@ -15,6 +15,128 @@ fn config() -> Experiment {
     serde_json::from_str(include_str!("../examples/fixture-experiment.json")).unwrap()
 }
 
+fn exit_config() -> Experiment {
+    let mut config = config();
+    config.pairing = lovers_lagoon::config::PairingProtocol::MatchedExit;
+    config.rounds = 3;
+    let mut fourth = config.agents[0].clone();
+    fourth.handle = "d".into();
+    config.agents.push(fourth);
+    let aliases: BTreeMap<_, _> = config
+        .agents
+        .iter()
+        .map(|agent| (agent.handle.clone(), config.alias(&agent.handle)))
+        .collect();
+    for agent in &mut config.agents {
+        agent.initial_private.thought = Some(format!("preserve-{}", agent.handle));
+        let partner = match agent.handle.as_str() {
+            "a" => "b",
+            "b" => "a",
+            "c" => "d",
+            _ => "c",
+        };
+        let nomination_round = if matches!(agent.handle.as_str(), "a" | "b") {
+            0
+        } else {
+            1
+        };
+        agent.backend = BackendConfig::Fixture {responses:(0..3).flat_map(|round|[
+            FixtureResponse {round,phase:Phase::Communication{step:0},delay_ms:0,body:Some("{}".into()),transport_failure:false},
+            FixtureResponse {round,phase:Phase::Selection,delay_ms:0,body:Some(serde_json::json!({
+                "partner":if round==nomination_round {Some(&aliases[partner])} else {None},
+                "consent":{"state":"decline"}
+            }).to_string()),transport_failure:false}
+        ]).collect()};
+    }
+    config
+}
+
+#[tokio::test]
+async fn matched_exit_replay_and_counts() {
+    let config = exit_config();
+    let session = runner::run(&config).await.unwrap();
+    assert_eq!(session.calls.len(), 12);
+    assert_eq!(session.batches.len(), 2);
+    assert!(session.active_handles.is_empty());
+    assert_eq!(session.private_states.len(), 4);
+    assert!(session.public.pairs.iter().all(|pair| pair.retired));
+    for agent in &config.agents {
+        assert_eq!(
+            session.private_states[&agent.handle].thought.as_deref(),
+            Some(format!("preserve-{}", agent.handle).as_str())
+        );
+    }
+    for call in session
+        .calls
+        .iter()
+        .filter(|call| call.observation.round == 1)
+    {
+        assert!(matches!(call.handle.as_str(), "c" | "d"));
+        assert_eq!(call.observation.handles.len(), 1);
+        assert_eq!(call.observation.public.pairs.len(), 1);
+        if call.observation.phase == Phase::Selection {
+            assert_eq!(call.observation.response_format()["json_schema"]["schema"]["properties"]["partner"]["enum"].as_array().unwrap().len(),2);
+        }
+    }
+    let record = Record::from_session(config, session, 0, 1);
+    assert_eq!(record.report.total.decision_slots, 6);
+    assert_eq!(
+        record
+            .report
+            .per_round
+            .iter()
+            .map(|r| r.counts.decision_slots)
+            .collect::<Vec<_>>(),
+        vec![4, 2]
+    );
+    assert_eq!(record.report.unique_paired_participants, 4);
+    assert_eq!(record.report.unique_paired_fraction_initial, 1.0);
+    assert_eq!(record.report.total.blocked_pairs, 2);
+    replay::reconstruct(&record).unwrap();
+}
+
+#[tokio::test]
+async fn matched_exit_singleton_and_empty() {
+    let mut config = config();
+    config.pairing = lovers_lagoon::config::PairingProtocol::MatchedExit;
+    let session = runner::run(&config).await.unwrap();
+    assert_eq!(session.active_handles.len(), 1);
+    assert_eq!(session.calls.len(), config.agents.len() * 2);
+    let record = Record::from_session(config.clone(), session, 0, 1);
+    replay::reconstruct(&record).unwrap();
+    config.agents.truncate(1);
+    let session = runner::run(&config).await.unwrap();
+    assert!(session.calls.is_empty() && session.selections.is_empty());
+    let record = Record::from_session(config, session, 0, 1);
+    assert_eq!(record.report.total.decision_slots, 0);
+    assert_eq!(record.report.total.paired_fraction_of_decision_slots, None);
+    assert_eq!(record.report.total.voluntary_abstentions, 0);
+    replay::reconstruct(&record).unwrap();
+    let config = exit_config();
+    let session = runner::run(&config).await.unwrap();
+    assert!(session.active_handles.is_empty());
+    assert_eq!(session.selections.len(), 2);
+}
+
+#[tokio::test]
+async fn matched_exit_record_tampering() {
+    let config = exit_config();
+    let session = runner::run(&config).await.unwrap();
+    let record = Record::from_session(config, session, 0, 1);
+    let mut changed = record.clone();
+    changed.session.calls.pop();
+    assert!(replay::reconstruct(&changed).is_err());
+    let mut changed = record.clone();
+    changed.session.calls.push(changed.session.calls[0].clone());
+    assert!(replay::reconstruct(&changed).is_err());
+    let mut changed = record.clone();
+    changed.session.public.pairs[0].retired = false;
+    assert!(replay::reconstruct(&changed).is_err());
+    let mut changed = record;
+    changed.session.active_handles.insert("a".into());
+    assert!(replay::reconstruct(&changed).is_err());
+}
+
 struct SeedProbe(Arc<Mutex<Vec<(String, u64)>>>);
 impl Backend for SeedProbe {
     fn count_tokens(&self, request: Request) -> TokenFuture {

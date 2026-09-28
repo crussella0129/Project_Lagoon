@@ -1,7 +1,7 @@
 # Project_Lagoon implementation roadmap
 
 This tracks the authorized improvement plan. It is an implementation sequence,
-not a claim that its proposed science has been validated. The existing v0.3 harness
+not a claim that its proposed science has been validated. The v0.4 harness
 is described in the [README](../README.md). Sprint 1 addresses Phase 0; later work
 stays gated. The user superseded minimum-version search with **current stable Rust**.
 
@@ -14,11 +14,11 @@ stays gated. The user superseded minimum-version search with **current stable Ru
 | 0.5 | Citation metadata and Zenodo integration | Metadata prepared; integration needs authenticated access |
 | 0.6 | Welfare/ethics policy | [ETHICS.md](../ETHICS.md); runtime controls still to implement |
 | 0.7 | Separate draft preregistrations | [Study A](../prereg/study-a-social.md), [Study B](../prereg/study-b-screening.md) |
-| 1.1 | Versioned per-call seeds and stochastic/greedy arms | Pending G0; [INT-0005](intents/INT-0005-observability-and-analysis.md) |
-| 1.2 | Configurable phase string bounds and schema hashes | Pending G0; INT-0005 |
-| 1.3 | Bounded private peer/trust ledger and privacy tests | Pending G0; INT-0005 |
+| 1.1 | Versioned per-call seeds and stochastic/greedy arms | Implemented; [INT-0005](intents/INT-0005-observability-and-analysis.md) |
+| 1.2 | Configurable phase string bounds and schema hashes | Implemented; INT-0005 |
+| 1.3 | Bounded private peer/trust ledger and privacy tests | Implemented; INT-0005 |
 | 1.4 | Pinned vLLM/llama.cpp conformance, receipts, measured output reserve | Pending G0; required for G1 |
-| 1.5 | Matched exit, eligibility/enums/singletons/replay | Pending G0; INT-0005 |
+| 1.5 | Matched exit, eligibility/enums/singletons/replay | Implemented; INT-0005 |
 | 1.6 | Choice/message/event/outcome/profile export and Python analysis | Pending G0; INT-0005 |
 | 2.1 | Optional typed profile states, history and write-once appearance | Pending G0; [INT-0004](intents/INT-0004-social-layer.md) |
 | 2.2 | Four deterministic event types, random teams and fixtures | Pending G0; INT-0004 |

@@ -1,7 +1,7 @@
 # Ethics and welfare protocol
 
 This policy governs proposed Project_Lagoon studies. It does not establish that
-language models have subjective experiences. The current v0.3 harness supports
+language models have subjective experiences. The current v0.4 harness supports
 abstention and explicit fusion-plan agreement, but does not implement automatic
 distress pauses, a leave action, retirement archives or exit interviews. Those
 controls remain requirements for the relevant studies, not completed safeguards.

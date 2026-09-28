@@ -17,6 +17,8 @@ Each participant can nominate one peer or abstain. Nominations remain sealed unt
 all attempts finish. Reciprocal nominations form an exclusive pair; abstention,
 failed requests, and unsuccessful matching preserve the participant and its memory.
 The baseline imposes no penalty for abstention.
+Optional matched-exit mode retires reciprocal partners from later rounds while
+preserving their state; this does not imply agreement to fusion.
 
 Partner selection and reproduction agreement are separate decisions. Participants
 may agree to an offered finite plan, decline, or defer. Each plan specifies child

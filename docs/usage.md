@@ -329,3 +329,22 @@ Only other configured participants are allowed. Omitted/null maps retain the
 ledger; a supplied map replaces it, and `{}` clears it. Entries and aggregate bytes
 are bounded. The owner writes all entries; the harness never invents a reputation.
 Peer observations and public transcripts do not include another owner's ledger.
+
+## Matched exit
+
+`pairing` defaults to `"repeated_rounds"`. Set `"matched_exit"` to retire both
+members of each reciprocal social pair after that round, including pairs whose
+fusion consent is declined or missing. Remaining participants continue; the next
+observations and response enums contain only eligible peers. Public pair events
+include `retired: true`. Private states remain archived in the operator record.
+
+With fewer than two remaining participants, no further calls are made. A singleton
+is recorded as remaining eligible, not as an invented abstention or a failed call.
+Retirement is reset for every new run. See `examples/matched-exit-experiment.json`.
+
+Reports name `initial_population` and show actual decision slots per round,
+remaining eligible aliases and unique paired participants/fraction. Per-round
+random-nomination references use that round's eligible population. The top-level
+reference uses the initial population and is not a cumulative matched-exit prediction.
+Replay reconstructs eligibility and rejects missing, extra or forged calls/retirements.
+Choosing this option as a study's primary endpoint still requires a frozen decision.
