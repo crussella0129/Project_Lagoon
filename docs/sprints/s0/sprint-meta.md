@@ -11,7 +11,7 @@
 - **Summary:** Implement a Rust harness with private state, sealed mutual choices, optional sibling plans, local inference, replay, and pending fusion manifests.
 - **Intents:** [INT-0001](../../intents/INT-0001-voluntary-observable-partner-choice.md); follow-on INT-0002 and INT-0003 remain proposed.
 - **Completion evidence:** Implementation T-001 through T-007 and 29 local tests pass; hosted CI blocked before execution by GitHub account runner availability; see failure-report.md and T-008.
-- **Checkpoint:** https://github.com/crussella0129/Lovers_Lagoon/pull/1
+- **Checkpoint:** https://github.com/crussella0129/Project_Lagoon/pull/1
 
 ## Blockages
 

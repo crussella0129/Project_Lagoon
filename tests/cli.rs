@@ -63,6 +63,144 @@ fn check_replay(original: &Path, copy: &Path) {
 }
 
 #[test]
+fn cli_runtime_schema_contract() {
+    for phase in ["communication", "selection"] {
+        let output = success(
+            binary()
+                .args(["schema", "--config"])
+                .arg(example("fixture-experiment.json"))
+                .args(["--owner", "a", "--phase", phase])
+                .output()
+                .unwrap(),
+        );
+        let value: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(
+            value["response_schema_fingerprint"],
+            lovers_lagoon::config::fingerprint(&value["response_format"])
+        );
+        assert_eq!(value["messages"].as_array().unwrap().len(), 2);
+        assert!(value["seed"].as_u64().is_some());
+        assert_eq!(value["response_format"]["json_schema"]["strict"], true);
+    }
+    assert!(
+        !binary()
+            .args(["schema", "--config"])
+            .arg(example("fixture-experiment.json"))
+            .args(["--owner", "missing"])
+            .output()
+            .unwrap()
+            .status
+            .success()
+    );
+}
+
+#[test]
+fn cli_export_privacy_and_failures() {
+    use lovers_lagoon::{config::FixtureResponse, protocol::Phase};
+    let root = tempfile::tempdir().unwrap();
+    let mut config: Experiment = record::read_json(&example("fixture-experiment.json")).unwrap();
+    config.rounds = 1;
+    for agent in &mut config.agents {
+        if let BackendConfig::Fixture { responses } = &mut agent.backend {
+            responses.retain(|response| response.round == 0);
+        }
+    }
+    let BackendConfig::Fixture { responses } = &mut config.agents[0].backend else {
+        panic!()
+    };
+    responses[0].body =
+        Some(serde_json::json!({"public_message":"Comma, \"quote\"\nUnicode 🐟"}).to_string());
+    config.agents[1].backend = BackendConfig::Fixture {
+        responses: vec![FixtureResponse {
+            round: 0,
+            phase: Phase::Selection,
+            delay_ms: 0,
+            transport_failure: true,
+            body: None,
+        }],
+    };
+    let config_path = root.path().join("config.json");
+    std::fs::write(&config_path, serde_json::to_vec(&config).unwrap()).unwrap();
+    let run = root.path().join("run");
+    success(
+        binary()
+            .arg("run")
+            .arg("--config")
+            .arg(config_path)
+            .arg("--output")
+            .arg(&run)
+            .output()
+            .unwrap(),
+    );
+    let tables = root.path().join("tables");
+    let record_path = run.join("operator-record.json");
+    let export = || {
+        binary()
+            .arg("export")
+            .arg("--record")
+            .arg(&record_path)
+            .arg("--output")
+            .arg(&tables)
+            .output()
+            .unwrap()
+    };
+    let result: serde_json::Value = serde_json::from_slice(&success(export()).stdout).unwrap();
+    assert_eq!(result["choice_sets"], 3);
+    assert_eq!(result["choice_rows"], 9);
+    let choices = std::fs::read_to_string(tables.join("choices.csv")).unwrap();
+    assert_eq!(
+        choices
+            .lines()
+            .filter(|l| l.ends_with("\"1\",\"valid\""))
+            .count(),
+        1
+    );
+    assert_eq!(
+        choices
+            .lines()
+            .filter(|l| l.ends_with("\"1\",\"abstained\""))
+            .count(),
+        1
+    );
+    assert_eq!(
+        choices
+            .lines()
+            .filter(|l| l.ends_with("\"\",\"transport_failure\""))
+            .count(),
+        3
+    );
+    assert!(
+        std::fs::read_to_string(tables.join("messages.csv"))
+            .unwrap()
+            .contains("\"Comma, \"\"quote\"\"\nUnicode 🐟\"")
+    );
+    for entry in std::fs::read_dir(&tables).unwrap() {
+        assert!(
+            !std::fs::read_to_string(entry.unwrap().path())
+                .unwrap()
+                .contains("fixture-private")
+        );
+    }
+    assert!(!export().status.success());
+    let mut invalid: Record = record::read_json(&record_path).unwrap();
+    invalid.session.calls[0].seed ^= 1;
+    std::fs::write(&record_path, serde_json::to_vec(&invalid).unwrap()).unwrap();
+    assert!(
+        !binary()
+            .arg("export")
+            .arg("--record")
+            .arg(&record_path)
+            .arg("--output")
+            .arg(root.path().join("invalid"))
+            .output()
+            .unwrap()
+            .status
+            .success()
+    );
+    assert!(!root.path().join("invalid").exists());
+}
+
+#[test]
 fn cli_fixture_run_replay_report() {
     let root = tempfile::tempdir().unwrap();
     let run = root.path().join("run");
@@ -170,6 +308,14 @@ fn local_config(endpoint: String, root: &Path) -> PathBuf {
     let mut config: Experiment = record::read_json(&example("fixture-experiment.json")).unwrap();
     config.rounds = 1;
     for agent in &mut config.agents {
+        agent.inference = Some(lovers_lagoon::config::InferenceProvenance {
+            server: "test-double".into(),
+            server_version: "fixture".into(),
+            grammar_backend: "fixture".into(),
+            model_revision: "f".repeat(40),
+            chat_template_sha256: "f".repeat(64),
+            conformance_report_sha256: None,
+        });
         agent.backend = BackendConfig::LocalHttp {
             endpoint: endpoint.clone(),
             model: "test-local".into(),

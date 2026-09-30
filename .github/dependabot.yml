@@ -1,5 +1,7 @@
 # Dependabot opens scheduled version-update PRs against the work branch.
 # Merge only at sprint boundaries when green; add ecosystems as the project grows.
+# Rust support is current stable, selected by rust-toolchain.toml and CI.
+# Dependabot maintains dependencies/actions; it has no Rust support-floor key.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -7,8 +9,25 @@ updates:
     schedule:
       interval: "weekly"
     target-branch: "codex/dev"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:
       interval: "weekly"
     target-branch: "codex/dev"
+    groups:
+      cargo-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "uv"
+    directory: "/analysis"
+    schedule:
+      interval: "weekly"
+    target-branch: "codex/dev"
+    groups:
+      analysis-dependencies:
+        patterns:
+          - "*"

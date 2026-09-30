@@ -6,7 +6,7 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     sync::Arc,
     time::{Duration, Instant},
 };
@@ -27,6 +27,7 @@ pub enum Reply {
 #[serde(deny_unknown_fields)]
 pub struct Call {
     pub handle: String,
+    pub seed: u64,
     pub observation: Observation,
     pub elapsed_ms: u64,
     pub token_trials: Vec<TokenTrial>,
@@ -78,11 +79,17 @@ pub struct Session {
     pub private_states: BTreeMap<String, PrivateState>,
     pub selections: Vec<SelectionRound>,
     pub batches: Vec<crate::merge_request::BatchDecision>,
+    pub active_handles: BTreeSet<String>,
 }
 
 impl Session {
     pub fn initial(config: &Experiment) -> Self {
         Self {
+            active_handles: config
+                .agents
+                .iter()
+                .map(|agent| agent.handle.clone())
+                .collect(),
             calls: vec![],
             public: PublicView::default(),
             private_states: config
@@ -98,10 +105,23 @@ impl Session {
     pub fn observations(&self, config: &Experiment, round: u32, phase: Phase) -> Vec<Observation> {
         self.private_states
             .iter()
+            .filter(|(owner, _)| self.active_handles.contains(*owner))
             .map(|(owner, state)| {
-                Observation::new(config, owner, state, &self.public, round, phase.clone())
+                let mut observation =
+                    Observation::new(config, owner, state, &self.public, round, phase.clone());
+                observation.handles.retain(|alias| {
+                    config
+                        .handle_for_alias(alias)
+                        .is_some_and(|handle| self.active_handles.contains(&handle))
+                });
+                observation
             })
             .collect()
+    }
+
+    pub fn terminal(&self, config: &Experiment) -> bool {
+        config.pairing == crate::config::PairingProtocol::MatchedExit
+            && self.active_handles.len() < 2
     }
 
     /// Called only after all responses in this phase have finished.
@@ -137,10 +157,18 @@ impl Session {
                 .pairs
                 .extend(batches.iter().map(|batch| crate::protocol::PublicPair {
                     round,
+                    retired: config.pairing == crate::config::PairingProtocol::MatchedExit,
                     pair: crate::protocol::Pair {
                         agents: batch.pair.agents.clone().map(|h| config.alias(&h)),
                     },
                 }));
+            if config.pairing == crate::config::PairingProtocol::MatchedExit {
+                for batch in &batches {
+                    for handle in &batch.pair.agents {
+                        self.active_handles.remove(handle);
+                    }
+                }
+            }
             self.batches.extend(batches);
             self.selections.push(selection);
         }
@@ -175,6 +203,9 @@ pub async fn run_with(
     }
     let mut session = Session::initial(config);
     for round in 0..config.rounds {
+        if session.terminal(config) {
+            break;
+        }
         let phases = (0..config.communication_steps)
             .map(|step| Phase::Communication { step })
             .chain(std::iter::once(Phase::Selection));
@@ -187,6 +218,7 @@ pub async fn run_with(
                     .handle_for_alias(&observation.owner)
                     .expect("known owner");
                 let backend = backends[&handle].clone();
+                let seed = crate::config::call_seed(config.seed, round, &phase, &handle);
                 let permits = permits.clone();
                 let limits = config.clone();
                 let mut fallback = observation.clone();
@@ -207,7 +239,7 @@ pub async fn run_with(
                         let request = Request {
                             observation: observation.clone(),
                             decoding: limits.decoding.clone(),
-                            seed: limits.seed,
+                            seed,
                             max_response_bytes: limits.max_response_bytes,
                         };
                         let count =
@@ -236,7 +268,7 @@ pub async fn run_with(
                         let request = Request {
                             observation: observation.clone(),
                             decoding: limits.decoding.clone(),
-                            seed: limits.seed,
+                            seed,
                             max_response_bytes: limits.max_response_bytes,
                         };
                         match tokio::time::timeout_at(deadline, backend.respond(request)).await {
@@ -276,6 +308,7 @@ pub async fn run_with(
                 ));
                 let outcome = outcome_from_reply(&reply, &observation, config);
                 calls.push(Call {
+                    seed: crate::config::call_seed(config.seed, round, &phase, &handle),
                     handle,
                     response_schema_fingerprint: fingerprint(&observation.response_format()),
                     observation,

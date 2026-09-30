@@ -1,4 +1,4 @@
-# Running Lover's Lagoon
+# Running Project_Lagoon
 
 Sprint 0 implements the partner-choice protocol in Rust. Agents communicate,
 retain their own optional self-reports, and independently nominate one peer or
@@ -9,7 +9,9 @@ change the population, prescribe personalities, or impose a loneliness penalty.
 
 ## Fixture workflow
 
-Install Rust with Cargo (edition 2024; minimum Rust 1.85). From the repository:
+Install Rust with Cargo (edition 2024; current stable supported). Run
+`rustup update stable` to update the channel selected by `rust-toolchain.toml`.
+From the repository:
 
 ```powershell
 cargo run --locked -- run --config examples/fixture-experiment.json --output runs/demo
@@ -279,9 +281,9 @@ cargo test --locked --all-targets
 Tests cover frozen snapshots, owner-only projections, bounded concurrent calls,
 real HTTP to disposable loopback test servers, failures, exact consent, sibling
 parentage, persistence, replay and CLI workflows. They establish protocol behavior,
-not real-model preferences or fusion quality. Local validation is the current
-acceptance gate at the user's request (GitHub minutes exhausted). Hosted workflow
-configuration remains available; no hosted result is required or claimed here.
+not real-model preferences or fusion quality. Local and hosted validation are both
+enabled. The user restored GitHub CI after making the repository public; main now
+requires the current-stable `check` job. See the sprint receipts for tested heads.
 
 [INT-0002](intents/INT-0002-evaluated-dare-descendants.md) supplies real checked
 checkpoints, a pinned external merger and evaluation before child admission.
@@ -290,12 +292,90 @@ comparisons and generational studies. [Method research](sprints/s0/sprint-resear
 and [sibling research](sprints/s0/sprint-research/sibling-batch-review.md) explain
 why the current catalog permits exact single-child or opt-in sibling plans.
 
-The v0.3 record format is schema version 3, with finish-reason metadata, bounded
-response schemas and finish-reason report counts. It rejects v0.1/schema-1 and
-v0.2/schema-2 records rather than silently reinterpret old output contracts.
+The v0.4 record format is schema version 4. It adds per-call seeds, configured
+response bounds and optional private peer memory. It rejects older records rather
+than silently reinterpret their seeds, schemas or outcomes.
 Use each archived record's matching code revision for replay. Historical evidence
 in `docs/sprints/s0` is preserved unchanged.
 
 See the [variance study](research/variance-review.md), [useful-protocol assessment](research/useful-protocol-review.md)
 and [unfrozen next-study preregistration](../PREREG.md). No training or real fusion
 has been executed by this follow-up.
+
+## Reproducible sampling and private memory (v0.4)
+
+Temperature is declared in each experiment's `decoding.temperature`. The existing
+examples retain greedy decoding as controls; `stochastic-local-experiment.json`
+illustrates temperature 0.7. A seed does not guarantee identical real-server output
+across hardware/software changes; offline replay validates the recorded result.
+
+Every call logs and sends its own u64 seed. Encoding is UTF-8 compact JSON of
+`["lagoon-call-seed-v1", run_seed, round, phase, step, handle]`, where phase is
+`"communication"` or `"selection"`, step is an integer or null, and handle is the
+operator handle. SHA-256's first eight bytes are interpreted big-endian. The same
+seed is used for token counting and generation. Replay rejects a changed seed.
+
+Optional `string_limits` has `communication` and `selection` objects, each with
+`public_message_chars` and `private_note_chars` (1–4096 Unicode characters).
+Defaults remain 128/64. These values enter runtime schemas, schema fingerprints,
+observations and parser checks. Selection has no public-message output. Limits
+constrain new text; a longer note validly written in another phase is retained.
+The separate UTF-8 response, context and total-private-state byte limits still apply.
+Changing limits does not justify reducing the output-token reserve without G1.
+
+With `peer_memory: true`, private updates may include `peers`, an object mapping
+known peer aliases to `{"trust": 0..10, "note": "up to 64 Unicode characters"}`.
+Only other configured participants are allowed. Omitted/null maps retain the
+ledger; a supplied map replaces it, and `{}` clears it. Entries and aggregate bytes
+are bounded. The owner writes all entries; the harness never invents a reputation.
+Peer observations and public transcripts do not include another owner's ledger.
+
+## Matched exit
+
+`pairing` defaults to `"repeated_rounds"`. Set `"matched_exit"` to retire both
+members of each reciprocal social pair after that round, including pairs whose
+fusion consent is declined or missing. Remaining participants continue; the next
+observations and response enums contain only eligible peers. Public pair events
+include `retired: true`. Private states remain archived in the operator record.
+
+With fewer than two remaining participants, no further calls are made. A singleton
+is recorded as remaining eligible, not as an invented abstention or a failed call.
+Retirement is reset for every new run. See `examples/matched-exit-experiment.json`.
+
+Reports name `initial_population` and show actual decision slots per round,
+remaining eligible aliases and unique paired participants/fraction. Per-round
+random-nomination references use that round's eligible population. The top-level
+reference uses the initial population and is not a cumulative matched-exit prediction.
+Replay reconstructs eligibility and rejects missing, extra or forged calls/retirements.
+Choosing this option as a study's primary endpoint still requires a frozen decision.
+
+## Server provenance and conformance
+
+Every `local_http` agent requires an `inference` object with `server`,
+`server_version`, `grammar_backend`, an immutable 40/64-hex `model_revision`,
+64-hex `chat_template_sha256` and optional `conformance_report_sha256`.
+These operator declarations are retained in records and excluded from participant
+observations. They are not independently verified by the runner. Fixture agents
+may omit them. The local example files deliberately contain invalid replacement
+placeholders: pin actual artifacts before running.
+
+`schema --config <file> --owner <handle> --phase communication|selection`
+exports the initial runtime contract, schema fingerprint and seed without
+inference. This is operator-only output, including the owner's initial notes.
+See the [conformance kit](../conformance/README.md) for pinned launch/probe commands,
+empirical reserve limitations and the still-open G1 evidence requirements.
+
+## Research table export
+
+`export --record <operator-record.json> --output <new-directory>` first reconstructs
+and validates the record, then writes `choices.csv`, `messages.csv`, `events.csv`,
+`outcomes.csv`, `profiles.csv` and a versioned manifest with input and table digests.
+Each artifact is bounded to 64 MiB. Existing destinations are rejected. CSV quotes
+preserve Unicode, commas, quotes and multiline messages.
+
+Choice rows include actual shown positions, candidate aliases, an explicit outside
+option and status. Missing choice flags indicate technical failure. Retired agents
+receive no later synthetic rows. Private notes and ledgers are excluded; ballots
+remain trusted research data. Social profiles/features are not yet generated.
+See the [analysis guide](../analysis/README.md) for exact joins, external measurements,
+failure rules, uncertainty limitations and planted-parameter recovery.

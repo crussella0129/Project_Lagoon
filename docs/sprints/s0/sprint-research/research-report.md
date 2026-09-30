@@ -8,7 +8,7 @@
 
 ## 1. Sprint Goal
 
-Build the smallest observable Lover's Lagoon protocol: a Rust CLI that runs bounded
+Build the smallest observable Project_Lagoon protocol: a Rust CLI that runs bounded
 communication and sealed reciprocal partner selection, respects private state and
 voluntary abstention, replays recorded outcomes, and emits honest pending/blocked
 merge requests. Include deterministic fixtures and a configured local HTTP

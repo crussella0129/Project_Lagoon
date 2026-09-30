@@ -1,5 +1,6 @@
 pub mod backend;
 pub mod config;
+pub mod export;
 pub mod matching;
 pub mod merge_request;
 pub mod observation;

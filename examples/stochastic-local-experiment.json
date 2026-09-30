@@ -1,0 +1,110 @@
+{
+  "seed": 9,
+  "rounds": 1,
+  "communication_steps": 1,
+  "workers": 2,
+  "timeout_ms": 30000,
+  "max_response_bytes": 8192,
+  "max_context_bytes": 100000,
+  "max_private_bytes": 4096,
+  "max_siblings": 1,
+  "mode": "mutual_choice",
+  "decoding": {
+    "temperature": 0.7,
+    "max_tokens": 4096
+  },
+  "agents": [
+    {
+      "handle": "a",
+      "checkpoint": null,
+      "merge_metadata": null,
+      "initial_private": {},
+      "inference": {"server": "vllm", "server_version": "replace-with-version", "grammar_backend": "xgrammar", "model_revision": "replace-with-immutable-revision", "chat_template_sha256": "replace-with-template-sha256", "conformance_report_sha256": null},
+      "backend": {
+        "endpoint": "http://127.0.0.1:8000/v1/chat/completions",
+        "kind": "local_http",
+        "model": "replace-with-local-model",
+        "tokenizer": {
+          "kind": "vllm",
+          "endpoint": "http://127.0.0.1:8000/tokenize"
+        }
+      }
+    },
+    {
+      "handle": "b",
+      "checkpoint": null,
+      "merge_metadata": null,
+      "initial_private": {},
+      "inference": {"server": "vllm", "server_version": "replace-with-version", "grammar_backend": "xgrammar", "model_revision": "replace-with-immutable-revision", "chat_template_sha256": "replace-with-template-sha256", "conformance_report_sha256": null},
+      "backend": {
+        "endpoint": "http://127.0.0.1:8000/v1/chat/completions",
+        "kind": "local_http",
+        "model": "replace-with-local-model",
+        "tokenizer": {
+          "kind": "vllm",
+          "endpoint": "http://127.0.0.1:8000/tokenize"
+        }
+      }
+    },
+    {
+      "handle": "c",
+      "checkpoint": null,
+      "merge_metadata": null,
+      "initial_private": {},
+      "inference": {"server": "vllm", "server_version": "replace-with-version", "grammar_backend": "xgrammar", "model_revision": "replace-with-immutable-revision", "chat_template_sha256": "replace-with-template-sha256", "conformance_report_sha256": null},
+      "backend": {
+        "endpoint": "http://127.0.0.1:8000/v1/chat/completions",
+        "kind": "local_http",
+        "model": "replace-with-local-model",
+        "tokenizer": {
+          "kind": "vllm",
+          "endpoint": "http://127.0.0.1:8000/tokenize"
+        }
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "ties",
+      "method": "ties",
+      "parent_weights": [
+        0.5,
+        0.5
+      ],
+      "density": 0.5,
+      "epsilon": null,
+      "lambda": 1
+    }
+  ],
+  "plans": [
+    {
+      "id": "single",
+      "children": [
+        {
+          "recipe_id": "ties",
+          "seed": 1
+        }
+      ],
+      "max_compute_seconds": 60,
+      "max_output_bytes": 1024
+    }
+  ],
+  "memory": {
+    "recent_rounds": 2,
+    "max_public_events": 64,
+    "max_prompt_tokens": 3968,
+    "context_window_tokens": 8192,
+    "safety_margin_tokens": 128
+  },
+  "peer_memory": true,
+  "string_limits": {
+    "communication": {
+      "public_message_chars": 256,
+      "private_note_chars": 128
+    },
+    "selection": {
+      "public_message_chars": 128,
+      "private_note_chars": 128
+    }
+  }
+}

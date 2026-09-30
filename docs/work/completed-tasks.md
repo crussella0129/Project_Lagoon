@@ -55,7 +55,7 @@
 - **Completed:** 2026-09-27
 - **Files modified:** Cargo.toml, Cargo.lock, src/backend, src/config.rs, src/observation.rs, src/protocol.rs, src/runner.rs, src/record.rs, src/replay.rs, src/report.rs, src/main.rs, tests/cli.rs, schemas, examples, .github/workflows/sprint-loops-ci.yml, README.md, PREREG.md, docs/usage.md, docs/intents, docs/research, docs/work/instrument-review.md, docs/SUMMARY.md
 - **Commit:** `c06cce7008297639d7f4f210714a83088dec7dbe`
-- **Verification:** [38 local tests, format and clippy](../research/instrument-validation.md); [PR #5](https://github.com/crussella0129/Lovers_Lagoon/pull/5). Hosted CI failed before runner execution; this maintenance completion does not realize INT-0001 or close T-008.
+- **Verification:** [38 local tests, format and clippy](../research/instrument-validation.md); [PR #5](https://github.com/crussella0129/Project_Lagoon/pull/5). Hosted CI failed before runner execution; this maintenance completion does not realize INT-0001 or close T-008.
 
 ## T-012 (post-Sprint 0 maintenance)
 - **Description:** Restore main's sha2 0.11 build compatibility, bound response strings and diagnose output token limits with replayable finish-reason receipts; verify matching-reference probabilities and revise pilot coverage/opportunity criteria while deferring training.
@@ -63,4 +63,74 @@
 - **Completed:** 2026-09-27
 - **Files modified:** Cargo.toml, Cargo.lock, src/backend, src/config.rs, src/observation.rs, src/protocol.rs, src/runner.rs, src/record.rs, src/replay.rs, src/report.rs, schemas, examples, README.md, PREREG.md, docs/usage.md, docs/research/output-review.md, docs/work/output-review.md, docs/intents/INT-0001-voluntary-observable-partner-choice.md, docs/work/tasks.md, docs/SUMMARY.md
 - **Commit:** `28585c58c6dc02c7c733794ff650fbba90d22207` (tested implementation; subsequent evidence-only commit reconciles acceptance state).
-- **Verification:** [locked build, format, clippy and 45 passing local tests](output-review.md#local-acceptance-evidence); [PR #6](https://github.com/crussella0129/Lovers_Lagoon/pull/6). Per the user's explicit local-testing override, hosted CI is optional and INT-0001 is realized for the harness increment. T-008 remains an optional backlog follow-up. No real server conformance, training, fusion, external registration or live matched-exit treatment occurred.
+- **Verification:** [locked build, format, clippy and 45 passing local tests](output-review.md#local-acceptance-evidence); [PR #6](https://github.com/crussella0129/Project_Lagoon/pull/6). Per the user's explicit local-testing override, hosted CI is optional and INT-0001 is realized for the harness increment. T-008 remains an optional backlog follow-up. No real server conformance, training, fusion, external registration or live matched-exit treatment occurred.
+
+## T-013 (pre-sprint maintenance)
+- **Description:** Repair the coupled RNG dependency PRs, resolve their conflicts, migrate the variance-study API and group future RNG updates. Synchronize local origin and all documentation names/links with Project_Lagoon.
+- **Completed:** 2026-09-27
+- **Files modified:** Cargo.toml, Cargo.lock, examples/variance-study.rs, .github/dependabot.yml, README.md, docs/usage.md, docs/SUMMARY.md, docs/work, docs/intents/INT-0001-voluntary-observable-partner-choice.md, docs/research/instrument-validation.md, docs/research/ci-block.json, docs/sprints/s0 name/link references and CI annotation URLs.
+- **Commit:** `125594c2cfe81ed491e6eb2d5e57390b056ebbe3` (tested merge repair; subsequent documentation/evidence commits do not change code).
+- **Verification:** [local locked build, format, clippy, all 45 tests and full study-result equality](pr-repairs.md#local-evidence); [both hosted Rust checks pass](pr-repairs.md#hosted-ci-restored) after the user restored public CI use. [PR #8](https://github.com/crussella0129/Project_Lagoon/pull/8) and [PR #9](https://github.com/crussella0129/Project_Lagoon/pull/9) share the compatible repair history and are conflict-free. Either includes the complete fix; no force push or automatic merge. Public publication was explicitly approved by the user. No new sprint.
+
+## T-008 (hosted verification follow-up)
+- **Description:** Complete hosted Rust verification after the user restored CI use for the public repository.
+- **Intent:** [INT-0001](../intents/INT-0001-voluntary-observable-partner-choice.md)
+- **Completed:** 2026-09-27 (local date; hosted jobs completed 2026-09-28 UTC).
+- **Tested head:** `bcd18a9074b140b1b6e2e30c88dd9ecc6d549f65`.
+- **Verification:** [successful run 36370335762](https://github.com/crussella0129/Project_Lagoon/actions/runs/36370335762) and [successful run 36370335758](https://github.com/crussella0129/Project_Lagoon/actions/runs/36370335758), with formatting, warning-free clippy and all-target tests executed. [Detailed evidence](pr-repairs.md#hosted-ci-restored). Historical blocked checks retain their original failure conclusions; this records new validation rather than relabeling them.
+
+## T-014 (sprint 1)
+- **Description:** Support rolling current stable Rust, fix its Clippy warnings, group weekly dependency updates and activate main protection.
+- **Intent:** [INT-0007](../intents/INT-0007-supported-builds.md)
+- **Completed:** 2026-09-28 UTC
+- **Files modified:** Cargo.toml, rust-toolchain.toml, src/merge_request.rs, src/protocol.rs, src/replay.rs, .github/, README.md, docs/usage.md, docs/intents/INT-0007-supported-builds.md, docs/sprints/s1/, docs/work/improvement-plan.md and work ledgers.
+- **Commit:** `08e4d1a56f673d6d495d26c6793c5c50e93150df`
+- **Verification:** [45 local tests, formatting, Clippy and active ruleset receipt](improvement-plan.md#t-014-local-and-remote-evidence); hosted acceptance recorded in the sprint test phase.
+
+## T-015 (sprint 1)
+- **Description:** Preserve the original concept verbatim, document ethics, separate Study A/B drafts and track the complete staged roadmap.
+- **Intent:** [INT-0006](../intents/INT-0006-publication-and-ethics.md)
+- **Completed:** 2026-09-28 UTC
+- **Files modified:** ORIGIN.md, ETHICS.md, PREREG.md, prereg/, README.md, docs/roadmap.md, docs/SUMMARY.md, docs/intents/INT-0006-publication-and-ethics.md, docs/work/improvement-plan.md, docs/sprints/s1/sprint-plans/plan-amendment.md and work ledgers.
+- **Commit:** `ff6dbceb73ae8fb242c1691ebfcca76532ea42b9`
+- **Verification:** [Original-blob equality, preserved Study B content, working relative links and design review](improvement-plan.md#t-015-and-t-016-documentation-evidence).
+
+## T-016 (sprint 1)
+- **Description:** Add validated citation metadata and document archival activation/release requirements; leave Zenodo explicitly deferred by the user.
+- **Intent:** [INT-0006](../intents/INT-0006-publication-and-ethics.md)
+- **Completed:** 2026-09-28 UTC (citation preparation only; activation is T-017)
+- **Files modified:** CITATION.cff, docs/publication.md and work ledgers.
+- **Commit:** `ed44e22a7b085b333a7e71ef6960b605df22bdb5`
+- **Verification:** Official CFF 1.2.0 schema validation passes. [Archival access receipt and user deferral](improvement-plan.md#t-015-and-t-016-documentation-evidence).
+
+## T-022 (sprint 1)
+- **Description:** Implement versioned per-call seeds, configurable phase string limits and optional bounded private peer memory, with record version 4.
+- **Intent:** [INT-0005](../intents/INT-0005-observability-and-analysis.md)
+- **Completed:** 2026-09-28 UTC
+- **Files modified:** Cargo.toml, Cargo.lock, CITATION.cff, schemas/, src/config.rs, src/protocol.rs, src/observation.rs, src/runner.rs, src/replay.rs, src/record.rs, src/backend/local_http.rs, tests/instrument.rs, examples/stochastic-local-experiment.json, README.md, docs/usage.md, docs/publication.md and work ledgers/evidence.
+- **Commit:** `6828aad499d9278672979215703dce5702265f8e`
+- **Verification:** [48 tests, formatting and warning-free Clippy](improvement-plan.md#t-022-instrument-evidence).
+
+## T-023 (sprint 1)
+- **Description:** Implement optional matched-exit eligibility, retirement announcements, singleton handling, honest denominators and replay.
+- **Intent:** [INT-0005](../intents/INT-0005-observability-and-analysis.md)
+- **Completed:** 2026-09-28 UTC
+- **Files modified:** src/config.rs, src/protocol.rs, src/observation.rs, src/runner.rs, src/replay.rs, src/report.rs, tests/instrument.rs, examples/matched-exit-experiment.json, README.md, ETHICS.md, docs/usage.md, docs/roadmap.md, prereg/study-b-screening.md and work ledgers/evidence.
+- **Commit:** `71bfdf642e0c53414d7ce61d278c21caa9956324`
+- **Verification:** [51 tests, formatting, warning-free Clippy and local build-resource workaround](improvement-plan.md#t-023-matched-exit-evidence).
+
+## T-024 (sprint 1)
+- **Description:** Require operator-only local-server provenance, expose runtime contracts and add a pinned, fail-closed conformance kit; real execution remains T-018.
+- **Intent:** [INT-0005](../intents/INT-0005-observability-and-analysis.md)
+- **Completed:** 2026-09-28 UTC
+- **Files modified:** src/config.rs, src/main.rs, tests/cli.rs, tests/instrument.rs, conformance/, analysis/pyproject.toml, analysis/uv.lock, .gitignore, local examples, docs/usage.md, docs/roadmap.md and work ledgers/evidence.
+- **Commit:** `2841483686dee6897d2155ebaaea479c1998e2ca`
+- **Verification:** [53 Rust tests, 5 Python tests and provenance/conformance limitations](improvement-plan.md#t-024-conformance-kit-evidence).
+
+## T-025 (sprint 1)
+- **Description:** Export replay-checked research CSV tables and recover planted conditional-logit and OLS parameters through the actual runner/export path; extend required CI to Python checks.
+- **Intent:** [INT-0005](../intents/INT-0005-observability-and-analysis.md)
+- **Completed:** 2026-09-28 UTC
+- **Files modified:** src/export.rs, src/lib.rs, src/main.rs, src/record.rs, tests/cli.rs, analysis/, conformance/probe.py, conformance/test_probe.py, .github/, README.md, docs/usage.md, docs/roadmap.md, docs/SUMMARY.md and work ledgers/evidence.
+- **Commit:** `c2523f1df99a21a1e960d7584eb7fb3d67ce4572`
+- **Verification:** [54 Rust tests, analysis/conformance checks and planted recovery](improvement-plan.md#t-025-export-and-recovery-evidence).

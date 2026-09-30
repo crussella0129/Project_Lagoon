@@ -1,6 +1,6 @@
 //! A closed, neutral finite-population toy study, never a weight merger.
 use clap::Parser;
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 use rand_distr::{Distribution, StandardNormal};
 use serde::Serialize;

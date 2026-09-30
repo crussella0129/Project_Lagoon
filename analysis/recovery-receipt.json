@@ -1,0 +1,144 @@
+{
+  "spec_sha256": "9f023659d42d3c64ef5014975b56a8bffdf9bf3f5702c12f40dfea5b699d378b",
+  "evidence_kind": "synthetic_parameter_recovery",
+  "passed": true,
+  "models": {
+    "choice": {
+      "model": "conditional_logit",
+      "audit": {
+        "records": 8,
+        "seed_clusters": 8,
+        "choice_sets": 2560,
+        "status_counts": {
+          "valid": 2418,
+          "abstained": 142
+        },
+        "failed_sets": 0,
+        "abstained_sets": 142,
+        "uninformative_singleton_sets": 0
+      },
+      "failure_policy": "error",
+      "covariance": "run_seed_cluster_sandwich_normal",
+      "alpha": 0.01,
+      "coefficients": {
+        "looks": {
+          "estimate": 0.5429292374038227,
+          "se": 0.03240141918921951,
+          "lower": 0.45946871237965947,
+          "upper": 0.6263897624279859
+        },
+        "skill": {
+          "estimate": -0.33648816243928426,
+          "se": 0.013740834923163341,
+          "lower": -0.3718822076895965,
+          "upper": -0.301094117188972
+        },
+        "reputation": {
+          "estimate": 0.7099990689524698,
+          "se": 0.03129211178589234,
+          "lower": 0.6293959304444404,
+          "upper": 0.7906022074604991
+        },
+        "loyalty_reputation": {
+          "estimate": 0.4170186788834659,
+          "se": 0.03521171559831291,
+          "lower": 0.32631931001710157,
+          "upper": 0.5077180477498302
+        },
+        "outside": {
+          "estimate": -0.5911347849190762,
+          "se": 0.1046485738476336,
+          "lower": -0.8606916480104119,
+          "upper": -0.32157792182774053
+        }
+      },
+      "recovery": {
+        "looks": {
+          "planted": 0.55,
+          "covered": true,
+          "within_absolute_error": true
+        },
+        "skill": {
+          "planted": -0.35,
+          "covered": true,
+          "within_absolute_error": true
+        },
+        "reputation": {
+          "planted": 0.7,
+          "covered": true,
+          "within_absolute_error": true
+        },
+        "loyalty_reputation": {
+          "planted": 0.4,
+          "covered": true,
+          "within_absolute_error": true
+        },
+        "outside": {
+          "planted": -0.5,
+          "covered": true,
+          "within_absolute_error": true
+        }
+      },
+      "passed": true
+    },
+    "ols": {
+      "model": "ols_relative_nominations",
+      "audit": {
+        "records": 8,
+        "seed_clusters": 8,
+        "choice_sets": 2560,
+        "status_counts": {
+          "valid": 2560
+        },
+        "failed_sets": 0,
+        "abstained_sets": 0
+      },
+      "covariance": "run_seed_cluster_sandwich_normal",
+      "alpha": 0.01,
+      "coefficients": {
+        "const": {
+          "estimate": 1.0000000000000029,
+          "se": 1.0927491991469493e-15,
+          "lower": 1.0,
+          "upper": 1.0000000000000058
+        },
+        "looks": {
+          "estimate": 0.12588274525817372,
+          "se": 0.03195414005266056,
+          "lower": 0.04357433494082505,
+          "upper": 0.2081911555755224
+        },
+        "skill": {
+          "estimate": -0.09894528285421761,
+          "se": 0.01513147122172688,
+          "lower": -0.1379213698329486,
+          "upper": -0.05996919587548663
+        },
+        "reputation": {
+          "estimate": 0.13334385745028438,
+          "se": 0.03823254035545768,
+          "lower": 0.03486335965358059,
+          "upper": 0.23182435524698816
+        }
+      },
+      "recovery": {
+        "looks": {
+          "planted": 0.12,
+          "covered": true,
+          "within_absolute_error": true
+        },
+        "skill": {
+          "planted": -0.1,
+          "covered": true,
+          "within_absolute_error": true
+        },
+        "reputation": {
+          "planted": 0.08,
+          "covered": true,
+          "within_absolute_error": true
+        }
+      },
+      "passed": true
+    }
+  }
+}

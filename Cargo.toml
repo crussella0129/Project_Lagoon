@@ -1,8 +1,8 @@
 [package]
 name = "lovers-lagoon"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
-rust-version = "1.85"
+# Support policy: current stable Rust (see rust-toolchain.toml and CI).
 license = "Apache-2.0"
 description = "A research harness for voluntary model partner and fusion-plan choices"
 
@@ -18,8 +18,8 @@ thiserror = "2"
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync", "net", "io-util"] }
 
 [dev-dependencies]
-rand = "0.9"
-rand_chacha = "0.9"
-rand_distr = "0.5"
+rand = "0.10"
+rand_chacha = "0.10"
+rand_distr = "0.6"
 tempfile = "3"
 tokio = { version = "1", features = ["test-util"] }

@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 
 // JSON Schema maxLength counts Unicode characters, independently of UTF-8 bytes.
 pub const PUBLIC_MESSAGE_MAX_CHARS: usize = 128;
@@ -10,10 +11,22 @@ pub struct PrivateState {
     pub feeling: Option<String>,
     pub learned_preference: Option<String>,
     pub thought: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub peers: Option<BTreeMap<String, PeerMemory>>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PeerMemory {
+    pub trust: u8,
+    pub note: String,
 }
 
 impl PrivateState {
     pub fn update(&mut self, update: &Self) {
+        if let Some(peers) = &update.peers {
+            self.peers = Some(peers.clone());
+        }
         for (current, incoming) in [
             (&mut self.feeling, &update.feeling),
             (&mut self.learned_preference, &update.learned_preference),
@@ -26,18 +39,40 @@ impl PrivateState {
     }
 
     pub fn byte_len(&self) -> usize {
-        [&self.feeling, &self.learned_preference, &self.thought]
+        let notes: usize = [&self.feeling, &self.learned_preference, &self.thought]
             .into_iter()
             .flatten()
             .map(String::len)
-            .sum()
+            .sum();
+        notes
+            + self.peers.as_ref().map_or(0, |peers| {
+                serde_json::to_vec(peers).expect("bounded peer map").len()
+            })
     }
 
     pub fn within_note_limits(&self) -> bool {
+        self.within_note_limit(PRIVATE_NOTE_MAX_CHARS)
+    }
+
+    pub fn within_note_limit(&self, limit: usize) -> bool {
         [&self.feeling, &self.learned_preference, &self.thought]
             .into_iter()
             .flatten()
-            .all(|s| s.chars().count() <= PRIVATE_NOTE_MAX_CHARS)
+            .all(|s| s.chars().count() <= limit)
+    }
+
+    pub fn valid_peers(&self, config: &crate::config::Experiment, owner: &str) -> bool {
+        self.peers.as_ref().is_none_or(|peers| {
+            config.peer_memory
+                && peers.len() < config.agents.len()
+                && peers.iter().all(|(alias, entry)| {
+                    entry.trust <= 10
+                        && entry.note.chars().count() <= PRIVATE_NOTE_MAX_CHARS
+                        && config.agents.iter().any(|agent| {
+                            agent.handle != owner && config.alias(&agent.handle) == *alias
+                        })
+                })
+        })
     }
 }
 
@@ -112,6 +147,7 @@ pub struct PublicView {
 pub struct PublicPair {
     pub round: u32,
     pub pair: Pair,
+    pub retired: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -157,7 +193,21 @@ pub fn normalize(
     if let Some(update) = &private_update {
         proposed.update(update);
     }
-    if proposed.byte_len() > config.max_private_bytes || !proposed.within_note_limits() {
+    if private_update.as_ref().is_some_and(|update| {
+        !update.valid_peers(
+            config,
+            &config
+                .handle_for_alias(&observation.owner)
+                .expect("known owner"),
+        )
+    }) {
+        return Outcome::failure(Status::InvalidResponse);
+    }
+    if proposed.byte_len() > config.max_private_bytes
+        || private_update.as_ref().is_some_and(|update| {
+            !update.within_note_limit(observation.response_limits.private_note_chars)
+        })
+    {
         return Outcome::failure(Status::OversizedResponse);
     }
     match observation.phase {
@@ -170,10 +220,9 @@ pub fn normalize(
             if !fields.is_empty() {
                 return Outcome::failure(Status::InvalidResponse);
             }
-            if public_message
-                .as_ref()
-                .is_some_and(|s| s.chars().count() > PUBLIC_MESSAGE_MAX_CHARS)
-            {
+            if public_message.as_ref().is_some_and(|s| {
+                s.chars().count() > observation.response_limits.public_message_chars
+            }) {
                 return Outcome::failure(Status::OversizedResponse);
             }
             Outcome {
@@ -199,19 +248,17 @@ pub fn normalize(
                 Some(mut value) => {
                     // The immutable observation binds the receipt. An obsolete copied hash
                     // is ignored, never interpreted as a different authorization.
-                    if value.get("state").and_then(|v| v.as_str()) == Some("agree") {
-                        if let Some(fields) = value.as_object_mut() {
-                            fields.remove("fingerprint");
-                            if let Some(card) = fields
-                                .get("plan_id")
-                                .and_then(|v| v.as_str())
-                                .and_then(|id| observation.plans.iter().find(|p| p.plan.id == id))
-                            {
-                                fields.insert(
-                                    "fingerprint".into(),
-                                    serde_json::json!(card.fingerprint),
-                                );
-                            }
+                    if value.get("state").and_then(|v| v.as_str()) == Some("agree")
+                        && let Some(fields) = value.as_object_mut()
+                    {
+                        fields.remove("fingerprint");
+                        if let Some(card) = fields
+                            .get("plan_id")
+                            .and_then(|v| v.as_str())
+                            .and_then(|id| observation.plans.iter().find(|p| p.plan.id == id))
+                        {
+                            fields
+                                .insert("fingerprint".into(), serde_json::json!(card.fingerprint));
                         }
                     }
                     match serde_json::from_value::<Consent>(value) {

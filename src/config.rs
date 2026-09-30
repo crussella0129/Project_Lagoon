@@ -24,6 +24,12 @@ pub struct Experiment {
     pub max_siblings: usize,
     pub mode: Mode,
     pub decoding: Decoding,
+    #[serde(default)]
+    pub string_limits: StringLimits,
+    #[serde(default)]
+    pub peer_memory: bool,
+    #[serde(default)]
+    pub pairing: PairingProtocol,
     pub agents: Vec<Agent>,
     pub recipes: Vec<Recipe>,
     pub plans: Vec<ReproductionPlan>,
@@ -36,11 +42,63 @@ pub enum Mode {
     MutualChoice,
 }
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PairingProtocol {
+    #[default]
+    RepeatedRounds,
+    MatchedExit,
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Decoding {
     pub temperature: f64,
     pub max_tokens: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ResponseLimits {
+    pub public_message_chars: usize,
+    pub private_note_chars: usize,
+}
+
+impl Default for ResponseLimits {
+    fn default() -> Self {
+        Self {
+            public_message_chars: crate::protocol::PUBLIC_MESSAGE_MAX_CHARS,
+            private_note_chars: crate::protocol::PRIVATE_NOTE_MAX_CHARS,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct StringLimits {
+    pub communication: ResponseLimits,
+    pub selection: ResponseLimits,
+}
+
+impl StringLimits {
+    pub fn for_phase(&self, phase: &Phase) -> &ResponseLimits {
+        match phase {
+            Phase::Communication { .. } => &self.communication,
+            Phase::Selection => &self.selection,
+        }
+    }
+}
+
+/// UTF-8 compact JSON tuple, explicit phase tag and nullable step; big-endian u64.
+pub fn call_seed(run_seed: u64, round: u32, phase: &Phase, handle: &str) -> u64 {
+    let (tag, step) = match phase {
+        Phase::Communication { step } => ("communication", Some(*step)),
+        Phase::Selection => ("selection", None),
+    };
+    let bytes = serde_json::to_vec(&("lagoon-call-seed-v1", run_seed, round, tag, step, handle))
+        .expect("seed tuple is serializable");
+    let digest = Sha256::digest(bytes);
+    u64::from_be_bytes(digest[..8].try_into().expect("eight digest bytes"))
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -86,6 +144,19 @@ pub struct Agent {
     #[serde(default)]
     pub initial_private: PrivateState,
     pub backend: BackendConfig,
+    #[serde(default)]
+    pub inference: Option<InferenceProvenance>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct InferenceProvenance {
+    pub server: String,
+    pub server_version: String,
+    pub grammar_backend: String,
+    pub model_revision: String,
+    pub chat_template_sha256: String,
+    pub conformance_report_sha256: Option<String>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -184,6 +255,16 @@ impl Experiment {
                 Err(ConfigError(message))
             }
         };
+        for limits in [
+            &self.string_limits.communication,
+            &self.string_limits.selection,
+        ] {
+            require(
+                (1..=4096).contains(&limits.public_message_chars)
+                    && (1..=4096).contains(&limits.private_note_chars),
+                "string limits must be 1..=4096 Unicode characters",
+            )?;
+        }
         require((1..=100).contains(&self.rounds), "rounds must be 1..=100")?;
         require(
             self.communication_steps <= 10,
@@ -248,13 +329,41 @@ impl Experiment {
         )?;
         let mut handles = BTreeSet::new();
         for agent in &self.agents {
+            if let Some(provenance) = &agent.inference {
+                require(
+                    [
+                        &provenance.server,
+                        &provenance.server_version,
+                        &provenance.grammar_backend,
+                    ]
+                    .into_iter()
+                    .all(|s| valid_metadata(s))
+                        && [40, 64].contains(&provenance.model_revision.len())
+                        && provenance
+                            .model_revision
+                            .bytes()
+                            .all(|b| b.is_ascii_hexdigit())
+                        && valid_sha256(&provenance.chat_template_sha256)
+                        && provenance
+                            .conformance_report_sha256
+                            .as_deref()
+                            .is_none_or(valid_sha256),
+                    "invalid inference provenance",
+                )?;
+            }
             require(
                 valid_id(&agent.handle) && handles.insert(&agent.handle),
                 "invalid or duplicate handle",
             )?;
             require(
                 agent.initial_private.byte_len() <= self.max_private_bytes
-                    && agent.initial_private.within_note_limits(),
+                    && agent.initial_private.within_note_limit(
+                        self.string_limits
+                            .communication
+                            .private_note_chars
+                            .max(self.string_limits.selection.private_note_chars),
+                    )
+                    && agent.initial_private.valid_peers(self, &agent.handle),
                 "initial private state exceeds bound",
             )?;
             if let Some(checkpoint) = &agent.checkpoint {
@@ -280,6 +389,10 @@ impl Experiment {
                     model,
                     tokenizer,
                 } => {
+                    require(
+                        agent.inference.is_some(),
+                        "local inference requires server/model/template provenance",
+                    )?;
                     validate_endpoint(endpoint)?;
                     require(valid_metadata(model), "missing local model")?;
                     match tokenizer {
@@ -434,6 +547,10 @@ fn valid_id(value: &str) -> bool {
             .all(|b| b.is_ascii_alphanumeric() || b"_-".contains(&b))
 }
 
+fn valid_sha256(value: &str) -> bool {
+    value.len() == 64 && value.bytes().all(|b| b.is_ascii_hexdigit())
+}
+
 fn valid_metadata(value: &str) -> bool {
     !value.trim().is_empty() && value.len() <= 256 && !value.chars().any(char::is_control)
 }
@@ -477,6 +594,9 @@ pub(crate) mod tests {
 
     pub fn config() -> Experiment {
         Experiment {
+            pairing: PairingProtocol::default(),
+            string_limits: StringLimits::default(),
+            peer_memory: false,
             seed: 9,
             rounds: 2,
             communication_steps: 1,
@@ -495,6 +615,14 @@ pub(crate) mod tests {
             agents: ["a", "b", "c"]
                 .into_iter()
                 .map(|handle| Agent {
+                    inference: Some(InferenceProvenance {
+                        server: "test-double".into(),
+                        server_version: "fixture".into(),
+                        grammar_backend: "fixture".into(),
+                        model_revision: "f".repeat(40),
+                        chat_template_sha256: "f".repeat(64),
+                        conformance_report_sha256: None,
+                    }),
                     handle: handle.into(),
                     checkpoint: None,
                     merge_metadata: None,
