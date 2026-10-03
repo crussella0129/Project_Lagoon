@@ -8,7 +8,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "codex/dev"
+    target-branch: "dev"
     groups:
       github-actions:
         patterns:
@@ -17,7 +17,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "codex/dev"
+    target-branch: "dev"
     groups:
       cargo-dependencies:
         patterns:
@@ -26,7 +26,7 @@ updates:
     directory: "/analysis"
     schedule:
       interval: "weekly"
-    target-branch: "codex/dev"
+    target-branch: "dev"
     groups:
       analysis-dependencies:
         patterns:

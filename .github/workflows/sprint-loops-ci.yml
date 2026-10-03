@@ -1,9 +1,9 @@
 name: Instrument checks
 on:
   push:
-    branches: [main, codex/dev]
+    branches: [main, dev]
   pull_request:
-    branches: [main, codex/dev]
+    branches: [main, dev]
 permissions:
   contents: read
 jobs:
